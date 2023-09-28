@@ -1,0 +1,13 @@
+{
+    "require": {
+        "aws/aws-sdk-php": "^3.261",
+        "vlucas/phpdotenv": "^5.5",
+        "guzzlehttp/guzzle": "^7.5",
+        "voku/simple-mysqli": "^8.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Src\\": "src/"
+        }
+    }
+}

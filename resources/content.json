@@ -1,0 +1,51 @@
+{
+    "schemaVersion": "2.2",
+    "description": "Create server block and issue SSL",
+    "parameters": {
+        "domainName": {
+            "type": "String",
+            "description": "The domain name to create server block for and issue SSL certificate for."
+        },
+        "rootDir": {
+            "type": "String",
+            "description": "The root directory for the nginx server."
+        },
+        "certbotEmail": {
+            "type": "String",
+            "description": "The email address to use for the SSL certificate."
+        }
+    },
+    "mainSteps": [
+        {
+            "name": "create_server_block",
+            "action": "aws:runShellScript",
+            "inputs": {
+                "runCommand": [
+                    "sudo su",
+                    "echo \"server {\\n\\tlisten 80;\\n\\tserver_name $domainName www.$domainName;\n\t $rootDir \\n\\treturn 301 https://$server_name$request_uri;\\n\\tadd_header X-XSS-Protection '1; mode=block';\\n\\tadd_header X-Content-Type-Options 'nosniff';\\n\\tindex index.html index.htm index.php;\\n\\tcharset utf-8;\\n\\tlocation / {\\ttry_files $uri $uri/ /index.php?$query_string;}\\n\\tlocation = /favicon.ico { access_log off; log_not_found off; }\\n\\tlocation = /robots.txt  { access_log off; log_not_found off; }\\n\\terror_page 404 /index.php;\n\tlocation ~ \\.php$ { fastcgi_pass unix:/var/run/php/php8.1-fpm.sock; \n\tfastcgi_index index.php;\n\tfastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;\n\tinclude fastcgi_params;\n\t}\n\tlocation ~ /\\.(?!well-known).* {\n\tdeny all;\n\t}}\" > /etc/nginx/sites-available/whitecoatdomain",
+                    "ln -s /etc/nginx/sites-available/$domainName /etc/nginx/sites-enabled/",
+                    "echo \"server {\\n\\tlisten 443 ssl;\\n\\tserver_name $domainName;\\n\\tssl_certificate /etc/letsencrypt/live/$domainName/fullchain.pem;\\n\\tssl_certificate_key /etc/letsencrypt/live/$domainName/privkey.pem;\\n\\tinclude /etc/letsencrypt/options-ssl-nginx.conf;\\n\\tssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;\\n\\troot $root_dir;\\n\\tindex index.php index.html index.htm;\\n\\tlocation / {\\n\\t\\ttry_files $uri $uri/ /index.php?$args;\\n\\t}\\n\\tlocation ~ \\.php$ {\\n\\t\\tinclude snippets/fastcgi-php.conf;\\n\\t\\tfastcgi_pass unix:/run/php/php7.4-fpm.sock;\\n\\t}\\n}\" > /etc/nginx/sites-available/$domainName"
+                ]
+            }
+        },
+        {
+            "name": "issue_ssl",
+            "action": "aws:runShellScript",
+            "inputs": {
+                "runCommand": [
+                    "certbot certonly --webroot -w $root_dir -d $domainName --email $certbotEmail --agree-tos --non-interactive --force-renewal"
+                ]
+            }
+        },
+        {
+            "name": "reload_nginx",
+            "action": "aws:runShellScript",
+            "inputs": {
+                "runCommand": [
+                    "sudo nginx -t",
+                    " sudo systemctl restart nginx"
+                ]
+            }
+        }
+    ]
+}
