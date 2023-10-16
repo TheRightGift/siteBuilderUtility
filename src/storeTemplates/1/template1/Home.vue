@@ -16,7 +16,7 @@ import HeroComponent from './HeroComponent.vue';
 import NavbarComponent from './NavbarComponent.vue';
 import OffersComponent from './OffersComponent.vue';
 import FooterComponent from './FooterComponent.vue';
-import ShippingDetails from './shippingDetails.vue';
+import ShippingDetails from './SellingPointComponent.vue';
 
 export default {
     components: { NavbarComponent, HeroComponent, OffersComponent, FeaturedProductsComponent, CategoryComponent, FooterComponent, ShippingDetails },
