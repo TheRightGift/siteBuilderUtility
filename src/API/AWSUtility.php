@@ -95,105 +95,127 @@ class AWSUtility
         $storeName = $input['storeName'];
         $themeColor = $input['themeColor'];
         $storeDirectoryName = $input['storeDirectoryName'];
-        $storeTypeId = 1; //$input['storeTypeId'];
-        // $randomTemplateNumber = 1; //check for number of templates in this type and get a random template = any number between 0 and max (inclusive)
+        $storeTypeId = $input['storeTypeId'];
+        $countTemplatesForStoreType = count( glob(dirname(__DIR__)."/storeTemplates/".$storeTypeId."/*", GLOB_ONLYDIR) );
+        
+        if($this->storeTypeHasTemplateCheck($storeTypeId) === 1) {
+            $randomTemplateNumber = rand(1, $countTemplatesForStoreType);
+            $defaultColorTheme = '--primary-color: #fff;';
+            $storeColorTheme = "--primary-color: $themeColor;";
+
+            // Make store directory if the store does not exist
+            $siteDirectoryCommand = "sudo mkdir -p /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName";
+            // MainHomeComponent
+            $homeComponent = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/Home.vue";
+            $homeComponentContent = $this->storeFileSetup($homeComponent, $defaultColorTheme, $storeColorTheme);
+            $componentName = 'Home.vue';  
+            $homeComponentCommand = "sudo nano $componentName
+                echo '$homeComponentContent' >> /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
+            ";
+
+            // Home partials
+            // $siteHomePartialsDirectoryCommand = "sudo mkdir -p /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/homePartials";
+            
+            // NAVBAR
+            $navbar = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/NavbarComponent.vue";
+            $navbarContent = $this->storeFileSetup($navbar, $defaultStoreName, $storeName);   
+            $componentName = 'NavbarComponent.vue';  
+            $navbarCommand = "sudo nano $componentName
+                echo '$navbarContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
+            ";
+
+            // HERO
+            $hero = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/HeroComponent.vue";
+            $heroContent = $this->storeFileSetup($hero);      
+            $componentName = 'HeroComponent.vue';  
+            $heroCommand = "sudo nano $componentName
+                echo '$heroContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
+            ";
+
+            // CATEGORY
+            $category = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/CategoryComponent.vue";
+            $categoryContent = $this->storeFileSetup($category);      
+            $componentName = 'CategoryComponent.vue';  
+            $categoryCommand = "sudo nano $componentName
+                echo '$categoryContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
+            ";
+
+            // FeaturedProducts
+            $featuredProducts = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/FeaturedProductsComponent.vue";
+            $featuredProductsContent = $this->storeFileSetup($featuredProducts);      
+            $componentName = 'FeaturedProductsComponent.vue';  
+            $featuredProductsCommand = "sudo nano $componentName
+                echo '$featuredProductsContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
+            ";
+
+            // OFFERS
+            $offers = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/OffersComponent.vue";
+            $offersContent = $this->storeFileSetup($offers);      
+            $componentName = 'OffersComponent.vue';  
+            $offersCommand = "sudo nano $componentName
+                echo '$offersContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
+            ";
+
+            // BLOG
+            $blogs = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/BlogComponent.vue";
+            $blogsContent = $this->storeFileSetup($blogs);      
+            $componentName = 'BlogComponent.vue';  
+            $blogsCommand = "sudo nano $componentName
+                echo '$blogsContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
+            ";
+            
+            // SHIPPING DETAILS
+            $shippingDetails = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/shippingDetails.vue";
+            $shippingDetailsContent = $this->storeFileSetup($shippingDetails);      
+            $componentName = 'shippingDetails.vue';  
+            $shippingDetailsCommand = "sudo nano $componentName
+                echo '$shippingDetailsContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
+            ";
+
+            // FOOTER
+            $footer = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/FooterComponent.vue";
+            $footerContent = $this->storeFileSetup($footer, $defaultStoreName, $storeName);      
+            $componentName = 'FooterComponent.vue';  
+            $footerCommand = "sudo nano $componentName
+                echo '$footerContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
+            ";
+            
+            try {
+                $n1Command = $this->ssmClient->sendCommand([
+                    'InstanceIds' => ['i-01f1d0e3ed7035edb'],
+                    'DocumentName' => 'AWS-RunShellScript',
+                    'Parameters' => [
+                        'commands' => [$siteDirectoryCommand, $homeComponentCommand, $navbarCommand, $heroCommand, $categoryCommand, $featuredProductsCommand, $offersCommand, $blogsCommand, $shippingDetailsCommand, $footerCommand],
+                    ],
+                ]);
+                $commandID = $n1Command['Command']['CommandId'];
+                if ($commandID !== '') {
+                    echo json_encode(['status' => 200, 'message' => 'successfully created store!', 'commandID' => $commandID]);
+                }
+            } catch (AwsException $e) {
+                echo 'AWS Error response: '. $e->getAwsErrorMessage();
+            }
+        } else {
+            echo json_encode(['status' => 500, 'message' => 'Agent could not generate template. Storetype has no template']);
+        }        
+    }
+
+    public function storeTypeHasTemplate(array $input){
+        $storeTypeId = $input['storeTypeId'];
+        if($this->storeTypeHasTemplateCheck($storeTypeId) === 1){
+            echo json_encode(['status' => 200, 'message' => 'Store type has templates.']);
+        }else{
+            echo json_encode(['status' => 500, 'message' => 'Storetype has no template.']);
+        }
+    }
+
+    private function storeTypeHasTemplateCheck($storeTypeId){
         $countTemplatesForStoreType = count( glob(dirname(__DIR__)."/storeTemplates/".$storeTypeId."/*", GLOB_ONLYDIR) );
 
-        $randomTemplateNumber = rand(1, $countTemplatesForStoreType);
-        $defaultColorTheme = '--primary-color: #fff;';
-        $storeColorTheme = "--primary-color: $themeColor;";
-
-        // Make store directory if the store does not exist
-        $siteDirectoryCommand = "sudo mkdir -p /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName";
-        // MainHomeComponent
-        $homeComponent = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/Home.vue";
-        $homeComponentContent = $this->storeFileSetup($homeComponent, $defaultColorTheme, $storeColorTheme);
-        $componentName = 'Home.vue';  
-        $homeComponentCommand = "sudo nano $componentName
-            echo '$homeComponentContent' >> /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
-        ";
-
-        // Home partials
-        // $siteHomePartialsDirectoryCommand = "sudo mkdir -p /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/homePartials";
-        
-        // NAVBAR
-        $navbar = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/NavbarComponent.vue";
-        $navbarContent = $this->storeFileSetup($navbar, $defaultStoreName, $storeName);   
-        $componentName = 'NavbarComponent.vue';  
-        $navbarCommand = "sudo nano $componentName
-            echo '$navbarContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
-        ";
-
-        // HERO
-        $hero = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/HeroComponent.vue";
-        $heroContent = $this->storeFileSetup($hero);      
-        $componentName = 'HeroComponent.vue';  
-        $heroCommand = "sudo nano $componentName
-            echo '$heroContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
-        ";
-
-        // CATEGORY
-        $category = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/CategoryComponent.vue";
-        $categoryContent = $this->storeFileSetup($category);      
-        $componentName = 'CategoryComponent.vue';  
-        $categoryCommand = "sudo nano $componentName
-            echo '$categoryContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
-        ";
-
-        // FeaturedProducts
-        $featuredProducts = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/FeaturedProductsComponent.vue";
-        $featuredProductsContent = $this->storeFileSetup($featuredProducts);      
-        $componentName = 'FeaturedProductsComponent.vue';  
-        $featuredProductsCommand = "sudo nano $componentName
-            echo '$featuredProductsContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
-        ";
-
-        // OFFERS
-        $offers = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/OffersComponent.vue";
-        $offersContent = $this->storeFileSetup($offers);      
-        $componentName = 'OffersComponent.vue';  
-        $offersCommand = "sudo nano $componentName
-            echo '$offersContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
-        ";
-
-        // BLOG
-        $blogs = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/BlogComponent.vue";
-        $blogsContent = $this->storeFileSetup($blogs);      
-        $componentName = 'BlogComponent.vue';  
-        $blogsCommand = "sudo nano $componentName
-            echo '$blogsContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
-        ";
-        
-        // SHIPPING DETAILS
-        $shippingDetails = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/shippingDetails.vue";
-        $shippingDetailsContent = $this->storeFileSetup($shippingDetails);      
-        $componentName = 'shippingDetails.vue';  
-        $shippingDetailsCommand = "sudo nano $componentName
-            echo '$shippingDetailsContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
-        ";
-
-        // FOOTER
-        $footer = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/FooterComponent.vue";
-        $footerContent = $this->storeFileSetup($footer, $defaultStoreName, $storeName);      
-        $componentName = 'FooterComponent.vue';  
-        $footerCommand = "sudo nano $componentName
-            echo '$footerContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
-        ";
-        
-        try {
-            $n1Command = $this->ssmClient->sendCommand([
-                'InstanceIds' => ['i-01f1d0e3ed7035edb'],
-                'DocumentName' => 'AWS-RunShellScript',
-                'Parameters' => [
-                    'commands' => [$siteDirectoryCommand, $homeComponentCommand, $navbarCommand, $heroCommand, $categoryCommand, $featuredProductsCommand, $offersCommand, $blogsCommand, $shippingDetailsCommand, $footerCommand],
-                ],
-            ]);
-            $commandID = $n1Command['Command']['CommandId'];
-            if ($commandID !== '') {
-                echo json_encode(['status' => 200, 'message' => 'successfully created store!', 'commandID' => $commandID]);
-            }
-        } catch (AwsException $e) {
-            echo 'AWS Error response: '. $e->getAwsErrorMessage();
+        if($countTemplatesForStoreType > 0) {
+            return 1;
+        } else {
+            return 0;
         }
     }
 

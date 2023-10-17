@@ -53,6 +53,9 @@ class AWSUtilityController
             case '/createStore':
                 $response = $this->createStore();
                 break;
+            case '/storeTypeHasTemplate':
+                $response = $this->storeTypeHasTemplate();
+                break;
             // case '/template/id':
             //     $response = $this->template();
             //     break;
@@ -175,9 +178,20 @@ class AWSUtilityController
             // print_r($response);
             return $response;
         } else {
-            echo 'No';
+            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support '.$_SERVER['REQUEST_METHOD'].' requests.']);
         }
         
+    }
+
+    private function storeTypeHasTemplate(){
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $input = $_POST;
+            $result = $this->awsUtilityGateway->storeTypeHasTemplate($input);
+            $response['body'] = json_encode($result);
+            return $response;
+        } else {
+            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support '.$_SERVER['REQUEST_METHOD'].' requests.']);
+        }
     }
 
     private function listcommands(){
