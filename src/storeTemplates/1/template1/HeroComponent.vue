@@ -37,7 +37,7 @@
                                           },
                                       }
                             "
-                            style="cursor: pointer"
+                            class="link"
                             >Shop Now</router-link
                         >
                         <router-link
@@ -62,6 +62,7 @@
                                           },
                                       }
                             "
+                            class="link"
                             >Find More</router-link
                         >
                     </div>
@@ -98,6 +99,9 @@
             },
         },
         mounted() {
+            var elems = document.querySelectorAll('.parallax');
+            var instances = M.Parallax.init(elems, {});
+
             if (this.hero.length > 0) {
                 this.heroSeeder = this.hero[0];
             }
@@ -172,27 +176,29 @@
         margin: 4vh 0 6vh 0;
     }
 
-    .heroCtaContainer a {
+    .heroCtaContainer .link {
         padding: 1vh 2vw;
         text-transform: uppercase;
         border: thin solid #fff;
+        cursor: pointer;
     }
 
-    .heroCtaContainer a:first-child {
+    .heroCtaContainer .link:first-child {
         background-color: #fff;
         color: #000;
+        margin-right: 1vw;
     }
 
-    .heroCtaContainer a:first-child:hover {
+    .heroCtaContainer .link:first-child:hover {
         color: #fff;
         background-color: unset;
     }
 
-    .heroCtaContainer a:last-child {
+    .heroCtaContainer .link:last-child {
         color: #fff;
     }
 
-    .heroCtaContainer a:last-child:hover {
+    .heroCtaContainer .link:last-child:hover {
         background-color: #fff;
         color: #000;
     }

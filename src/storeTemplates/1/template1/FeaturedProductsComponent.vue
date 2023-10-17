@@ -2,11 +2,11 @@
     <div class="row noMarginBottom">
         <div class="col l12 featuredPrdtBackground">
             <div class="container">
-                <h1 class="centerAlign">Featured Products</h1>
+                <h2 class="centerAlign">Featured Products</h2>
                 <div class="row" @click="showProductEditor">
                     <!-- Loop through your products using v-for -->
                     <div
-                        class="col l3 product"
+                        class="col l3 s12 product"
                         v-for="(product, index) in seededProducts"
                         :key="index"
                     >
@@ -28,7 +28,7 @@
 								alt=""
 								loading="lazy"
 							/>
-							<h2>{{ product.title }}</h2>
+							<h3>{{ product.title }}</h3>
 						</router-link>
                         <span class="category grey-text">{{
                             product.category.name
@@ -230,6 +230,9 @@
 </script>
 
 <style scoped>
+h2 {
+    font-size: 2.53rem;
+}
     .noMarginBottom {
         margin-bottom: 0 !important;
     }
@@ -258,9 +261,10 @@
     .product {
         display: flex;
         flex-direction: column;
+        margin-bottom: 6vh;
     }
 
-    .product h2 {
+    .product h3 {
         font-size: 1.8rem;
         margin: 0.5rem 0;
         padding: 0;
@@ -289,5 +293,12 @@
     img {
         width: 300px;
         height: 300px;
+    }
+    /* MOBILE */
+    @media only screen and (max-width: 767px) {
+        img {
+            width: 100%;
+            height: unset;
+        }
     }
 </style>

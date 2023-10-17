@@ -72,22 +72,14 @@
             loggedIn: Boolean,
             sellPoint: Array,
         },
-		// watch: {
-		// 	sellPoint(newVal, oldVal) {
-		// 		if (newVal) {
-		// 			newVal.forEach((index, i) => {
-		// 				const updatedItem = newVal[i];
-		// 				if (index.index >= 0 && index.index < this.sellingPSeeder.length) {
-		// 					this.sellingPSeeder[index.index] = updatedItem;
-		// 				}
-		// 			});
-		// 		}
-		// 	},
-		// },
     };
 </script>
 
 <style scoped>
+    .container {
+        width: 88%;
+        max-width: unset;
+    }
     #sellingPoint {
         padding: 5vh 0;
     }
@@ -116,5 +108,18 @@
     #sellingPoint .card-content .col .detail h4 {
         font-size: 1.75rem;
         margin-bottom: 0.5vh;
+    }
+
+    /* MOBILE */
+    @media only screen and (max-width: 767px) {
+        #sellingPoint .card-content .col .img {
+            width: 37%;
+            display: flex;
+            justify-content: unset;
+        }
+
+        #sellingPoint .card-content .col {
+            margin-bottom: 3vh;
+        }
     }
 </style>

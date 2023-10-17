@@ -278,7 +278,8 @@
             };
         },
         mounted() {
-            localStorage.setItem("previousPage", this.$route.fullPath);
+            // localStorage.setItem("previousPage", this.$route.fullPath);
+
             var elems = document.querySelectorAll(".sidenav");
             var instances = M.Sidenav.init(elems, {
                 edge: "left",

@@ -33,6 +33,7 @@
                                                   },
                                               }
                                     "
+                                    class="link"
                                     >Shop Now</router-link
                                 >
                             </div>
@@ -113,14 +114,14 @@
         width: 88%;
         max-width: unset;
     }
-    .offerCtaContainer a {
+    .offerCtaContainer .link {
         padding: 1vh 2vw;
         text-transform: uppercase;
         border: thin solid#fff;
         background-color: #fff;
         color: #000;
     }
-    .offerCtaContainer a:hover {
+    .offerCtaContainer .link:hover {
         color: #fff;
         background-color: unset;
     }

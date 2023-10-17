@@ -2,7 +2,7 @@
     <div>
         <div class="container" @click="showBlogEditor" id="blog">
             <div class="row" @click="showBlogEditor">
-                <h1 class="centerAlign center">Blogs</h1>
+                <h2 class="centerAlign center">Blogs</h2>
                 <div
                     class="col s12 l3 m4 mb-4"
                     v-for="blog in blogSeeder"
@@ -48,6 +48,13 @@
     </div>
 </template>
 <style scoped>
+h2 {
+    font-size: 2.53rem;
+}
+    .container {
+        width: 88%;
+        max-width: unset;
+    }
     .customer-title {
         text-align: center;
         margin-top: 2vh;

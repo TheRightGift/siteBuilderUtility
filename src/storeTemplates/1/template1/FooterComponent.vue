@@ -8,7 +8,8 @@
                         <h4>{{ brandShortsDesc }}</h4>
                     </div>
                     <div class="col l5 s12">
-                        <div class="col l4 s6">
+                        <div class="col l4 s12">
+                            <h2>Discover</h2>
                             <ul>
                                 <li>
                                     <a :href="loggedIn ? `#!` : `/`">Home</a>
@@ -37,6 +38,7 @@
                                                       },
                                                   }
                                         "
+                                        class="link"
                                         >{{ category.name }}</router-link
                                     >
                                 </li>
@@ -49,33 +51,7 @@
                                     <a :href="mailUs">Contact Us</a>
                                 </li>
                             </ul>
-                            <!-- <h2>{{ category.name }}</h2>
-                            <ul v-if="category.subcategories.length > 0">
-                                <li
-                                    v-for="item in category.subcategories"
-                                    :key="item.id"
-                                >
-                                    <a :href="item.link">{{ item.name }}</a>
-                                </li>
-                            </ul>
-                            <ul v-else>
-                                <li>
-                                    <router-link
-                                        :to="{
-                                            name: 'product-search-category',
-                                            params: {
-                                                category_name:
-                                                    category.name ?? 'category',
-                                            },
-                                            query: {
-                                                additionalData:
-                                                    category.id ?? 'category_id',
-                                            },
-                                        }"
-                                        >{{ category.name }}</router-link
-                                    >
-                                </li>
-                            </ul> -->
+                            
                         </div>
                         <div class="col l7 s12">
                             <h2>Subscribe</h2>
@@ -170,8 +146,7 @@
                 ],
                 yourMail: "",
                 womenItems: [],
-                brandShortsDesc:
-                    this.branddesc ?? "The best look anytime, anywhere.",
+                brandShortsDesc: this.branddesc ?? "The best look anytime, anywhere.",
             };
         },
         methods: {
@@ -259,22 +234,28 @@
     .footerInner .l5 h4 {
         font-size: 1.9rem;
     }
-    .footerInner .l4 h2 {
+    .footerInner .l4 h2, .footerInner .l7 h2 {
         margin-top: 0;
         font-size: 1.7rem;
     }
     .footerInner .l4 ul li a,
-    .footerIconContainer a {
+    .footerIconContainer a, .footerInner ul li .link {
         color: rgba(0, 0, 0, 0.51);
-        font-size: 1.2rem;
+        font-size: 1rem;
+        cursor: pointer;
     }
     .footerInner .l4 ul li a:hover,
     .footerInner .l4 ul li a:active,
     .footerInner .l4 ul li a:visited,
     .footerIconContainer a:hover,
     .footerIconContainer a:active,
-    .footerIconContainer a:visited {
-        color: #0084d6;
+    .footerIconContainer a:visited, 
+    .footerInner ul li .link:hover, 
+    .footerInner ul li .link:active, 
+    .footerInner ul li .link:visited {
+        color: #24262b;
+        text-transform: capitalize;
+        opacity: 1;
     }
     .footerInner .l4 .input-field:first-child {
         margin-bottom: 0.5rem;
