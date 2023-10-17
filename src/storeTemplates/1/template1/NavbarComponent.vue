@@ -2,7 +2,10 @@
     <div>
         <nav>
             <div class="nav-wrapper">
-                <a :href="loggedIn ? `#!` : `/`" class="brand-logo hide-on-large-only">
+                <a
+                    :href="loggedIn ? `#!` : `/`"
+                    class="brand-logo hide-on-large-only"
+                >
                     <span class="brandname">{{ brandname }}</span>
                 </a>
 
@@ -41,30 +44,34 @@
                                 @click="showCategoryEditEditor"
                             >
                                 <router-link
-                                    :to="
-                                        loggedIn
-                                            ? `#!`
-                                            : {
-                                                  name: `product-search-category`,
-                                                  params: {
-                                                      category_name:
-                                                          category.name ??
-                                                          `category`,
-                                                  },
-                                                  query: {
-                                                      additionalData:
-                                                          category.id ??
-                                                          `category_id`,
-                                                  },
-                                              }
-                                    "
-                                    class="link"
+                                    :to="{
+                                        name: `product-search-category`,
+                                        params: {
+                                            category_name:
+                                                category.name ?? `category`,
+                                        },
+                                        query: {
+                                            additionalData:
+                                                category.id ?? `category_id`,
+                                        },
+                                    }"
+                                    v-if="!loggedIn"
                                     >{{ category.name }}</router-link
                                 >
+                                <a href="#productCategorySection" v-else>{{
+                                    category.name
+                                }}</a>
                             </li>
                         </span>
                         <li v-show="categories.length > 3" class="catDropdown">
-                            <a class="dropdown-trigger" href="#" data-target="dropdownCategory">Categories<i class="material-icons right">arrow_drop_down</i></a>
+                            <a
+                                class="dropdown-trigger"
+                                href="#"
+                                data-target="dropdownCategory"
+                                >Categories<i class="material-icons right"
+                                    >arrow_drop_down</i
+                                ></a
+                            >
                         </li>
                         <ul id="dropdownCategory" class="dropdown-content">
                             <li
@@ -95,7 +102,7 @@
                             </li>
                         </ul>
                         <li>
-                            <a href="#">Blog</a>
+                            <a href="#blog">Blog</a>
                         </li>
                         <li>
                             <a :href="mailUs">Contact Us</a>
@@ -124,7 +131,10 @@
                             <!-- TODO: add dropdown for user specific operations -->
                         </li>
                         <li>
-                            <a class="iconLinks modal-trigger" href="#searchModal">
+                            <a
+                                class="iconLinks modal-trigger"
+                                href="#searchModal"
+                            >
                                 <i class="material-icons">search</i>
                             </a>
                         </li>
@@ -199,7 +209,6 @@
                             ? `/vendor/dashboard`
                             : `/your_account/dashboard`
                     "
-                    
                     >{{ names }}</router-link
                 >
                 <!-- TODO: add dropdown for user specific operations -->
@@ -216,17 +225,18 @@
                 </a>
             </li>
             <li>
-                <a class="modal-trigger" href="#searchModal"> 
+                <a class="modal-trigger" href="#searchModal">
                     <i class="material-icons left">search</i>
-                    Search 
+                    Search
                 </a>
-                
             </li>
         </ul>
         <!-- Search Modal Structure -->
         <div id="searchModal" class="modal">
             <div class="modal-content">
-                <a class="modal-close waves-effect waves-teal btn-flat right closeModal">
+                <a
+                    class="modal-close waves-effect waves-teal btn-flat right closeModal"
+                >
                     <i class="material-icons">clear</i>
                 </a>
                 <div class="row">
@@ -236,7 +246,12 @@
                         </select>
 
                         <div class="input-field">
-                            <input placeholder="Product name" type="search" class="browser-default" v-model="searchproduct.productName">
+                            <input
+                                placeholder="Product name"
+                                type="search"
+                                class="browser-default"
+                                v-model="searchproduct.productName"
+                            />
                         </div>
 
                         <a class="waves-effect waves-light btn searchBtn">
@@ -244,7 +259,6 @@
                         </a>
                     </div>
                 </div>
-                
             </div>
         </div>
     </div>
@@ -259,22 +273,22 @@
             return {
                 searchproduct: {
                     categoryId: 0,
-                    productName: ""
-                }
+                    productName: "",
+                },
             };
         },
         mounted() {
-            // localStorage.setItem("previousPage", this.$route.fullPath);
-            var elems = document.querySelectorAll('.sidenav');
+            localStorage.setItem("previousPage", this.$route.fullPath);
+            var elems = document.querySelectorAll(".sidenav");
             var instances = M.Sidenav.init(elems, {
-                edge: 'left'
+                edge: "left",
             });
 
-            if(this.categories.length > 3){
-                var elems = document.querySelectorAll('.dropdown-trigger');
+            if (this.categories.length > 3) {
+                var elems = document.querySelectorAll(".dropdown-trigger");
                 var instances = M.Dropdown.init(elems, {
                     constrainWidth: true,
-                    coverTrigger: false
+                    coverTrigger: false,
                 });
             }
         },
@@ -316,10 +330,8 @@
             showCategoryEditEditor() {
                 if (this.loggedIn) {
                     this.$emit("showEditNavMenu", true);
-                    console.log("am here");
                 }
             },
-            // #TODO: DO a mixin later for API
         },
         props: {
             brandname: String,
@@ -338,7 +350,7 @@
     }
     nav .nav-wrapper {
         /* width: 100%;
-        height: 10vh; */
+                    height: 10vh; */
         display: flex;
         /* align-items: center; */
         justify-content: space-between;
@@ -365,10 +377,12 @@
         margin-left: 5vw;
         height: 100%;
     }
-    ul.navLinks li a, ul li .link {
+    ul.navLinks li a,
+    ul li .link {
         padding: 0 0.7vw;
     }
-    ul li a, ul li .link {
+    ul li a,
+    ul li .link {
         text-decoration: none;
         text-transform: uppercase;
         color: #24262b;
@@ -389,7 +403,8 @@
         transition: unset;
         background-color: unset !important;
     }
-    ul li a:hover, ul li .link:hover {
+    ul li a:hover,
+    ul li .link:hover {
         color: var(--primary-color);
         background-color: unset !important;
     }
@@ -452,7 +467,7 @@
     .input-field input[type="search"] + .label-icon {
         left: 0.5rem;
     }
-    
+
     /* TODO: TABLET */
 
     /* MOBILE */
@@ -496,7 +511,8 @@
             color: #fff;
             background-color: var(--primary-color);
         }
-        .sidenav li>a, .sidenav li>.link {
+        .sidenav li > a,
+        .sidenav li > .link {
             color: #24262b;
             display: block;
             font-size: 1rem;
@@ -540,58 +556,57 @@
             right: 3.8vw;
             bottom: 2.5vh;
         }
-        .sidenav li>a.mobileWishist {
+        .sidenav li > a.mobileWishist {
             display: flex;
             justify-content: space-between;
             width: 100%;
         }
-        .sidenav li>a.mobileWishist i {
+        .sidenav li > a.mobileWishist i {
             position: relative;
             top: 0.4vh;
             font-size: 1.6rem;
             margin-right: 2vw;
         }
-        
+
         .mobileSidNavBrand,
-        .sidenav li.mobileSidNavBrand>a {
+        .sidenav li.mobileSidNavBrand > a {
             height: 10vh;
             line-height: 10vh;
-            
         }
-        .sidenav li.mobileSidNavBrand>a {
+        .sidenav li.mobileSidNavBrand > a {
             background-color: var(--primary-color);
             color: black;
             font-size: 1.4rem;
             font-weight: 500;
         }
 
-        .sidenav li>.input-field .prefix {
+        .sidenav li > .input-field .prefix {
             position: absolute;
             width: 2.4rem;
             font-size: 1.6rem;
-            -webkit-transition: color .2s;
-            transition: color .2s;
+            -webkit-transition: color 0.2s;
+            transition: color 0.2s;
             top: 0.5rem;
             height: 2rem;
             line-height: 2rem;
         }
-        .sidenav li>.input-field {
+        .sidenav li > .input-field {
             padding: 0 8.6vw;
             margin: 0;
         }
-        .sidenav li>.input-field .prefix ~ input {
+        .sidenav li > .input-field .prefix ~ input {
             margin-left: 2.4rem;
             width: calc(100% - 2.4rem);
         }
 
-        input[type=text]:not(.browser-default) {
+        input[type="text"]:not(.browser-default) {
             height: 2rem;
         }
-        input[type=text]:not(.browser-default):focus:not([readonly]) {
+        input[type="text"]:not(.browser-default):focus:not([readonly]) {
             border-bottom: thin solid var(--primary-color);
             box-shadow: unset;
         }
-        .sidenav li>.input-field .prefix.active {
+        .sidenav li > .input-field .prefix.active {
             color: var(--primary-color);
         }
     }

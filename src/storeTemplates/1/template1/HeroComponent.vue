@@ -1,29 +1,79 @@
 <template>
-   
-    <div class="parallax-container" :style="{zIndex: !loggedIn ? -1 : 'inherit'}">
-        <div class="parallax" @click="showHeroEditor">
-            <img
-                :src="imageUrlWithTimestamp"
-            />
-        </div>
-        <div class="heroContainer" @click="showHeroEditor">
-            <div class="heroBackgroundOverlay"></div>
-            <div class="heroContent">
-                <h1 class="heroMainHeading">{{ heroSeeder.description }}</h1>
-                <h3 class="heroMinorHeading">{{ heroSeeder.others }}</h3>
-                <div class="heroCtaContainer">
-                    <a href="#">Shop Now</a>
-                    <a href="#">Find More</a>
+    <div id="herocomponent">
+        <div
+            class="parallax-container"
+            :style="{ zIndex: !loggedIn ? -1 : 'inherit' }"
+        >
+            <div class="parallax" @click="showHeroEditor">
+                <img :src="imageUrlWithTimestamp" />
+            </div>
+            <div class="heroContainer" @click="showHeroEditor">
+                <div class="heroBackgroundOverlay"></div>
+                <div class="heroContent">
+                    <h1 class="heroMainHeading">
+                        {{ heroSeeder.description }}
+                    </h1>
+                    <h3 class="heroMinorHeading">{{ heroSeeder.subtitle }}</h3>
+                    <div class="heroCtaContainer">
+                        <router-link
+                            :to="
+                                loggedIn
+                                    ? `#!`
+                                    : {
+                                          name: `product-search-category`,
+                                          params: {
+                                              category_name:
+                                                  heroSeeder.type == 'welcome'
+                                                      ? 'all'
+                                                      : heroSeeder.title ??
+                                                        `offer`,
+                                          },
+                                          query: {
+                                              additionalOfferData:
+                                                  heroSeeder.type == `welcome`
+                                                      ? `all`
+                                                      : heroSeeder.id ??
+                                                        `offer_id`,
+                                          },
+                                      }
+                            "
+                            style="cursor: pointer"
+                            >Shop Now</router-link
+                        >
+                        <router-link
+                            :to="
+                                loggedIn
+                                    ? `#!`
+                                    : {
+                                          name: `product-search-category`,
+                                          params: {
+                                              category_name:
+                                                  heroSeeder.type == `welcome`
+                                                      ? `all`
+                                                      : heroSeeder.title ??
+                                                        `offer`,
+                                          },
+                                          query: {
+                                              additionalData:
+                                                  heroSeeder.type == `welcome`
+                                                      ? 'all'
+                                                      : heroSeeder.id ??
+                                                        `offer_id`,
+                                          },
+                                      }
+                            "
+                            >Find More</router-link
+                        >
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    
 </template>
 
 <script>
     export default {
-        computed:{
+        computed: {
             imageUrlWithTimestamp() {
                 // Append the timestamp as a query parameter to the image URL
                 return `${this.heroSeeder.image}?t=${this.timestamp}`;
@@ -32,35 +82,52 @@
         data() {
             return {
                 heroSeeder: {
-                    description: 'Raining Offers For Hot Summer!',
-                    image: 'https://websitedemos.net/brandstore-02/wp-content/uploads/sites/150/2019/12/home-new-bg-free-img.jpg',
-                    others: '25% Off On All Products'
+                    description: "Raining Offers For Hot Summer!",
+                    image: "https://websitedemos.net/brandstore-02/wp-content/uploads/sites/150/2019/12/home-new-bg-free-img.jpg",
+                    subtitle: "25% Off On All Products",
+                    title: "25% Off On All Products",
+                    type: "welcome",
                 },
-                
-            }
+            };
         },
         methods: {
             showHeroEditor() {
                 if (this.loggedIn) {
-                    this.$emit('showHeroEditor', true);
+                    this.$emit("showHeroEditor", true);
                 }
+            },
+        },
+        mounted() {
+            if (this.hero.length > 0) {
+                this.heroSeeder = this.hero[0];
             }
         },
-        mounted() {},
         props: {
             loggedIn: Boolean,
-            hero: Object,
-            timestamp: Number
+            hero: Array,
+            timestamp: Number,
         },
         watch: {
             hero(newVal, oldVal) {
-                if (Object.entries(newVal).length > 0) {
-                    this.heroSeeder.description = newVal.description ?? this.heroSeeder.description;
-                    this.heroSeeder.image = newVal.image ?? this.heroSeeder.image;
-                    this.heroSeeder.others = newVal.others ?? this.heroSeeder.others;
+                let parallax = document.querySelectorAll(
+                    "#herocomponent .parallax"
+                );
+                let carousel = document.querySelectorAll(
+                    "#herocomponent .carousel"
+                );
+                if (parallax.length > 0 || carousel.length === 0) {
+                    this.heroSeeder = newVal[0];
+                } else if (carousel.length > 0) {
+                    this.heroSeeder = newVal;
                 }
-            }
-        }
+                // console.log(parallax);
+                // if (Object.entries(newVal).length > 0) {
+                //     // this.heroSeeder.description = newVal.description ?? this.heroSeeder.description;
+                //     // this.heroSeeder.image = newVal.image ?? this.heroSeeder.image;
+                //     // this.heroSeeder.others = newVal.others ?? this.heroSeeder.others;
+                // }
+            },
+        },
     };
 </script>
 
@@ -132,5 +199,42 @@
 
     .parallax-container {
         height: 100vh;
+    }
+
+    /* MOBILE */
+    @media only screen and (max-width: 767px) {
+        .heroContainer {
+            width: 100%;
+            height: 60vh;
+            padding: 12vh 0 10vh;
+        }
+        .parallax-container {
+            height: 60vh;
+        }
+        .heroContent {
+            /* position: relative; */
+            width: 90vw;
+        }
+        .heroMainHeading {
+            text-align: center;
+            width: 100%;
+            margin: 0;
+            font-size: 2.4rem;
+            font-weight: 600;
+        }
+        .heroMinorHeading {
+            text-align: center;
+        }
+        .heroCtaContainer a {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 1vh 2vw;
+            text-transform: uppercase;
+            border: thin solid #fff;
+        }
+        .heroCtaContainer a:first-child {
+            margin-bottom: 2vh;
+        }
     }
 </style>
