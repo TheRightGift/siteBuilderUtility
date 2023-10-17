@@ -96,8 +96,10 @@ class AWSUtility
         $themeColor = $input['themeColor'];
         $storeDirectoryName = $input['storeDirectoryName'];
         $storeTypeId = 1; //$input['storeTypeId'];
-        $randomTemplateNumber = 1; //check for number of templates in this type and get a random template = any number between 0 and max (inclusive)
+        // $randomTemplateNumber = 1; //check for number of templates in this type and get a random template = any number between 0 and max (inclusive)
+        $countTemplatesForStoreType = count( glob(dirname(__DIR__)."/storeTemplates/".$storeTypeId."/*", GLOB_ONLYDIR) );
 
+        $randomTemplateNumber = rand(1, $countTemplatesForStoreType);
         $defaultColorTheme = '--primary-color: #fff;';
         $storeColorTheme = "--primary-color: $themeColor;";
 
@@ -153,6 +155,14 @@ class AWSUtility
         $offersCommand = "sudo nano $componentName
             echo '$offersContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
         ";
+
+        // BLOG
+        $blogs = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/BlogComponent.vue";
+        $blogsContent = $this->storeFileSetup($blogs);      
+        $componentName = 'BlogComponent.vue';  
+        $blogsCommand = "sudo nano $componentName
+            echo '$blogsContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
+        ";
         
         // SHIPPING DETAILS
         $shippingDetails = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/shippingDetails.vue";
@@ -175,7 +185,7 @@ class AWSUtility
                 'InstanceIds' => ['i-01f1d0e3ed7035edb'],
                 'DocumentName' => 'AWS-RunShellScript',
                 'Parameters' => [
-                    'commands' => [$siteDirectoryCommand, $homeComponentCommand, $navbarCommand, $heroCommand, $categoryCommand, $featuredProductsCommand, $offersCommand, $shippingDetailsCommand, $footerCommand],
+                    'commands' => [$siteDirectoryCommand, $homeComponentCommand, $navbarCommand, $heroCommand, $categoryCommand, $featuredProductsCommand, $offersCommand, $blogsCommand, $shippingDetailsCommand, $footerCommand],
                 ],
             ]);
             $commandID = $n1Command['Command']['CommandId'];
