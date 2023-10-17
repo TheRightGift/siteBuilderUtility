@@ -1,133 +1,138 @@
 <template>
-    <div class="row noMarginBottom">
-        <div class="col l12 s12 footer">
-            <div class="footerInner">
-                <div class="col l6 s12 mg-Btm-4">
-                    <h3>{{ brandname }}</h3>
-                    <h4>{{ brandShortsDesc }}</h4>
-                </div>
-                <div class="col l6 s12">
-                    <div
-                        class="col l4 s6"
-                    >
-                        <h2>Discover</h2>
-                        <ul>
-                            <li>
-                                <a :href="loggedIn ? `#!` : `/`">Home</a>
-                            </li>
-                            <!-- <span v-show="categories.length < 3"> -->
+    <div>
+        <div class="row noMarginBottom">
+            <div class="col l12 s12 footer">
+                <div class="footerInner">
+                    <div class="col l6 s12 mg-Btm-4">
+                        <h3>{{ brandname }}</h3>
+                        <h4>{{ brandShortsDesc }}</h4>
+                    </div>
+                    <div class="col l6 s12">
+                        <div
+                            class="col l4 s6"
+                        >
+                            <h2>Discover</h2>
+                            <ul>
+                                <li>
+                                    <a :href="loggedIn ? `#!` : `/`">Home</a>
+                                </li>
+                                <!-- <span v-show="categories.length < 3"> -->
+                                    <li
+                                        v-for="category in categories"
+                                        :key="category.id"
+                                        @click="showCategoryEditEditor"
+                                    >
+                                        <router-link
+                                            :to="
+                                                loggedIn
+                                                    ? `#!`
+                                                    : {
+                                                          name: `product-search-category`,
+                                                          params: {
+                                                              category_name:
+                                                                  category.name ??
+                                                                  `category`,
+                                                          },
+                                                          query: {
+                                                              additionalData:
+                                                                  category.id ??
+                                                                  `category_id`,
+                                                          },
+                                                      }
+                                            "
+                                            class="link"
+                                            >{{ category.name }}</router-link
+                                        >
+                                    </li>
+                                <!-- </span> -->
+                                
+                                <li>
+                                    <a href="#">Blog</a>
+                                </li>
+                                <li>
+                                    <a :href="mailUs">Contact Us</a>
+                                </li>
+                            </ul>
+                            <!-- <h2>{{ category.name }}</h2>
+                            <ul v-if="category.subcategories.length > 0">
                                 <li
-                                    v-for="category in categories"
-                                    :key="category.id"
-                                    @click="showCategoryEditEditor"
+                                    v-for="item in category.subcategories"
+                                    :key="item.id"
                                 >
+                                    <a :href="item.link">{{ item.name }}</a>
+                                </li>
+                            </ul>
+                            <ul v-else>
+                                <li>
                                     <router-link
-                                        :to="
-                                            loggedIn
-                                                ? `#!`
-                                                : {
-                                                      name: `product-search-category`,
-                                                      params: {
-                                                          category_name:
-                                                              category.name ??
-                                                              `category`,
-                                                      },
-                                                      query: {
-                                                          additionalData:
-                                                              category.id ??
-                                                              `category_id`,
-                                                      },
-                                                  }
-                                        "
-                                        class="link"
+                                        :to="{
+                                            name: 'product-search-category',
+                                            params: {
+                                                category_name:
+                                                    category.name ?? 'category',
+                                            },
+                                            query: {
+                                                additionalData:
+                                                    category.id ?? 'category_id',
+                                            },
+                                        }"
                                         >{{ category.name }}</router-link
                                     >
                                 </li>
-                            <!-- </span> -->
-                            
-                            <li>
-                                <a href="#">Blog</a>
-                            </li>
-                            <li>
-                                <a :href="mailUs">Contact Us</a>
-                            </li>
-                        </ul>
-                        <!-- <h2>{{ category.name }}</h2>
-                        <ul v-if="category.subcategories.length > 0">
-                            <li
-                                v-for="item in category.subcategories"
-                                :key="item.id"
-                            >
-                                <a :href="item.link">{{ item.name }}</a>
-                            </li>
-                        </ul>
-                        <ul v-else>
-                            <li>
-                                <router-link
-                                    :to="{
-                                        name: 'product-search-category',
-                                        params: {
-                                            category_name:
-                                                category.name ?? 'category',
-                                        },
-                                        query: {
-                                            additionalData:
-                                                category.id ?? 'category_id',
-                                        },
-                                    }"
-                                    >{{ category.name }}</router-link
-                                >
-                            </li>
-                        </ul> -->
-                    </div>
-                    <div class="col l7 s12">
-                        <h2>Subscribe</h2>
-                        <div class="row">
-                            <div class="input-field col s12 noMarginTop">
-                                <input
-                                    v-model="email"
-                                    placeholder="Your email address..."
-                                    type="text"
-                                />
-                            </div>
-                            <div class="input-field col s12 noMarginTop">
-                                <a
-                                    class="waves-effect waves-light btn blue darken-2"
-                                    @click="subscribe"
-                                    >Subscribe</a
-                                >
+                            </ul> -->
+                        </div>
+                        <div class="col l7 s12">
+                            <h2>Subscribe</h2>
+                            <div class="row">
+                                <div class="input-field col s12 noMarginTop">
+                                    <input
+                                        v-model="yourMail"
+                                        placeholder="Your email address..."
+                                        type="text"
+                                    />
+                                </div>
+                                <div class="input-field col s12 noMarginTop">
+                                    <a
+                                        class="waves-effect waves-light btn blue darken-2"
+                                        @click="subscribe"
+                                        >Subscribe</a
+                                    >
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="row noMarginBottom">
-        <div class="container">
-            <div class="col l10 s12">
-                <p class="mobileCenterText noMarginBottom">
-                    <small
-                        >Copyright &copy; {{ new Date().getFullYear() }} {{ brandname }}. Powered by
-                        zebraline.ai.</small
-                    >
-                </p>
-            </div>
-            <div class="col l2  s12 right-align">
-                <p class="footerIconContainer">
-                    <a href="#">
-                        <i class="fa-brands fa-facebook-f"></i>
-                    </a>
-                    <a href="#">
-                        <i class="fa-brands fa-youtube"></i>
-                    </a>
-                    <a href="#">
-                        <i class="fa-brands fa-twitter"></i>
-                    </a>
-                    <a href="#">
-                        <i class="fa-brands fa-instagram"></i>
-                    </a>
-                </p>
+        <div class="row noMarginBottom"  @click="showSocialEditor">
+            <div class="container">
+                <div class="col l10 s12">
+                    <p class="mobileCenterText noMarginBottom">
+                        <small
+                            >Copyright &copy; {{ new Date().getFullYear() }} {{ brandname }}. Powered by
+                            zebraline.ai.</small
+                        >
+                    </p>
+                </div>
+                <div class="col l2  s12 right-align">
+                    <p class="footerIconContainer">
+                        <a :href="socials.facebook">
+                            <i class="fa-brands fa-facebook-f"></i>
+                        </a>
+                        <a :href="socials.youtube">
+                            <i class="fa-brands fa-youtube"></i>
+                        </a>
+                        <a :href="socials.twitter">
+                            <i class="fa-brands fa-twitter"></i>
+                        </a>
+                        <a :href="socials.instagram">
+                            <i class="fa-brands fa-instagram"></i>
+                        </a>
+                        <a :href="socials.tiktok">
+                            <i class="fa-brands fa-twitter"></i>
+                        </a>
+                    </p>
+                </div>
             </div>
         </div>
     </div>
@@ -167,8 +172,10 @@
                         ],
                     },
                 ],
-                email: "",
-                brandShortsDesc: "Pulvinar aenean dignissim porttitor sed risus urna, pretium quis non id.",
+                yourMail: "",
+                womenItems: [],
+                brandShortsDesc:
+                    this.branddesc ??  "Pulvinar aenean dignissim porttitor sed risus urna, pretium quis non id.",
             };
         },
         methods: {

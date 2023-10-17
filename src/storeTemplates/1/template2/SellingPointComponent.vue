@@ -54,7 +54,6 @@
             };
         },
         mounted() {
-            console.log(this.sellPoint)
         },
         methods: {
             showSellingPointEditor() {

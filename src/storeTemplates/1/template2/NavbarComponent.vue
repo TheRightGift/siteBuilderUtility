@@ -10,38 +10,78 @@
                     
                     <ul class="navLinks">
                         <li>
-                            <a href="#">Home</a>
+                            <a :href="loggedIn ? `#!` : `/`">Home</a>
                         </li>
-                        <li
-                            v-for="category in categories.slice(0, 3)"
-                            :key="category.id"
-                            @click="showCategoryEditEditor"
-                        >
-                            <router-link
-                                :to="
-                                    loggedIn
-                                        ? `#!`
-                                        : {
-                                            name: `product-search-category`,
-                                            params: {
-                                                category_name:
-                                                    category.name ?? `category`,
-                                            },
-                                            query: {
-                                                additionalData:
-                                                    category.id ?? `category_id`,
-                                            },
-                                        }
-                                "
-                                class="link"
-                                >{{ category.name }}</router-link
+                        <span v-show="categories.length <= 3">
+                            <li
+                                v-for="category in categories"
+                                :key="category.id"
+                                @click="showCategoryEditEditor"
+                            >
+                                <a href="#productCategorySection" v-if="loggedIn || editFlag != null">{{
+                                    category.name
+                                }}</a>
+                                <router-link
+                                    :to="{
+                                        name: `product-search-category`,
+                                        params: {
+                                            category_name:
+                                                category.name ?? `category`,
+                                        },
+                                        query: {
+                                            additionalData:
+                                                category.id ?? `category_id`,
+                                        },
+                                    }"
+                                    v-else
+                                    >{{ category.name }}</router-link
+                                >
+                                
+                            </li>
+                        </span>
+                        <li v-show="categories.length > 3" class="catDropdown">
+                            <a
+                                class="dropdown-trigger"
+                                href="#productCategorySection"
+                                data-target="dropdownCategory"
+                                >Categories<i class="material-icons right"
+                                    >arrow_drop_down</i
+                                ></a
                             >
                         </li>
+                        <ul id="dropdownCategory" class="dropdown-content">
+                            <li
+                                v-for="category in categories"
+                                :key="category.id"
+                                @click="showCategoryEditEditor"
+                            >
+                                <router-link
+                                    :to="
+                                        loggedIn
+                                            ? '#!'
+                                            : {
+                                                  name: 'product-search-category',
+                                                  params: {
+                                                      category_name:
+                                                          category.name ??
+                                                          'category',
+                                                  },
+                                                  query: {
+                                                      additionalData:
+                                                          category.id ??
+                                                          'category_id',
+                                                  },
+                                              }
+                                    "
+                                    >{{ category.name }}</router-link
+                                >
+                            </li>
+                        </ul>
                         <li>
                             <a href="#">Blog</a>
                         </li>
                         <li>
-                            <a href="#">Contac Us</a>
+                            <a :href="mailUs">Contact Us</a>
                         </li>
                     </ul>
                 </div>
@@ -97,7 +137,7 @@
                 </a>
             </li>
             <li
-                v-for="category in categories.slice(0, 3)"
+                v-for="category in categories"
                 :key="category.id"
                 @click="showCategoryEditEditor"
             >
@@ -186,10 +226,14 @@
                 searchproduct: {
                     categoryId: 0,
                     productName: ""
-                }
+                },
+                editFlag: null,
             };
         },
         mounted() {
+            localStorage.setItem("previousPage", this.$route.fullPath);
+            this.editFlag = localStorage.getItem("editFlag");
+
             var elems = document.querySelectorAll('.sidenav');
             this.sideNavInstance = M.Sidenav.init(elems, {
                 edge: 'left'
@@ -241,7 +285,6 @@
                     console.log("am here");
                 }
             },
-            // #TODO: DO a mixin later for API
         },
         props: {
             brandname: String,
