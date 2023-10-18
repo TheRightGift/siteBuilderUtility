@@ -2,11 +2,9 @@
     <div class="row noMarginBottom">
         <div class="col l12 offerBackground">
             <div class="container">
-                <div class="parallax-container" @click="showHeroEditor">
+                <div class="parallax-container" @click="showOffersEditor">
                     <div class="parallax">
-                        <img
-                            :src="heroSeeder.cover"
-                        />
+                        <img :src="imageUrlWithTimestamp" />
                     </div>
 
                     <div class="row parallaxContent">
@@ -22,20 +20,21 @@
                                         loggedIn
                                             ? `#!`
                                             : {
-                                                    name: `product-search-category`,
-                                                    params: {
-                                                        category_name:
-                                                        heroSeeder.title ??
-                                                            `offer`,
-                                                    },
-                                                    query: {
-                                                        additionalOfferData:
-                                                        heroSeeder.id ??
-                                                            `offer_id`,
-                                                    },
-                                                }
+                                                  name: `product-search-category`,
+                                                  params: {
+                                                      category_name:
+                                                          heroSeeder.title ??
+                                                          `offer`,
+                                                  },
+                                                  query: {
+                                                      additionalOfferData:
+                                                          heroSeeder.id ??
+                                                          `offer_id`,
+                                                  },
+                                              }
                                     "
-                                >Shop Now</router-link>
+                                    >Shop Now</router-link
+                                >
                             </div>
                         </div>
                     </div>
@@ -47,25 +46,35 @@
   
   <script>
     export default {
+        computed: {
+            imageUrlWithTimestamp() {
+                // Append the timestamp as a query parameter to the image URL
+                return `${this.heroSeeder.cover}?t=${this.timestamp}`;
+            },
+        },
         data() {
             return {
                 heroSeeder: {
                     title: "Special Offer",
                     subtitle: "Get 20% Discount, Use Code OFF20",
-                    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.",
+                    description:
+                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.",
                     discount: "50%",
-                    cover: "https://websitedemos.net/brandstore-02/wp-content/uploads/sites/150/2019/12/banner-03.jpg"
-                }
-            }
+                    cover: "https://websitedemos.net/brandstore-02/wp-content/uploads/sites/150/2019/12/banner-03.jpg",
+                },
+            };
         },
         mounted() {
             // Initialize Materialize components
             M.AutoInit();
+            if (this.offers.length > 0) {
+                this.heroSeeder = this.offers[0];
+            }
         },
         methods: {
-            showHeroEditor() {
+            showOffersEditor() {
                 if (this.loggedIn) {
-                    this.$emit("showHeroEditor", true);
+                    this.$emit("showOffersEditor", true);
                 }
             },
         },
@@ -73,18 +82,19 @@
             loggedIn: Boolean,
             hero: Array,
             offers: Array,
+            timestamp: Number,
         },
         watch: {
             offers(newVal) {
                 if (Object.entries(newVal).length > 0) {
                     this.heroSeeder = newVal[0];
                 }
-            }
-        }
+            },
+        },
     };
 </script>
   
-  <style scoped>
+<style scoped>
     html,
     body {
         padding: 0;

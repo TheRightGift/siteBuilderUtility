@@ -1,5 +1,5 @@
 <template>
-    <div id="herocomponent">
+    <div id="herocomponent" @click="showHeroEditor">
         <!-- <div
             class="parallax-container"
             :style="{ zIndex: !loggedIn ? -1 : 'inherit' }"
@@ -56,25 +56,41 @@
                 </div>
             </div>
         </div> -->
-        <div class="hero" :style="{ backgroundImage: `url(${this.heroSeeder.image})` }">
+        <div
+            class="hero"
+            :style="{ backgroundImage: `url(${imageUrlWithTimestamp})` }"
+        >
             <div class="heroInner">
                 <h1 class="heroMainHeading">
-                    {{ heroSeeder.mainHeading }}
+                    {{ heroSeeder.title }}
                 </h1>
                 <p>
                     {{ heroSeeder.description }}
                 </p>
                 <div class="heroCtaContainer">
-                    <router-link class="cta" :to="loggedIn ? `#!` : { name: `product-search-category`, params: {
-                                              category_name:
-                                              heroSeeder.type == 'welcome' ? 'all' : heroSeeder.title ?? `offer`,
-                                          },
-                                          query: {
-                                              additionalOfferData:
-                                              heroSeeder.type == 'welcome' ? 'all' : heroSeeder.id ?? `offer_id`,
-                                          },
-                                      }
-                            " style="cursor: pointer;">Shop Collection
+                    <router-link
+                        class="cta"
+                        :to="
+                            loggedIn
+                                ? `#!`
+                                : {
+                                      name: `product-search-category`,
+                                      params: {
+                                          category_name:
+                                              heroSeeder.type == 'welcome'
+                                                  ? 'all'
+                                                  : heroSeeder.title ?? `offer`,
+                                      },
+                                      query: {
+                                          additionalOfferData:
+                                              heroSeeder.type == 'welcome'
+                                                  ? 'all'
+                                                  : heroSeeder.id ?? `offer_id`,
+                                      },
+                                  }
+                        "
+                        style="cursor: pointer"
+                        >Shop Collection
                     </router-link>
                 </div>
             </div>
@@ -85,49 +101,56 @@
 <script>
     export default {
         computed: {
-            // imageUrlWithTimestamp() {
-            //     // Append the timestamp as a query parameter to the image URL
-            //     return `${this.heroSeeder.image}?t=${this.timestamp}`;
-            // },
+            imageUrlWithTimestamp() {
+                // Append the timestamp as a query parameter to the image URL
+                return `${this.heroSeeder.image}?t=${this.timestamp}`;
+            },
         },
         data() {
             return {
                 heroSeeder: {
-                    mainHeading: "Party Wears",
-                    description: "In congue venenatis bibendum viverra sit augue elit sed viverra fames blandit.",
+                    title: "Party Wears",
+                    description:
+                        "In congue venenatis bibendum viverra sit augue elit sed viverra fames blandit.",
                     image: "https://websitedemos.net/fashion-designer-boutique-02/wp-content/uploads/sites/917/2021/07/fashion-designer-template-hero-img-bg.jpg",
-                    // subtitle: "25% Off On All Products",                    
+                    subtitle: "25% Off On All Products",
                     type: "welcome",
                 },
+                imgDimensionHeight: 880,
+                imgDimensionWidth: 800, 
             };
         },
         methods: {
             showHeroEditor() {
                 if (this.loggedIn) {
-                    this.$emit("showHeroEditor", true);
+                    this.$emit("showHeroEditor", {evt: true, width: this.imgDimensionWidth, height: this.imgDimensionHeight});
                 }
             },
         },
-        mounted() {},
+        mounted() {
+            if (this.hero.length > 0) {
+                this.heroSeeder = this.hero[0];
+            }
+        },
         props: {
-            // loggedIn: Boolean,
-            // hero: Array,
-            // timestamp: Number,
+            loggedIn: Boolean,
+            hero: Array,
+            timestamp: Number,
         },
         watch: {
-            // hero(newVal, oldVal) {
-            //     let parallax = document.querySelectorAll(
-            //         "#herocomponent .parallax"
-            //     );
-            //     let carousel = document.querySelectorAll(
-            //         "#herocomponent .carousel"
-            //     );
-            //     if (parallax.length > 0 || carousel.length === 0) {
-            //         this.heroSeeder = newVal[0];
-            //     } else if (carousel.length > 0) {
-            //         this.heroSeeder = newVal;
-            //     }
-            // },
+            hero(newVal, oldVal) {
+                let parallax = document.querySelectorAll(
+                    "#herocomponent .parallax"
+                );
+                let carousel = document.querySelectorAll(
+                    "#herocomponent .carousel"
+                );
+                if (parallax.length > 0 || carousel.length === 0) {
+                    this.heroSeeder = newVal[0];
+                } else if (carousel.length > 0) {
+                    this.heroSeeder = newVal;
+                }
+            },
         },
     };
 </script>
@@ -143,14 +166,13 @@
         background-position: center right;
         background-repeat: no-repeat;
         background-size: contain;
-        
     }
     .heroInner {
         width: 34%;
         margin-left: 13vw;
     }
     .heroInner h1 {
-        color: #FFF;
+        color: #fff;
         font-family: Fahkwang;
         font-size: 8.5rem;
         font-style: normal;
@@ -196,7 +218,7 @@
             padding: 0 8vw;
         }
         .heroInner h1 {
-            color: #FFF;
+            color: #fff;
             font-family: Fahkwang;
             font-size: 3.5rem;
             font-style: normal;
@@ -207,8 +229,8 @@
             padding: 1vh 0;
         }
 
-        .heroInner p {     
-            color: #fff;       
+        .heroInner p {
+            color: #fff;
             font-size: 1.1rem;
             font-weight: 500;
             line-height: 1.7;
@@ -225,37 +247,37 @@
         }
 
         /* .heroContainer {
-            width: 100%;
-            height: 60vh;
-            padding: 12vh 0 10vh;
-        }
-        .parallax-container {
-            height: 60vh;
-        }
-        .heroContent {
-            width: 90vw;
-        }
-        .heroMainHeading {
-            text-align: center;
-            width: 100%;
-            margin: 0;
-            font-size: 2.4rem;
-            font-weight: 600;
-        }
-        .heroMinorHeading {
-            text-align: center;
-        }
-        .heroCtaContainer a {
-            display: block;
-            width: 100%;
-            text-align: center;
-            padding: 1vh 2vw;
-            text-transform: uppercase;
-            border: thin solid #fff;
-        }
-        .heroCtaContainer a:first-child {
-            margin-bottom: 2vh;
-        } */
+                width: 100%;
+                height: 60vh;
+                padding: 12vh 0 10vh;
+            }
+            .parallax-container {
+                height: 60vh;
+            }
+            .heroContent {
+                width: 90vw;
+            }
+            .heroMainHeading {
+                text-align: center;
+                width: 100%;
+                margin: 0;
+                font-size: 2.4rem;
+                font-weight: 600;
+            }
+            .heroMinorHeading {
+                text-align: center;
+            }
+            .heroCtaContainer a {
+                display: block;
+                width: 100%;
+                text-align: center;
+                padding: 1vh 2vw;
+                text-transform: uppercase;
+                border: thin solid #fff;
+            }
+            .heroCtaContainer a:first-child {
+                margin-bottom: 2vh;
+            } */
     }
 </style>
 

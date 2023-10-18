@@ -1,5 +1,5 @@
 <template>
-    <div class="productCatSection">
+    <div class="productCatSection" id="productCategorySection">
         <div v-if="categories && categories.length > 0" class="productCatSectionInner">
             <div
                 v-for="(category, index) in categories.slice(0, 3)"
@@ -12,7 +12,21 @@
                         <h3>{{ category.name }}</h3>
                         <p>{{ !category.image ? seeder[index].description : category.description }}</p>
                         <div class="heroCtaContainer">
-                            <a href="#">Shop Now</a>
+                            <router-link
+                                :to="{
+                                    name: `product-search-category`,
+                                    params: {
+                                        category_name:
+                                            category.name ?? `category`,
+                                    },
+                                    query: {
+                                        additionalData:
+                                            category.id ?? `category_id`,
+                                    },
+                                }"
+                                v-if="!loggedIn"
+                                >Shop Now</router-link
+                            >
                         </div>
                     </div>
                 </div>
@@ -66,7 +80,8 @@
             };
         },
 		props:{
-			categories: Array
+			categories: Array,
+            loggedIn: Boolean
 		},
 		watch: {
 			categories(newVal) {

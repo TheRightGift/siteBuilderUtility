@@ -1,23 +1,48 @@
 <template>
     <div>
-        <div class="container" @click="showBlogEditor">
+        <div class="container" @click="showBlogEditor" id="blog">
             <div class="row">
                 <h1 class="centerAlign center">Blogs</h1>
-                <div class="col s12 l4 m4 mb-4" v-for="blog in blogSeeder" :key="blog">
+                <div
+                    class="col s12 l4 m4 mb-4"
+                    v-for="blog in blogSeeder"
+                    :key="blog"
+                >
                     <img
-                        :src="blog.url"
+                        :src="blog.images[0].url"
                         alt="Blog post image"
                         class="responsive-img"
                     />
-                    <p class="blog-description">{{ blog.title }}</p>
-                    <h6 class="blog_description">
-                        {{ blog.body.slice(0, 31) }}, <br />
-                       {{ blog.category.name }}
+                    <p class="blog-description">
+                        {{ blog.title.slice(0, 35) }}...
+                    </p>
+                    <h6
+                        class="blog_description"
+                        v-html="blog.body.slice(0, 31)"
+                    ></h6>
+                    <h6>
+                        {{ blog.category.name }}
                     </h6>
 
-                    <button class="btn btn-blog waves waves-effect">
+                    <router-link
+                        class="btn btn-blog"
+                        :class="{'waves waves-effect': !loggedIn && editFlag !== '1' }"
+                        :to="
+                            loggedIn || editFlag == '1'
+                                ? '#!'
+                                : {
+                                      name: 'blog-detail',
+                                      params: {
+                                          blog: blog.title,
+                                      },
+                                      query: {
+                                          additionalData: blog.id ?? 'blog_id',
+                                      },
+                                  }
+                        "
+                    >
                         Read more
-                    </button>
+                    </router-link>
                 </div>
             </div>
         </div>
@@ -53,61 +78,93 @@
     export default {
         data() {
             return {
+                editFlag: null,
                 blogSeeder: [
                     {
-                        url: "https://websitedemos.net/fashion-designer-boutique-02/wp-content/uploads/sites/917/2021/07/fashion-designer-template-blog-featured-img-3.jpg",
+                        images: [
+                            {
+                                url: "https://risingtheme.com/html/demo-suruchi-v1/suruchi/assets/img/blog/blog4.png",
+                            },
+                        ],
                         category_id: 1,
                         category: {
                             name: "Women",
                         },
                         created_at: "2023-09-28T04:41:10.000000Z",
-                        body: "Fashiion Trends in 2021 Styles, Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo"
+                        title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sollicitudin non purus finibus commodo. Etiam at dui quis nulla auctor commodo eu convallis orci",
+                        body: "Fashiion Trends in 2021 Styles, Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo",
                     },
                     {
-                        url: "https://websitedemos.net/fashion-designer-boutique-02/wp-content/uploads/sites/917/2021/07/fashion-designer-template-blog-featured-img-2.jpg",
+                        images: [
+                            {
+                                url: "https://risingtheme.com/html/demo-suruchi-v1/suruchi/assets/img/blog/blog3.png",
+                            },
+                        ],
                         category_id: 1,
                         category: {
                             name: "Men",
                         },
                         created_at: "2023-09-28T04:41:10.000000Z",
-                        body: "Fashiion Trends in 2021 Styles, Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo"
+                        title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sollicitudin non purus finibus commodo. Etiam at dui quis nulla auctor commodo eu convallis orci",
+                        body: "Fashiion Trends in 2021 Styles, Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo",
                     },
                     {
-                        url: "https://websitedemos.net/fashion-designer-boutique-02/wp-content/uploads/sites/917/2021/07/fashion-designer-template-blog-featured-img-1.jpg",
+                        images: [
+                            {
+                                url: "https://risingtheme.com/html/demo-suruchi-v1/suruchi/assets/img/blog/blog2.png",
+                            },
+                        ],
                         category_id: 1,
                         category: {
                             name: "Kids",
                         },
                         created_at: "2023-09-28T04:41:10.000000Z",
-                        body: "Fashiion Trends in 2021 Styles, Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo"
+                        title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sollicitudin non purus finibus commodo. Etiam at dui quis nulla auctor commodo eu convallis orci",
+                        body: "Fashiion Trends in 2021 Styles, Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo",
                     },
                     {
-                        url: "https://websitedemos.net/fashion-designer-boutique-02/wp-content/uploads/sites/917/2021/07/fashion-designer-template-blog-featured-img-2.jpg",
+                        images: [
+                            {
+                                url: "https://risingtheme.com/html/demo-suruchi-v1/suruchi/assets/img/blog/blog1.png",
+                            },
+                        ],
                         category_id: 1,
                         category: {
                             name: "Accessories",
                         },
+                        title: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sollicitudin non purus finibus commodo. Etiam at dui quis nulla auctor commodo eu convallis orci",
                         created_at: "2023-09-28T04:41:10.000000Z",
-                        body: "Fashiion Trends in 2021 Styles, Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo"
-                    }
-                ]
-            }
+                        body: "Fashiion Trends in 2021 Styles, Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo",
+                    },
+                ],
+            };
         },
         methods: {
             showBlogEditor() {
-
-            }
+                if (this.loggedIn) {
+                    this.$emit("showEditBlogMenu", true);
+                }
+            },
         },
         props: {
-            blog: Array,
-            loggedIn: Boolean
+            blogs: Array,
+            loggedIn: Boolean,
         },
         watch: {
-            blog(newVal) {
-                if (newVal.length > 0) {
-                    this.blogSeeder = newVal;
-                }
+            blogs: {
+                handler(newBlog) {
+                    if (newBlog.length > 0) {
+                        this.blogSeeder = [...newBlog]; // Make a copy of the new products
+                    }
+                },
+                deep: true, // Enable deep watching to detect changes within the array
+            },
+        },
+        mounted() {
+            this.editFlag = localStorage.getItem("editFlag");
+            if (this.blogs.length > 0) {
+                this.blogSeeder = this.blogs;
             }
-        }
+        },
     };
 </script>
