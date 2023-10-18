@@ -25,7 +25,21 @@
                             }}
                         </p>
                         <div class="heroCtaContainer">
-                            <a href="#">Shop Now</a>
+                            <router-link
+                                :to="{
+                                    name: `product-search-category`,
+                                    params: {
+                                        category_name:
+                                            category.name ?? `category`,
+                                    },
+                                    query: {
+                                        additionalData:
+                                            category.id ?? `category_id`,
+                                    },
+                                }"
+                                v-if="!loggedIn"
+                                >Shop Now</router-link
+                            >
                         </div>
                     </div>
                 </div>
@@ -43,7 +57,7 @@
                         <h3>{{ category.name }}</h3>
                         <p>{{ category.description }}</p>
                         <div class="heroCtaContainer">
-                            <a href="#">Shop Now</a>
+                            <a href="">Shop Now</a>
                         </div>
                     </div>
                 </div>

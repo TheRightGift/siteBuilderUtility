@@ -66,7 +66,7 @@
                         <li v-show="categories.length > 3" class="catDropdown">
                             <a
                                 class="dropdown-trigger"
-                                href="#"
+                                href="#productCategorySection"
                                 data-target="dropdownCategory"
                                 >Categories<i class="material-icons right"
                                     >arrow_drop_down</i
@@ -128,7 +128,6 @@
                                 "
                                 >{{ names }}</a
                             >
-                            <!-- TODO: add dropdown for user specific operations -->
                         </li>
                         <li>
                             <a
@@ -265,8 +264,8 @@
 </template>
   
 <script>
-    import apiMixin from "./mixin/apiMixin";
-    import { useCartStore } from "../store";
+    import apiMixin from "@/mixin/apiMixin";
+    import { useCartStore } from "../../../store/store";
     export default {
         mixins: [apiMixin],
         data() {
@@ -278,8 +277,7 @@
             };
         },
         mounted() {
-            // localStorage.setItem("previousPage", this.$route.fullPath);
-
+            localStorage.setItem("previousPage", this.$route.fullPath);
             var elems = document.querySelectorAll(".sidenav");
             var instances = M.Sidenav.init(elems, {
                 edge: "left",
@@ -351,7 +349,7 @@
     }
     nav .nav-wrapper {
         /* width: 100%;
-                    height: 10vh; */
+                        height: 10vh; */
         display: flex;
         /* align-items: center; */
         justify-content: space-between;
