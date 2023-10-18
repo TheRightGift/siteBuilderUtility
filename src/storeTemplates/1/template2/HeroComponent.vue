@@ -1,5 +1,5 @@
 <template>
-    <div id="herocomponent">
+    <div id="herocomponent" @click="showHeroEditor">
         <!-- <div
             class="parallax-container"
             :style="{ zIndex: !loggedIn ? -1 : 'inherit' }"
@@ -116,12 +116,14 @@
                     subtitle: "25% Off On All Products",
                     type: "welcome",
                 },
+                imgDimensionHeight: 880,
+                imgDimensionWidth: 800, 
             };
         },
         methods: {
             showHeroEditor() {
                 if (this.loggedIn) {
-                    this.$emit("showHeroEditor", true);
+                    this.$emit("showHeroEditor", {evt: true, width: this.imgDimensionWidth, height: this.imgDimensionHeight});
                 }
             },
         },
@@ -150,7 +152,6 @@
                 }
             },
         },
-        
     };
 </script>
 

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="container" @click="showBlogEditor">
+        <div class="container" @click="showBlogEditor" id="blog">
             <div class="row">
                 <h1 class="centerAlign center">Blogs</h1>
                 <div
@@ -25,9 +25,10 @@
                     </h6>
 
                     <router-link
-                        class="btn btn-blog waves waves-effect"
+                        class="btn btn-blog"
+                        :class="{'waves waves-effect': !loggedIn && editFlag !== '1' }"
                         :to="
-                            loggedIn
+                            loggedIn || editFlag == '1'
                                 ? '#!'
                                 : {
                                       name: 'blog-detail',
@@ -77,6 +78,7 @@
     export default {
         data() {
             return {
+                editFlag: null,
                 blogSeeder: [
                     {
                         images: [
@@ -159,9 +161,10 @@
             },
         },
         mounted() {
+            this.editFlag = localStorage.getItem("editFlag");
             if (this.blogs.length > 0) {
                 this.blogSeeder = this.blogs;
             }
-        }
+        },
     };
 </script>

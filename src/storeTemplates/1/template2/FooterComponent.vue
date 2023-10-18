@@ -106,7 +106,7 @@
         </div>
         <div class="row noMarginBottom"  @click="showSocialEditor">
             <div class="container">
-                <div class="col l10 s12">
+                <div class="col l10 s12 m6">
                     <p class="mobileCenterText noMarginBottom">
                         <small
                             >Copyright &copy; {{ new Date().getFullYear() }} {{ brandname }}. Powered by
@@ -114,7 +114,7 @@
                         >
                     </p>
                 </div>
-                <div class="col l2  s12 right-align">
+                <div class="col l2  s12  m6 right-align">
                     <p class="footerIconContainer">
                         <a :href="socials.facebook">
                             <i class="fa-brands fa-facebook-f"></i>
@@ -184,11 +184,19 @@
                 // You can access the email input value with this.email
             },
         },
-        props: { brandname: String, categories: Array },
+        props: { brandname: String, categories: Array, socials: Object, loggedIn: Boolean, email: String },
+        computed: {
+            mailUs() {
+                return (
+                    `mailto:` +
+                    this.email +
+                    `?subject=Contact%20Us&body=Hello%20Team`
+                );
+            },
+        },
         watch: {
             categories(newVal) {
                 if (newVal.length > 0) {
-                    console.log(`footer: ${newVal}`);
                     newVal.forEach((category, i) => {
                         if (i < this.seeder.length) {
                             // Update existing seeder items

@@ -80,7 +80,8 @@
             };
         },
 		props:{
-			categories: Array
+			categories: Array,
+            loggedIn: Boolean
 		},
 		watch: {
 			categories(newVal) {
