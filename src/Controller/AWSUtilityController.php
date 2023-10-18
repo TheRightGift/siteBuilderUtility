@@ -68,10 +68,6 @@ class AWSUtilityController
             default: header("HTTP/1.1 404 Not Found");
             exit();
         }
-        // header($response['status_code_header']);
-        // if ($response['body']) {
-        //     echo $response['body'];
-        // }
     }
 
     private function dbConnection(){
