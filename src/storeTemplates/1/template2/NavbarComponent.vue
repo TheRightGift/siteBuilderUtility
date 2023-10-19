@@ -98,8 +98,7 @@
                         <li>
                             <a
                                 :href="!isAuthenticated ? `/auth/signin` : `#`"
-                                class="iconLinks"
-                                :class="{ 'dropdown-trigger': isAuthenticated }"
+                                :class="classObject"
                                 data-target="authDropdown"
                             >
                                 <i class="material-icons">person_outline</i>
@@ -149,8 +148,7 @@
                 <span class="mobileIconLinks">
                     <a
                         :href="!isAuthenticated ? `/auth/signin` : `#`"
-                        class="iconLinks"
-                        :class="{ 'dropdown-trigger': isAuthenticated }"
+                        :class="classObject"
                         data-target="authDropdown"
                     >
                         <i class="material-icons">person_outline</i>
@@ -223,8 +221,7 @@
             <li>
                 <a
                     :href="!isAuthenticated ? `/auth/signin` : `#`"
-                    class="iconLinks"
-                    :class="{ 'dropdown-trigger': isAuthenticated }"
+                    :class="classObject"
                     data-target="authDropdownSmall"
                 >
                     <i class="material-icons">person_outline</i>
@@ -330,6 +327,12 @@
 
         },
         computed: {
+            classObject() {
+                return {
+                    iconLinks: true,
+                    'dropdown-trigger': this.isAuthenticated 
+                }
+            },
             isAuthenticated() {
                 const cartStore = useCartStore();
                 return cartStore.isAuthenticated;
