@@ -379,6 +379,8 @@
     ul.navLinks li a,
     ul li .link {
         padding: 0 0.7vw;
+        height: inherit;
+    line-height: inherit;
     }
     ul li a,
     ul li .link {
@@ -414,7 +416,6 @@
         height: 6vh;
         min-height: unset;
         line-height: 6vh;
-        padding: 0 2vw;
     }
     nav i.material-icons {
         color: #24262b;

@@ -62,6 +62,8 @@
                     discount: "50%",
                     cover: "https://websitedemos.net/brandstore-02/wp-content/uploads/sites/150/2019/12/banner-03.jpg",
                 },
+                imgDimensionHeight: 880,
+                imgDimensionWidth: 800,
             };
         },
         mounted() {
@@ -74,7 +76,7 @@
         methods: {
             showOffersEditor() {
                 if (this.loggedIn) {
-                    this.$emit("showOffersEditor", true);
+                    this.$emit("showOffersEditor", {evt: true, width: this.imgDimensionWidth, height: this.imgDimensionHeight});
                 }
             },
         },
