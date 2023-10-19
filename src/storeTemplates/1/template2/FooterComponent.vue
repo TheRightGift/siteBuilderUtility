@@ -114,19 +114,19 @@
                 </div>
                 <div class="col l2 s12 m6 right-align">
                     <p class="footerIconContainer">
-                        <a :href="socials.facebook">
+                        <a :href="social.facebook">
                             <i class="fa-brands fa-facebook-f"></i>
                         </a>
-                        <a :href="socials.youtube">
+                        <a :href="social.youtube">
                             <i class="fa-brands fa-youtube"></i>
                         </a>
-                        <a :href="socials.twitter">
+                        <a :href="social.twitter">
                             <i class="fa-brands fa-twitter"></i>
                         </a>
-                        <a :href="socials.instagram">
+                        <a :href="social.instagram">
                             <i class="fa-brands fa-instagram"></i>
                         </a>
-                        <a :href="socials.tiktok">
+                        <a :href="social.tiktok">
                             <i class="fa-brands fa-twitter"></i>
                         </a>
                     </p>
@@ -142,9 +142,8 @@
             return {
                 yourMail: "",
                 womenItems: [],
-                brandShortsDesc:
-                    this.branddesc ??
-                    "Pulvinar aenean dignissim porttitor sed risus urna, pretium quis non id.",
+                brandShortsDesc: "",
+                social: "",
             };
         },
         methods: {
@@ -170,29 +169,19 @@
             },
         },
         watch: {
-            categories(newVal) {
-                if (newVal.length > 0) {
-                    newVal.forEach((category, i) => {
-                        if (i < this.seeder.length) {
-                            // Update existing seeder items
-                            this.seeder[i].name = category.name;
-                            this.seeder[i].image =
-                                category.image || this.seeder[i].image;
-                            this.seeder[i].description =
-                                category.description || this.seeder[i].description;
-                            this.seeder[i].subcategories =
-                                category.subcategories ||
-                                this.seeder[i].subcategories;
-                        } else {
-                            // Create new seeder items if there are more categories
-                            this.seeder.push({
-                                name: category.name,
-                                image: category.image || null,
-                                description: category.description || null,
-                                subcategories: category.subcategories,
-                            });
-                        }
-                    });
+            socials(newVal) {
+                this.social = { facebook: "", youtube: "", tiktok: "", twitter: "", instagram: ""};
+                if (newVal !== null && newVal !== undefined) {
+                    if (Object.entries(newVal).length !== 0) {
+                        this.social = newVal;
+                    }
+                }
+            },
+            branddesc(newVal) {
+                if (newVal !== "") {
+                    this.brandShortsDesc = newVal;
+                } else {
+                    this.brandShortsDesc = "Pulvinar aenean dignissim porttitor sed risus urna, pretium quis non id.";
                 }
             },
         },

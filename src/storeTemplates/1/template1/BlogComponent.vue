@@ -147,6 +147,7 @@ h2 {
                         body: "Fashiion Trends in 2021 Styles, Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo",
                     },
                 ],
+                editFlag: false,
             };
         },
         methods: {
@@ -171,6 +172,7 @@ h2 {
             },
         },
         mounted() {
+            this.editFlag = localStorage.getItem('editFlag');
             if (this.blogs.length > 0) {
                 this.blogSeeder = this.blogs;
             }

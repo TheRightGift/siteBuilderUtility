@@ -113,23 +113,19 @@
         },
         watch: {
             hero(newVal, oldVal) {
-                let parallax = document.querySelectorAll(
-                    "#herocomponent .parallax"
-                );
-                let carousel = document.querySelectorAll(
-                    "#herocomponent .carousel"
-                );
-                if (parallax.length > 0 || carousel.length === 0) {
-                    this.heroSeeder = newVal[0];
-                } else if (carousel.length > 0) {
-                    this.heroSeeder = newVal;
+                if (newVal.length > 0) {
+                    let parallax = document.querySelectorAll(
+                        "#herocomponent .parallax"
+                    );
+                    let carousel = document.querySelectorAll(
+                        "#herocomponent .carousel"
+                    );
+                    if (parallax.length > 0 || carousel.length === 0) {
+                        this.heroSeeder = newVal[0];
+                    } else if (carousel.length > 0) {
+                        this.heroSeeder = newVal;
+                    }
                 }
-                // console.log(parallax);
-                // if (Object.entries(newVal).length > 0) {
-                //     // this.heroSeeder.description = newVal.description ?? this.heroSeeder.description;
-                //     // this.heroSeeder.image = newVal.image ?? this.heroSeeder.image;
-                //     // this.heroSeeder.others = newVal.others ?? this.heroSeeder.others;
-                // }
             },
         },
     };
