@@ -12,14 +12,14 @@
 </template>
 
 <script>
-import CategoryComponent from `./CategoryComponent.vue`;
-import FeaturedProductsComponent from `./FeaturedProductsComponent.vue`;
-import HeroComponent from `./HeroComponent.vue`;
-import NavbarComponent from `./NavbarComponent.vue`;
-import OffersComponent from `./OffersComponent.vue`;
-import FooterComponent from `./FooterComponent.vue`;
-import BlogComponent from `./BlogComponent.vue`;
-import SellingPointComponent from `./SellingPointComponent.vue`;
+import CategoryComponent from "./CategoryComponent.vue";
+import FeaturedProductsComponent from "./FeaturedProductsComponent.vue";
+import HeroComponent from "./HeroComponent.vue";
+import NavbarComponent from "./NavbarComponent.vue";
+import OffersComponent from "./OffersComponent.vue";
+import FooterComponent from "./FooterComponent.vue";
+import BlogComponent from "./BlogComponent.vue";
+import SellingPointComponent from "./SellingPointComponent.vue";
 
 export default {
     components: { NavbarComponent, HeroComponent, OffersComponent, FeaturedProductsComponent, CategoryComponent, FooterComponent, SellingPointComponent, BlogComponent },
