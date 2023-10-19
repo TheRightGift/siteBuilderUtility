@@ -94,10 +94,11 @@
         },
         props: {
             categories: Array,
+            loggedIn: Boolean,
         },
         watch: {
             categories(newVal) {
-                if (newVal) {
+                if (newVal.length > 0) {
                     newVal.forEach((category, i) => {
                         if (i < this.seeder.length) {
                             // Update existing seeder items

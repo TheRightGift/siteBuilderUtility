@@ -139,16 +139,18 @@
         },
         watch: {
             hero(newVal, oldVal) {
-                let parallax = document.querySelectorAll(
-                    "#herocomponent .parallax"
-                );
-                let carousel = document.querySelectorAll(
-                    "#herocomponent .carousel"
-                );
-                if (parallax.length > 0 || carousel.length === 0) {
-                    this.heroSeeder = newVal[0];
-                } else if (carousel.length > 0) {
-                    this.heroSeeder = newVal;
+                if (newVal.length > 0) {
+                    let parallax = document.querySelectorAll(
+                        "#herocomponent .parallax"
+                    );
+                    let carousel = document.querySelectorAll(
+                        "#herocomponent .carousel"
+                    );
+                    if (parallax.length > 0 || carousel.length === 0) {
+                        this.heroSeeder = newVal[0];
+                    } else if (carousel.length > 0) {
+                        this.heroSeeder = newVal;
+                    }
                 }
             },
         },
