@@ -3,7 +3,7 @@ os: linux
 files: 
   - source: /
     destination: /var/www/siteBuilderUtility
-file_exists_behavior: RETAIN
+file_exists_behavior: OVERWRITE
 hooks:
   ApplicationStop:
     - location: CICDScripts/application_stop.sh
