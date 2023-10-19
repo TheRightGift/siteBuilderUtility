@@ -330,7 +330,7 @@
             classObject() {
                 return {
                     iconLinks: true,
-                    'dropdown-trigger': this.isAuthenticated 
+                    "dropdown-trigger": this.isAuthenticated 
                 }
             },
             isAuthenticated() {
