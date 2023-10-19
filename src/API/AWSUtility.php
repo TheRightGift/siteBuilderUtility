@@ -77,27 +77,28 @@ class AWSUtility
                 'HostedZoneId' => $hostedZoneId,
                 'ChangeBatch' => $changeBatch
             ]);
-            echo 'Resquest is Successful -> '.$result;
+            echo 'Resquest is Successful -> ' . $result;
         } catch (AwsException $th) {
-            echo 'Error with the requested method '  .$th->getMessage();
+            echo 'Error with the requested method ' . $th->getMessage();
             exit;
         }
     }
-    
+
     /**
      * Operation for creating a store
      *
      * @param Array $input
      * @return void
      */
-    public function createStoreModule(array $input){
+    public function createStoreModule(array $input)
+    {
         $defaultStoreName = 'StoreName';
         $storeName = $input['storeName'];
         $themeColor = $input['themeColor'];
         $storeDirectoryName = $input['storeDirectoryName'];
         $storeTypeId = $input['storeTypeId'];
-        $countTemplatesForStoreType = count( glob(dirname(__DIR__)."/storeTemplates/".$storeTypeId."/*", GLOB_ONLYDIR) );
-        
+        $countTemplatesForStoreType = count(glob(dirname(__DIR__) . "/storeTemplates/" . $storeTypeId . "/*", GLOB_ONLYDIR));
+
         if($this->storeTypeHasTemplateCheck($storeTypeId) === 1) {
             $randomTemplateNumber = rand(1, $countTemplatesForStoreType);
             $defaultColorTheme = '--primary-color: #fff;';
@@ -106,113 +107,160 @@ class AWSUtility
             // Make store directory if the store does not exist
             $siteDirectoryCommand = "sudo mkdir -p /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName";
             // MainHomeComponent
-            $homeComponent = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/Home.vue";
+            $homeComponent = dirname(__DIR__) . "/storeTemplates/" . $storeTypeId . "/template" . $randomTemplateNumber . "/Home.vue";
             $homeComponentContent = $this->storeFileSetup($homeComponent, $defaultColorTheme, $storeColorTheme);
-            $componentName = 'Home.vue';  
+            $componentName = 'Home.vue';
             $homeComponentCommand = "sudo nano $componentName
                 echo '$homeComponentContent' >> /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
             ";
 
             // Home partials
             // $siteHomePartialsDirectoryCommand = "sudo mkdir -p /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/homePartials";
-            
+
             // NAVBAR
-            $navbar = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/NavbarComponent.vue";
-            $navbarContent = $this->storeFileSetup($navbar, $defaultStoreName, $storeName);   
-            $componentName = 'NavbarComponent.vue';  
+            $navbar = dirname(__DIR__) . "/storeTemplates/" . $storeTypeId . "/template" . $randomTemplateNumber . "/NavbarComponent.vue";
+            $navbarContent = $this->storeFileSetup($navbar, $defaultStoreName, $storeName);
+            $componentName = 'NavbarComponent.vue';
             $navbarCommand = "sudo nano $componentName
                 echo '$navbarContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
             ";
 
             // HERO
-            $hero = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/HeroComponent.vue";
-            $heroContent = $this->storeFileSetup($hero);      
-            $componentName = 'HeroComponent.vue';  
+            $hero = dirname(__DIR__) . "/storeTemplates/" . $storeTypeId . "/template" . $randomTemplateNumber . "/HeroComponent.vue";
+            $heroContent = $this->storeFileSetup($hero);
+            $componentName = 'HeroComponent.vue';
             $heroCommand = "sudo nano $componentName
                 echo '$heroContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
             ";
 
             // CATEGORY
-            $category = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/CategoryComponent.vue";
-            $categoryContent = $this->storeFileSetup($category);      
-            $componentName = 'CategoryComponent.vue';  
+            $category = dirname(__DIR__) . "/storeTemplates/" . $storeTypeId . "/template" . $randomTemplateNumber . "/CategoryComponent.vue";
+            $categoryContent = $this->storeFileSetup($category);
+            $componentName = 'CategoryComponent.vue';
             $categoryCommand = "sudo nano $componentName
                 echo '$categoryContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
             ";
 
             // FeaturedProducts
-            $featuredProducts = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/FeaturedProductsComponent.vue";
-            $featuredProductsContent = $this->storeFileSetup($featuredProducts);      
-            $componentName = 'FeaturedProductsComponent.vue';  
+            $featuredProducts = dirname(__DIR__) . "/storeTemplates/" . $storeTypeId . "/template" . $randomTemplateNumber . "/FeaturedProductsComponent.vue";
+            $featuredProductsContent = $this->storeFileSetup($featuredProducts);
+            $componentName = 'FeaturedProductsComponent.vue';
             $featuredProductsCommand = "sudo nano $componentName
                 echo '$featuredProductsContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
             ";
 
             // OFFERS
-            $offers = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/OffersComponent.vue";
-            $offersContent = $this->storeFileSetup($offers);      
-            $componentName = 'OffersComponent.vue';  
+            $offers = dirname(__DIR__) . "/storeTemplates/" . $storeTypeId . "/template" . $randomTemplateNumber . "/OffersComponent.vue";
+            $offersContent = $this->storeFileSetup($offers);
+            $componentName = 'OffersComponent.vue';
             $offersCommand = "sudo nano $componentName
                 echo '$offersContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
             ";
 
             // BLOG
-            $blogs = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/BlogComponent.vue";
-            $blogsContent = $this->storeFileSetup($blogs);      
-            $componentName = 'BlogComponent.vue';  
+            $blogs = dirname(__DIR__) . "/storeTemplates/" . $storeTypeId . "/template" . $randomTemplateNumber . "/BlogComponent.vue";
+            $blogsContent = $this->storeFileSetup($blogs);
+            $componentName = 'BlogComponent.vue';
             $blogsCommand = "sudo nano $componentName
                 echo '$blogsContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
             ";
-            
+
             // SHIPPING DETAILS
-            $shippingDetails = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/SellingPointComponent.vue";
-            $shippingDetailsContent = $this->storeFileSetup($shippingDetails);      
-            $componentName = 'SellingPointComponent.vue';  
+            $shippingDetails = dirname(__DIR__) . "/storeTemplates/" . $storeTypeId . "/template" . $randomTemplateNumber . "/SellingPointComponent.vue";
+            $shippingDetailsContent = $this->storeFileSetup($shippingDetails);
+            $componentName = 'SellingPointComponent.vue';
             $shippingDetailsCommand = "sudo nano $componentName
                 echo '$shippingDetailsContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
             ";
 
             // FOOTER
-            $footer = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/FooterComponent.vue";
-            $footerContent = $this->storeFileSetup($footer, $defaultStoreName, $storeName);      
-            $componentName = 'FooterComponent.vue';  
+            $footer = dirname(__DIR__) . "/storeTemplates/" . $storeTypeId . "/template" . $randomTemplateNumber . "/FooterComponent.vue";
+            $footerContent = $this->storeFileSetup($footer, $defaultStoreName, $storeName);
+            $componentName = 'FooterComponent.vue';
             $footerCommand = "sudo nano $componentName
                 echo '$footerContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
             ";
-            
+
             try {
                 $n1Command = $this->ssmClient->sendCommand([
                     'InstanceIds' => ['i-01f1d0e3ed7035edb'],
                     'DocumentName' => 'AWS-RunShellScript',
                     'Parameters' => [
-                        'commands' => ['rm -r /var/www/zebralinetest/resources/js/components/websites/n_1697662401_qasotD/', $siteDirectoryCommand, $homeComponentCommand, $navbarCommand, $heroCommand, $categoryCommand, $featuredProductsCommand, $offersCommand, $blogsCommand, $shippingDetailsCommand, $footerCommand, 'cd /var/www/zebralinetest && npm run prod'],
-                        // 'commands' => ['cd /var/www/zebralinetest && npm run prod']
-                        // 'commands' => [$siteDirectoryCommand, $homeComponentCommand, $navbarCommand, $heroCommand, $categoryCommand, $featuredProductsCommand, $offersCommand, $blogsCommand, $shippingDetailsCommand, $footerCommand, 'cd /var/www/zebralinetest && npm run prod'],
+                        'commands' => [$siteDirectoryCommand, $homeComponentCommand, $navbarCommand, $heroCommand, $categoryCommand, $featuredProductsCommand, $offersCommand, $blogsCommand, $shippingDetailsCommand, $footerCommand, 'cd /var/www/zebralinetest && npm run prod'],
                     ],
                 ]);
-                $commandID = $n1Command['Command']['CommandId'];
-                if ($commandID !== '') {
-                    echo json_encode(['status' => 200, 'message' => 'successfully created store!', 'commandID' => $commandID]);
+                $commandId = $n1Command['Command']['CommandId'];
+
+                if ($commandId !== '') {
+                    // Poll for command status
+                    $status = null;
+                    $maxAttempts = 30; // Maximum number of attempts
+                    $attempts = 0;
+
+                    while ($status !== 'Success' && $attempts < $maxAttempts) {
+                        // Wait for a few seconds before checking the status again
+                        sleep(10);
+
+                        $result = $this->ssmClient->listCommandInvocations([
+                            'CommandId' => $commandId,
+                            'InstanceId' => 'i-01f1d0e3ed7035edb', // Replace with your instance ID
+                        ]);
+
+                        if (!empty($result['CommandInvocations'])) {
+                            $status = $result['CommandInvocations'][0]['Status'];
+                        }
+
+                        $attempts++;
+                    }
+
+                    if ($status === 'Success') {
+                        echo json_encode(['status' => 200, 'message' => 'Command execution is successful.', 'commandID' => $commandId]);
+                    } else {
+                        echo json_encode(['status' => 500, 'message' => 'Command execution failed.', 'commandID' => $commandId]);
+                    }
                 }
+                // $commandID = $n1Command['Command']['CommandId'];
+                // if ($commandID !== '') {
+                //     echo json_encode(['status' => 200, 'message' => 'successfully created store!', 'commandID' => $commandID]);
+                // }
             } catch (AwsException $e) {
-                echo 'AWS Error response: '. $e->getAwsErrorMessage();
+                echo 'AWS Error response: ' . $e->getAwsErrorMessage();
             }
         } else {
             echo json_encode(['status' => 500, 'message' => 'Agent could not generate template. Storetype has no template']);
-        }        
+        }
     }
 
-    public function storeTypeHasTemplate(array $input){
+    public function isCommandSuccessful($ssmClient, $commandId)
+    {
+        $result = $ssmClient->describeInstanceInformation([
+            'InstanceInformationFilterList' => [
+                [
+                    'key' => 'InstanceIds',
+                    'valueSet' => ['i-01f1d0e3ed7035edb'], // Replace with your instance ID
+                ],
+            ],
+        ]);
+
+        $instanceInformation = $result['InstanceInformationList'][0];
+        $status = $instanceInformation['PingStatus'];
+
+        return $status === 'Online'; // Adjust the condition based on your requirements
+    }
+
+    public function storeTypeHasTemplate(array $input)
+    {
         $storeTypeId = $input['storeTypeId'];
-        if($this->storeTypeHasTemplateCheck($storeTypeId) === 1){
+        if($this->storeTypeHasTemplateCheck($storeTypeId) === 1) {
             echo json_encode(['status' => 200, 'message' => 'Store type has templates.']);
-        }else{
+        } else {
             echo json_encode(['status' => 500, 'message' => 'Storetype has no template.']);
         }
     }
 
-    private function storeTypeHasTemplateCheck($storeTypeId){
-        $countTemplatesForStoreType = count( glob(dirname(__DIR__)."/storeTemplates/".$storeTypeId."/*", GLOB_ONLYDIR) );
+    private function storeTypeHasTemplateCheck($storeTypeId)
+    {
+        $countTemplatesForStoreType = count(glob(dirname(__DIR__) . "/storeTemplates/" . $storeTypeId . "/*", GLOB_ONLYDIR));
 
         if($countTemplatesForStoreType > 0) {
             return 1;
@@ -221,13 +269,14 @@ class AWSUtility
         }
     }
 
-    private function storeFileSetup($fileName, $find = NULL, $replace = NULL){
+    private function storeFileSetup($fileName, $find = null, $replace = null)
+    {
         //read the entire string
-        $str=file_get_contents($fileName);
+        $str = file_get_contents($fileName);
 
-        if($find !== NULL || $replace !== NULL){
+        if($find !== null || $replace !== null) {
             //replace something in the file string - this is a VERY simple example
-            $str=str_replace($find, $replace, $str);
+            $str = str_replace($find, $replace, $str);
         }
 
         // Write content to EC2 directory
@@ -314,10 +363,10 @@ class AWSUtility
     public function changeNameServers(String $domainName, array $nameServers)
     {
         $key = $_SERVER['NAMESILO_API_KEY'];
-        $ns1= $nameServers[0];
-        $ns2= $nameServers[1];
-        $ns3= $nameServers[2];
-        $ns4= $nameServers[3];
+        $ns1 = $nameServers[0];
+        $ns2 = $nameServers[1];
+        $ns3 = $nameServers[2];
+        $ns4 = $nameServers[3];
         // $key = '19162fabb5d351a3b3a5';
         // $ns1= 'NS1.NAMESILO.COM ';
         // $ns2= 'NS2.NAMESILO.COM';
@@ -355,7 +404,7 @@ class AWSUtility
             $awwwRecord = [
                 'Action' => 'CREATE',
                 'ResourceRecordSet' => [
-                    'Name' => 'www.'.$domainName,
+                    'Name' => 'www.' . $domainName,
                     'Type' => 'A',
                     'SetIdentifier' => 'aww-record',
                     'TTL' => 300,
@@ -386,7 +435,7 @@ class AWSUtility
             $aWildRecord = [
                 'Action' => 'CREATE',
                 'ResourceRecordSet' => [
-                    'Name' => '*.'.$domainName,
+                    'Name' => '*.' . $domainName,
                     'Type' => 'A',
                     'SetIdentifier' => 'awild-record',
                     'TTL' => 300,
@@ -413,7 +462,7 @@ class AWSUtility
                 'ChangeBatch' => $changeBatch
             ]);
         } catch (AwsException $e) {
-            echo 'Error retrieving hosted zone ID for load balancer: ' .$e->getAwsErrorMessage();
+            echo 'Error retrieving hosted zone ID for load balancer: ' . $e->getAwsErrorMessage();
         } finally {
             if ($result) {
                 $changeId = $result->get('ChangeInfo')['Id'];
@@ -487,7 +536,7 @@ class AWSUtility
                 echo json_encode(['status' => 200, 'message' => 'success on creating server!', 'commandID' => $commandID]);
             }
         } catch (AwsException $e) {
-            echo 'AWS Error response: '. $e->getAwsErrorMessage();
+            echo 'AWS Error response: ' . $e->getAwsErrorMessage();
         }
     }
 
@@ -517,7 +566,7 @@ class AWSUtility
     {
         $result = $this->ssmClient->listCommandInvocations(
             [
-                'CommandId' => '91d5abed-30b2-4a50-9fa9-bd9444733480',
+                'CommandId' => 'cfa58a7a-30c6-496c-9ed6-5b2cd2b814e9',
                 'Details' => true,
                 'InstanceId' => 'i-01f1d0e3ed7035edb',
                 // "NextToken" => "AAEAASiaH2XV9X6gYzh6sJ201/MOh1ryQY/Ixll+fRvoBwGlAAAAAGRMD9I1IdZhNLKZNX1PHoNwZFKtsE6yJer9otpcugjtbW26TJSXP+C9iwejqL9pdDAsk9fnE7HZwytd4THp+c2ThMxK68JwvXvunVJR0ZE6xUJnqypbqrQ4iAxqKL+hOXUlheh36KoYRk/svRAG7+HwOz1s+3sq737nlgoaAXNIxnpYYT3Uyq7xKmA9aIYIYTCfjZhjcyQ55uAIqucAy+9/LXiTEiNvTcPLxi3XCctQf4a53giAAMFceiDT9Zp420wVTJLt91uQTWSSaZWv8GbE3n6oUbRCon29nigdvbfJm4N/mXvPF4wcRls0xy8SD16ljI9ykCNzXgzLj3iGO2eyAU4hWnUkGRD+0B/JqXkE6954Rs48z3+F+uR2hQcHrSrhXYIbdxfT3ZzbA1F95PKJ/RbSYPtaTwAGI5/fhBSk0JllJOuxGnsO5doa0LCAm79QS+fxIVqfDxStEmB282ldKgOAkiNEOvdi4VOtdpJAzsE6HcihH5KdB9qLRDb9URkcOkssAijrSJO5v8lUuLMIfWeGyb2Qu4zptLC5BFmiIGoY37fBU1aRCBeeoap+ffXirUGsxS9wTz5w4icq8o8Ta9pYfsTMYpSv8YOKM1+IqKFj4GHOXGx39YPexrS2BnI9taArt1YBrG6dCr7GrbbvU5SxcWKRXl9SmiuwYVGO1UJ+mEc3flGnxoDXM6Txgb7ImFDlGLOrLTZyDoTfFIJwVPes1b4LTk1nkr/hTaAB8l8pGwonNANhxX0s6hUMesgsTDKqcKUiA+Xc7LiwHMvxGBAk2KRko39bOUQcOawyee6BjPpmmpyQg0NML9H/uchTqxJfDQWAX5di1yOmKKbK/Ecvf2SrQl17Uw0gJl88PVyWaUnSxIo3dXkhdHac1jPVklVTH7bYMT3sEf73vDGndV+k7pz/sw9kuO6sunhmBAcXcRHPFqQiAIdQA9p33yWiBYHUTKkIhas0nprq8t7FkRP+iVftpAeD1yZcOdo/KbznbDJPTodgGowDn3LG90VMqrHD532Swi/9UM5q7T2Ot2y7fa500RQHo3zSBoBHxi/SE4siHEQ7AikH+V1BaZohoX5i4M6B1RVal/2rpssQyB2jYsdajhEDGVrfEbwAFXIlmyc57hC72+jiC7bF3vDR45avBnix81e0gOfRTVw4a+ssgCkaPSa+rpUSpYu6Rg5dpA==",
@@ -534,29 +583,29 @@ class AWSUtility
      *   -u @api String $user:
      * @param String $domain
      */
-    public function createDomain(Array $input)
+    public function createDomain(array $input)
     {
         $domain = $input["DomainName"];
         $email = $input['email'];
         $zoneID = $this->requestZoneID($domain);
         if ($zoneID['status'] == 200) {
             $hostedZoneId = $zoneID['zoneID'];
-            $url = $_SERVER['EMAILFORWARD_NET_URL'].'domains';
+            $url = $_SERVER['EMAILFORWARD_NET_URL'] . 'domains';
             $options = [
                 'auth' => [$_SERVER['EMAILFORWARD_NET_USER'], ''],
                 'form_params' => [
                     'domain' => $domain,
                 ],
             ];
-    
+
             try {
                 $response = $this->client->post($url, $options);
-    
+
                 // Get the response body as a string
                 $body = $response->getBody()->getContents();
                 $alias = "consultancy";
                 $responseData = json_decode($body, true);
-    
+
                 if (isset($responseData['created_at'])) {
                     $verification_record = $responseData['verification_record'];
                     $this->createDomainAlias($alias, $domain, $email);
@@ -584,7 +633,7 @@ class AWSUtility
     public function createDomainAlias(String $aliasName, String $domain, String $email)
     {
         // Set the request URL and options
-        $url = $_SERVER['EMAILFORWARD_NET_URL'].'domains/'.$domain.'/aliases';
+        $url = $_SERVER['EMAILFORWARD_NET_URL'] . 'domains/' . $domain . '/aliases';
         $options = [
             'auth' => [$_SERVER['EMAILFORWARD_NET_USER'], ''], // Replace with your API key
             'headers' => [
@@ -693,7 +742,7 @@ class AWSUtility
      */
     public function verifyDomainRecords(String $domain)
     {
-        $url = $_SERVER['EMAILFORWARD_NET_URL'].'domains/'.$domain.'/verify-records';
+        $url = $_SERVER['EMAILFORWARD_NET_URL'] . 'domains/' . $domain . '/verify-records';
         $options = [
             'auth' => [$_SERVER['EMAILFORWARD_NET_USER'], ''],
         ];
@@ -785,7 +834,7 @@ class AWSUtility
     * @param mixed $data
     * @param string $httpHeader
     */
-    protected function sendOutput($data, $httpHeaders=array())
+    protected function sendOutput($data, $httpHeaders = array())
     {
         header_remove('Set-Cookie');
         if (is_array($httpHeaders) && count($httpHeaders)) {
@@ -873,7 +922,7 @@ class AWSUtility
         $awwwRecord = [
             'Action' => 'DELETE',
             'ResourceRecordSet' => [
-                'Name' => 'www.'.$domainName,
+                'Name' => 'www.' . $domainName,
                 'Type' => 'A',
                 'SetIdentifier' => 'aww-record',
                 'TTL' => 300,
@@ -904,7 +953,7 @@ class AWSUtility
         $aWildRecord = [
             'Action' => 'DELETE',
             'ResourceRecordSet' => [
-                'Name' => '*.'.$domainName,
+                'Name' => '*.' . $domainName,
                 'Type' => 'A',
                 'SetIdentifier' => 'awild-record',
                 'TTL' => 300,
@@ -1004,12 +1053,12 @@ class AWSUtility
     //     }
     // }
 
-     /**
-     * Makes a request for an SSL certificate
-     *
-     * @param Array $input
-     * @return void
-     */
+    /**
+    * Makes a request for an SSL certificate
+    *
+    * @param Array $input
+    * @return void
+    */
     // public function requestCertificate(Array $input, String $hostedZoneId) {
     //     $domainName = $input['DomainName']; // Change to your domain name
     //     try {
