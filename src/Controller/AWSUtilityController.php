@@ -28,46 +28,47 @@ class AWSUtilityController
 
     public function processRequest()
     {
-        switch ($this->request) {
-            case '/createzone':
-                $response = $this->createZone();
-                break;
-            case '/sendcommand':
-                $response = $this->sendCommand();
-                break;
-            case '/listcommands':
-                $response = $this->listcommands();
-                break;
-            case '/getzones':
-                $response = $this->getcreatedZone();
-                break;
-            case '/createdomainforwarding':
-                $response = $this->createDomainForwarding();
-                break;
-            case '/createTemplate':
-                $response = $this->createTemplate();
-                break;
-            case '/allTemplates':
-                $response = $this->allTemplates();
-                break;
-            case '/createStore':
-                $response = $this->createStore();
-                break;
-            case '/storeTypeHasTemplate':
-                $response = $this->storeTypeHasTemplate();
-                break;
-            // case '/template/id':
-            //     $response = $this->template();
-            //     break;
-            // case '/updateTemplate':
-            //     $response = $this->updateTemplate();
-            //     break;
-            // case '/deleteTemplate':
-            //     $response = $this->deleteTemplate();
-            //     break;            
-            default: header("HTTP/1.1 404 Not Found");
-            exit();
-        }
+        // switch ($this->request) {
+        //     case '/createzone':
+        //         $response = $this->createZone();
+        //         break;
+        //     case '/sendcommand':
+        //         $response = $this->sendCommand();
+        //         break;
+        //     case '/listcommands':
+        //         $response = $this->listcommands();
+        //         break;
+        //     case '/getzones':
+        //         $response = $this->getcreatedZone();
+        //         break;
+        //     case '/createdomainforwarding':
+        //         $response = $this->createDomainForwarding();
+        //         break;
+        //     case '/createTemplate':
+        //         $response = $this->createTemplate();
+        //         break;
+        //     case '/allTemplates':
+        //         $response = $this->allTemplates();
+        //         break;
+        //     case '/createStore':
+        //         $response = $this->createStore();
+        //         break;
+        //     case '/storeTypeHasTemplate':
+        //         $response = $this->storeTypeHasTemplate();
+        //         break;
+        //     // case '/template/id':
+        //     //     $response = $this->template();
+        //     //     break;
+        //     // case '/updateTemplate':
+        //     //     $response = $this->updateTemplate();
+        //     //     break;
+        //     // case '/deleteTemplate':
+        //     //     $response = $this->deleteTemplate();
+        //     //     break;            
+        //     default: header("HTTP/1.1 404 Not Found");
+        //     exit();
+        // }
+        echo 'here';
     }
 
     private function dbConnection(){
