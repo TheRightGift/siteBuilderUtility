@@ -14,7 +14,6 @@
                                 <li>
                                     <a :href="loggedIn ? `#!` : `/`">Home</a>
                                 </li>
-                                <!-- <span v-show="categories.length < 3"> -->
                                 <li
                                     v-for="category in categories"
                                     :key="category.id"
@@ -42,16 +41,14 @@
                                         >{{ category.name }}</router-link
                                     >
                                 </li>
-                                <!-- </span> -->
 
                                 <li>
-                                    <a href="#">Blog</a>
+                                    <a href="#blog">Blog</a>
                                 </li>
                                 <li>
                                     <a :href="mailUs">Contact Us</a>
                                 </li>
                             </ul>
-                            
                         </div>
                         <div class="col l7 s12">
                             <h2>Subscribe</h2>
@@ -114,39 +111,11 @@
     export default {
         data() {
             return {
-                seeder: [
-                    {
-                        id: 1,
-                        name: "Men",
-                        link: "#",
-                        subcategories: [
-                            {
-                                id: 1,
-                                name: "Men Jeans",
-                                link: "#",
-                            },
-                            { id: 2, name: "Men Shirts", link: "#" },
-                            { id: 3, name: "Men Shoes", link: "#" },
-                            { id: 4, name: "Men Accessories", link: "#" },
-                            { id: 5, name: "Men Jackets", link: "#" },
-                        ],
-                    },
-                    {
-                        id: 1,
-                        name: "Women",
-                        link: "#",
-                        subcategories: [
-                            { id: 1, name: "Women Jeans", link: "#" },
-                            { id: 2, name: "Tops & Shirts", link: "#" },
-                            { id: 3, name: "Women Jacket", link: "#" },
-                            { id: 4, name: "Heels & Flats", link: "#" },
-                            { id: 5, name: "Women Accessories", link: "#" },
-                        ],
-                    },
-                ],
+                
                 yourMail: "",
                 womenItems: [],
-                brandShortsDesc: this.branddesc ?? "The best look anytime, anywhere.",
+                brandShortsDesc:
+                    this.branddesc ?? "The best look anytime, anywhere.",
             };
         },
         methods: {
@@ -199,9 +168,9 @@
         computed: {
             mailUs() {
                 return (
-                    `mailto:` +
+                    "mailto:" +
                     this.email +
-                    `?subject=Contact%20Us&body=Hello%20Team`
+                    "?subject=Contact%20Us&body=Hello%20Team"
                 );
             },
         },
@@ -234,12 +203,14 @@
     .footerInner .l5 h4 {
         font-size: 1.9rem;
     }
-    .footerInner .l4 h2, .footerInner .l7 h2 {
+    .footerInner .l4 h2,
+    .footerInner .l7 h2 {
         margin-top: 0;
         font-size: 1.7rem;
     }
     .footerInner .l4 ul li a,
-    .footerIconContainer a, .footerInner ul li .link {
+    .footerIconContainer a,
+    .footerInner ul li .link {
         color: rgba(0, 0, 0, 0.51);
         font-size: 1rem;
         cursor: pointer;
@@ -249,9 +220,9 @@
     .footerInner .l4 ul li a:visited,
     .footerIconContainer a:hover,
     .footerIconContainer a:active,
-    .footerIconContainer a:visited, 
-    .footerInner ul li .link:hover, 
-    .footerInner ul li .link:active, 
+    .footerIconContainer a:visited,
+    .footerInner ul li .link:hover,
+    .footerInner ul li .link:active,
     .footerInner ul li .link:visited {
         color: #24262b;
         text-transform: capitalize;
