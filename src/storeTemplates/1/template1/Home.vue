@@ -12,20 +12,20 @@
 </template>
 
 <script>
-import CategoryComponent from './CategoryComponent.vue';
-import FeaturedProductsComponent from './FeaturedProductsComponent.vue';
-import HeroComponent from './HeroComponent.vue';
-import NavbarComponent from './NavbarComponent.vue';
-import OffersComponent from './OffersComponent.vue';
-import FooterComponent from './FooterComponent.vue';
-import BlogComponent from './BlogComponent.vue';
-import SellingPointComponent from './SellingPointComponent.vue';
+import CategoryComponent from "./CategoryComponent.vue";
+import FeaturedProductsComponent from "./FeaturedProductsComponent.vue";
+import HeroComponent from "./HeroComponent.vue";
+import NavbarComponent from "./NavbarComponent.vue";
+import OffersComponent from "./OffersComponent.vue";
+import FooterComponent from "./FooterComponent.vue";
+import BlogComponent from "./BlogComponent.vue";
+import SellingPointComponent from "./SellingPointComponent.vue";
 
 export default {
     components: { NavbarComponent, HeroComponent, OffersComponent, FeaturedProductsComponent, CategoryComponent, FooterComponent, SellingPointComponent, BlogComponent },
     // data() {
     //     return {
-    //         brandname: 'OZStores',
+    //         brandname: `OZStores`,
     //         categories: [
     //             {
     //                 name: "Women",
@@ -53,7 +53,7 @@ export default {
     //             },
     //         ],
     //         loggedIn: false,
-    //         email: 'goziechukwu@gmail.com',
+    //         email: `goziechukwu@gmail.com`,
     //         sellPoint: [
     //             {
     //                 title: "Shipping",
@@ -77,11 +77,11 @@ export default {
     //             },
     //         ],
     //         socials: {
-    //             facebook: '',
-    //             youtube: '',
-    //             twitter: '',
-    //             instagram: '',
-    //             tiktok: ''
+    //             facebook: ``,
+    //             youtube: ``,
+    //             twitter: ``,
+    //             instagram: ``,
+    //             tiktok: ``
     //         }
     //     };
     // },
@@ -101,25 +101,25 @@ export default {
     },
     methods: {
         showEditNavMenu (evt) {
-            this.$emit('showEditNavMenu', evt);
+            this.$emit(`showEditNavMenu`, evt);
         },
         showHeroEditor (evt) {
-            this.$emit('showHeroEditor', evt);
+            this.$emit(`showHeroEditor`, evt);
         },
         showOffersEditor (evt) {
-            this.$emit('showOffersEditor', evt);
+            this.$emit(`showOffersEditor`, evt);
         },
         showSellingPointEditor (evt) {
-            this.$emit('showSellingPointEditor', evt);
+            this.$emit(`showSellingPointEditor`, evt);
         },
         showProductEditor(evt) {
-            this.$emit('showProductEditor', evt);
+            this.$emit(`showProductEditor`, evt);
         },
         showEditBlogMenu (evt) {
-            this.$emit('showEditBlogMenu', evt);
+            this.$emit(`showEditBlogMenu`, evt);
         },
         showSocialEditor(evt) {
-            this.$emit('showSocialEditor', evt);
+            this.$emit(`showSocialEditor`, evt);
         }
     },
     mounted() {

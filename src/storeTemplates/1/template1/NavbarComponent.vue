@@ -82,18 +82,18 @@
                                 <router-link
                                     :to="
                                         loggedIn
-                                            ? '#!'
+                                            ? `#!`
                                             : {
-                                                  name: 'product-search-category',
+                                                  name: `product-search-category`,
                                                   params: {
                                                       category_name:
                                                           category.name ??
-                                                          'category',
+                                                          `category`,
                                                   },
                                                   query: {
                                                       additionalData:
                                                           category.id ??
-                                                          'category_id',
+                                                          `category_id`,
                                                   },
                                               }
                                     "
