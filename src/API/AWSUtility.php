@@ -113,9 +113,6 @@ class AWSUtility
                 echo '$homeComponentContent' >> /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
             ";
 
-            // Home partials
-            // $siteHomePartialsDirectoryCommand = "sudo mkdir -p /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/homePartials";
-            
             // NAVBAR
             $navbar = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/NavbarComponent.vue";
             $navbarContent = $this->storeFileSetup($navbar, $defaultStoreName, $storeName);   
@@ -164,12 +161,12 @@ class AWSUtility
                 echo '$blogsContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
             ";
             
-            // SHIPPING DETAILS
-            $shippingDetails = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/shippingDetails.vue";
-            $shippingDetailsContent = $this->storeFileSetup($shippingDetails);      
-            $componentName = 'shippingDetails.vue';  
-            $shippingDetailsCommand = "sudo nano $componentName
-                echo '$shippingDetailsContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
+            // SELLING POINT
+            $SellingPointComponent = dirname(__DIR__)."/storeTemplates/".$storeTypeId."/template".$randomTemplateNumber."/SellingPointComponent.vue";
+            $SellingPointComponentContent = $this->storeFileSetup($SellingPointComponent);      
+            $componentName = 'SellingPointComponent.vue';  
+            $SellingPointCommand = "sudo nano $componentName
+                echo '$SellingPointComponentContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
             ";
 
             // FOOTER
@@ -185,7 +182,7 @@ class AWSUtility
                     'InstanceIds' => ['i-01f1d0e3ed7035edb'],
                     'DocumentName' => 'AWS-RunShellScript',
                     'Parameters' => [
-                        'commands' => [$siteDirectoryCommand, $homeComponentCommand, $navbarCommand, $heroCommand, $categoryCommand, $featuredProductsCommand, $offersCommand, $blogsCommand, $shippingDetailsCommand, $footerCommand],
+                        'commands' => [$siteDirectoryCommand, $homeComponentCommand, $navbarCommand, $heroCommand, $categoryCommand, $featuredProductsCommand, $offersCommand, $blogsCommand, $SellingPointCommand, $footerCommand],
                     ],
                 ]);
                 $commandID = $n1Command['Command']['CommandId'];

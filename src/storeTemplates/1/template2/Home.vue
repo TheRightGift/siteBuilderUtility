@@ -26,7 +26,7 @@ export default {
     props: {
         loggedIn: Boolean,
 
-        themecolor: String,
+        // themecolor: String,
         brandname: String,
         sellPoint: Array,
         categories: Array,
@@ -68,3 +68,8 @@ export default {
     }
 }
 </script>,
+<style>
+    :root {
+      --primary-color: #fff;
+    }
+</style>
