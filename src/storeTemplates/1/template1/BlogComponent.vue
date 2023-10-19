@@ -172,7 +172,7 @@ h2 {
             },
         },
         mounted() {
-            this.editFlag = localStorage.getItem('editFlag');
+            this.editFlag = localStorage.getItem("editFlag");
             if (this.blogs.length > 0) {
                 this.blogSeeder = this.blogs;
             }
