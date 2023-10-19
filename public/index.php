@@ -12,4 +12,4 @@ $request = $_SERVER['REQUEST_URI'];
 
 // pass the request method and user ID to the PersonController and process the HTTP request:
 $controller = new AWSUtilityController($acmClient, $request, $client, $route53, $ELBClient, $ssmClient);
-// $controller->processRequest();
+$controller->processRequest();
