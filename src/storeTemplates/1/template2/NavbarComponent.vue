@@ -42,7 +42,7 @@
                         </span>
                         <li v-show="categories.length > 3" class="catDropdown">
                             <a
-                                class="dropdown-trigger"
+                                class="dropdown-trigger flex items-center"
                                 href="#productCategorySection"
                                 data-target="dropdownCategory"
                                 >Categories<i class="material-icons right"
@@ -156,8 +156,9 @@
                             id="authDropdown"
                             v-if="isAuthenticated"
                             class="dropdown-content"
+                            @click="showCategoryEditEditor"
                         >
-                            <li>
+                            <li >
                                 <a
                                     :href="
                                         role == `Admin`
@@ -231,7 +232,7 @@
                     v-if="isAuthenticated"
                     class="dropdown-content"
                 >
-                    <li>
+                    <li @click="showCategoryEditEditor">
                         <a
                             :href="
                                 role == `Admin`
@@ -291,6 +292,8 @@
                     productName: "",
                 },
                 editFlag: null,
+                imgDimensionHeight: 880,
+                imgDimensionWidth: 800, 
             };
         },
         mounted() {
@@ -370,8 +373,7 @@
             },
             showCategoryEditEditor() {
                 if (this.loggedIn) {
-                    this.$emit("showEditNavMenu", true);
-                    console.log("am here");
+                    this.$emit("showEditNavMenu", {evt: true, width: this.imgDimensionWidth, height: this.imgDimensionHeight});
                 }
             },
             async logout() {
@@ -432,6 +434,8 @@
     ul.navLinks li a,
     ul li .link {
         padding: 0 0.7vw;
+        height: inherit;
+    line-height: inherit;
     }
     ul li a,
     ul li .link {
@@ -458,6 +462,20 @@
     ul li a:hover,
     ul li .link:hover {
         color: var(--primary-color);
+    }
+    .catDropdown i.material-icons {
+        margin-left: 0;
+    }
+    .dropdown-content li {
+        height: 6vh;
+        min-height: unset;
+        line-height: 6vh;
+    }
+    nav i.material-icons {
+        color: #24262b;
+    }
+    .catDropdown i.material-icons {
+        color: inherit;
     }
     .iconLinks .notify {
         background-color: var(--primary-color);
