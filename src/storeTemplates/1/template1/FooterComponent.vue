@@ -112,6 +112,7 @@
         data() {
             return {
                 yourMail: "",
+                womenItems: [],
                 brandShortsDesc: "",
                 social: "",
             };
@@ -120,7 +121,6 @@
             subscribe() {
                 // Implement your subscribe logic here
                 // You can access the email input value with this.email
-                console.log('Subscribe');
             },
             showSocialEditor() {
                 this.$emit("showSocialEditor", true);
@@ -129,33 +129,9 @@
         props: {
             brandname: String,
             categories: Array,
-            loggedIn: Boolean,
             socials: Object,
-            branddesc: String,
+            loggedIn: Boolean,
             email: String,
-        },
-        watch: {
-            branddesc(newVal) {
-                if (newVal !== "") {
-                    this.brandShortsDesc = newVal;
-                } else {
-                    this.brandShortsDesc = "The best look anytime, anywhere."
-                }
-            },
-            socials(newVal) {
-                this.social = {
-                    facebook: "",
-                    youtube: "",
-                    tiktok: "",
-                    twitter: "",
-                    instagram: "",
-                };
-                if (newVal !== null && newVal !== undefined) {
-                    if (Object.entries(newVal).length !== 0) {
-                        this.social = newVal;
-                    }
-                }
-            }
         },
         computed: {
             mailUs() {
@@ -164,6 +140,23 @@
                     this.email +
                     "?subject=Contact%20Us&body=Hello%20Team"
                 );
+            },
+        },
+        watch: {
+            socials(newVal) {
+                this.social = { facebook: "", youtube: "", tiktok: "", twitter: "", instagram: ""};
+                if (newVal !== null && newVal !== undefined) {
+                    if (Object.entries(newVal).length !== 0) {
+                        this.social = newVal;
+                    }
+                }
+            },
+            branddesc(newVal) {
+                if (newVal !== "") {
+                    this.brandShortsDesc = newVal;
+                } else {
+                    this.brandShortsDesc = "Pulvinar aenean dignissim porttitor sed risus urna, pretium quis non id.";
+                }
             },
         },
     };
