@@ -2,7 +2,7 @@
     <div id="herocomponent">
         <div
             class="parallax-container"
-            :style="{ zIndex: !loggedIn ? -1 : 'inherit' }"
+            :style="{ zIndex: !loggedIn ? -1 : `inherit` }"
         >
             <div class="parallax" @click="showHeroEditor">
                 <img :src="imageUrlWithTimestamp" />
@@ -23,8 +23,8 @@
                                           name: `product-search-category`,
                                           params: {
                                               category_name:
-                                                  heroSeeder.type == 'welcome'
-                                                      ? 'all'
+                                                  heroSeeder.type == `welcome`
+                                                      ? `all`
                                                       : heroSeeder.title ??
                                                         `offer`,
                                           },
@@ -56,7 +56,7 @@
                                           query: {
                                               additionalData:
                                                   heroSeeder.type == `welcome`
-                                                      ? 'all'
+                                                      ? `all`
                                                       : heroSeeder.id ??
                                                         `offer_id`,
                                           },
@@ -99,7 +99,7 @@
             },
         },
         mounted() {
-            var elems = document.querySelectorAll('.parallax');
+            var elems = document.querySelectorAll(`.parallax`);
             var instances = M.Parallax.init(elems, {});
 
             if (this.hero.length > 0) {

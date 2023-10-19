@@ -8,7 +8,7 @@
 				<div class="row" @click="showProductEditor">
 					<!-- Loop through your products using v-for -->
 					<div class="col l3 s6 product" v-for="(product, index) in seededProducts" :key="index" >
-						<router-link :to="{ name: 'product-details', params: { product_name: product.title } }">
+						<router-link :to="{ name: `product-details`, params: { product_name: product.title } }">
 							<img class="responsive-img" :src="product.images[0].url" alt="" loading="lazy" />
 							<h2>{{ product.title }}</h2>
 						</router-link>
@@ -176,7 +176,7 @@ export default {
 	methods: {
 		showProductEditor() {
 			if (this.loggedIn) {
-				this.$emit('showProductEditor', true);
+				this.$emit(`showProductEditor`, true);
 			}
 		}
 	},

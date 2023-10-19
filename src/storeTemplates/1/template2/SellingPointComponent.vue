@@ -58,7 +58,7 @@
         methods: {
             showSellingPointEditor() {
                 if (this.loggedIn) {
-                    this.$emit('showSellingPointEditor', true);
+                    this.$emit(`showSellingPointEditor`, true);
                 }
             }
         },

@@ -26,17 +26,17 @@
 
                     <router-link
                         class="btn btn-blog"
-                        :class="{'waves waves-effect': !loggedIn && editFlag !== '1' }"
+                        :class="{'waves waves-effect': !loggedIn && editFlag !== `1` }"
                         :to="
-                            loggedIn || editFlag == '1'
-                                ? '#!'
+                            loggedIn || editFlag == `1`
+                                ? `#!`
                                 : {
-                                      name: 'blog-detail',
+                                      name: `blog-detail`,
                                       params: {
                                           blog: blog.title,
                                       },
                                       query: {
-                                          additionalData: blog.id ?? 'blog_id',
+                                          additionalData: blog.id ?? `blog_id`,
                                       },
                                   }
                         "

@@ -2,7 +2,7 @@
     <div id="herocomponent" @click="showHeroEditor">
         <!-- <div
             class="parallax-container"
-            :style="{ zIndex: !loggedIn ? -1 : 'inherit' }"
+            :style="{ zIndex: !loggedIn ? -1 : `inherit` }"
         >
             <div class="parallax" @click="showHeroEditor">
                 <img :src="imageUrlWithTimestamp" />
@@ -23,11 +23,11 @@
                                           name: `product-search-category`,
                                           params: {
                                               category_name:
-                                              heroSeeder.type == 'welcome' ? 'all' : heroSeeder.title ?? `offer`,
+                                              heroSeeder.type == `welcome` ? `all` : heroSeeder.title ?? `offer`,
                                           },
                                           query: {
                                               additionalOfferData:
-                                              heroSeeder.type == 'welcome' ? 'all' : heroSeeder.id ?? `offer_id`,
+                                              heroSeeder.type == `welcome` ? `all` : heroSeeder.id ?? `offer_id`,
                                           },
                                       }
                             "
@@ -42,11 +42,11 @@
                                           name: `product-search-category`,
                                           params: {
                                               category_name:
-                                              heroSeeder.type == 'welcome' ? 'all' : heroSeeder.title ?? `offer`,
+                                              heroSeeder.type == `welcome` ? `all` : heroSeeder.title ?? `offer`,
                                           },
                                           query: {
                                               additionalData:
-                                                  heroSeeder.type == 'welcome' ? 'all' : heroSeeder.id ?? `offer_id`,
+                                                  heroSeeder.type == `welcome` ? `all` : heroSeeder.id ?? `offer_id`,
                                           },
                                       }
                             "
@@ -77,14 +77,14 @@
                                       name: `product-search-category`,
                                       params: {
                                           category_name:
-                                              heroSeeder.type == 'welcome'
-                                                  ? 'all'
+                                              heroSeeder.type == `welcome`
+                                                  ? `all`
                                                   : heroSeeder.title ?? `offer`,
                                       },
                                       query: {
                                           additionalOfferData:
-                                              heroSeeder.type == 'welcome'
-                                                  ? 'all'
+                                              heroSeeder.type == `welcome`
+                                                  ? `all`
                                                   : heroSeeder.id ?? `offer_id`,
                                       },
                                   }

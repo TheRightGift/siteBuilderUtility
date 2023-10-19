@@ -66,14 +66,14 @@
                                 <li>
                                     <router-link
                                         :to="{
-                                            name: 'product-search-category',
+                                            name: `product-search-category`,
                                             params: {
                                                 category_name:
-                                                    category.name ?? 'category',
+                                                    category.name ?? `category`,
                                             },
                                             query: {
                                                 additionalData:
-                                                    category.id ?? 'category_id',
+                                                    category.id ?? `category_id`,
                                             },
                                         }"
                                         >{{ category.name }}</router-link
