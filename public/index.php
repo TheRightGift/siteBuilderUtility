@@ -11,5 +11,5 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 $request = $_SERVER['REQUEST_URI'];
 
 // pass the request method and user ID to the PersonController and process the HTTP request:
-$controller = new AWSUtilityController($acmClient, $request, $client, $route53, $ELBClient, $ssmClient);
-$controller->processRequest();
+// $controller = new AWSUtilityController($acmClient, $request, $client, $route53, $ELBClient, $ssmClient);
+// $controller->processRequest();
