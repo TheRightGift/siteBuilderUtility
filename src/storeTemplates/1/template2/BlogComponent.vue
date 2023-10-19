@@ -25,8 +25,7 @@
                     </h6>
 
                     <router-link
-                        class="btn btn-blog"
-                        :class="{'waves waves-effect': !loggedIn && editFlag !== `1` }"
+                        :class="classObject"
                         :to="
                             loggedIn || editFlag == `1`
                                 ? `#!`
@@ -76,8 +75,17 @@
 </style>
 <script>
     export default {
+        computed: {
+            classObject() {
+                return {
+                    "waves waves-effect": !this.loggedIn && this.editFlag !== `1`,
+                    "btn btn-blog" : this.showBlogButton,
+                };
+            },
+        },
         data() {
             return {
+                showBlogButton: true,
                 editFlag: null,
                 blogSeeder: [
                     {
