@@ -49,17 +49,10 @@
                             "https://risingtheme.com/html/demo-suruchi-v1/suruchi/assets/img/other/shipping3.png",
                         description: "From handpicked sellers",
                     },
-                    {
-                        title: "Support",
-                        image_or_icon:
-                            "https://risingtheme.com/html/demo-suruchi-v1/suruchi/assets/img/other/shipping4.png",
-                        description: "From handpicked sellers",
-                    },
                 ],
             };
         },
         mounted() {
-            console.log(this.sellPoint)
         },
         methods: {
             showSellingPointEditor() {

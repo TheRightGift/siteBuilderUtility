@@ -142,16 +142,8 @@
             return {
                 yourMail: "",
                 womenItems: [],
-                brandShortsDesc:
-                    this.branddesc ??
-                    "Pulvinar aenean dignissim porttitor sed risus urna, pretium quis non id.",
-                social: {
-                    facebook: "",
-                    youtube: "",
-                    tiktok: "",
-                    twitter: "",
-                    instagram: "",
-                }
+                brandShortsDesc: "",
+                social: "",
             };
         },
         methods: {
@@ -178,12 +170,20 @@
         },
         watch: {
             socials(newVal) {
+                this.social = { facebook: "", youtube: "", tiktok: "", twitter: "", instagram: ""};
                 if (newVal !== null && newVal !== undefined) {
                     if (Object.entries(newVal).length !== 0) {
                         this.social = newVal;
                     }
                 }
-            }
+            },
+            branddesc(newVal) {
+                if (newVal !== "") {
+                    this.brandShortsDesc = newVal;
+                } else {
+                    this.brandShortsDesc = "Pulvinar aenean dignissim porttitor sed risus urna, pretium quis non id.";
+                }
+            },
         },
     };
 </script>

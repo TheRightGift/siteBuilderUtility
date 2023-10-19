@@ -112,21 +112,15 @@
         data() {
             return {
                 yourMail: "",
-                brandShortsDesc:
-                    this.branddesc ?? "The best look anytime, anywhere.",
-                social: {
-                    facebook: "",
-                    youtube: "",
-                    tiktok: "",
-                    twitter: "",
-                    instagram: "",
-                }
+                brandShortsDesc: "",
+                social: "",
             };
         },
         methods: {
             subscribe() {
                 // Implement your subscribe logic here
                 // You can access the email input value with this.email
+                console.log('Subscribe');
             },
             showSocialEditor() {
                 this.$emit("showSocialEditor", true);
@@ -142,9 +136,20 @@
         },
         watch: {
             branddesc(newVal) {
-                this.brandShortsDesc = newVal;
+                if (newVal !== "") {
+                    this.brandShortsDesc = newVal;
+                } else {
+                    this.brandShortsDesc = "The best look anytime, anywhere."
+                }
             },
             socials(newVal) {
+                this.social = {
+                    facebook: "",
+                    youtube: "",
+                    tiktok: "",
+                    twitter: "",
+                    instagram: "",
+                };
                 if (newVal !== null && newVal !== undefined) {
                     if (Object.entries(newVal).length !== 0) {
                         this.social = newVal;
