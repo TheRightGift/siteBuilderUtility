@@ -185,9 +185,9 @@ class AWSUtility
                     'InstanceIds' => ['i-01f1d0e3ed7035edb'],
                     'DocumentName' => 'AWS-RunShellScript',
                     'Parameters' => [
-                        // 'commands' => ['rm -r /var/www/zebralinetest/resources/js/components/websites/n_1697662401_qasotD/', $siteDirectoryCommand, $homeComponentCommand, $navbarCommand, $heroCommand, $categoryCommand, $featuredProductsCommand, $offersCommand, $blogsCommand, $shippingDetailsCommand, $footerCommand, 'cd /var/www/zebralinetest && npm run prod'],
+                        'commands' => ['rm -r /var/www/zebralinetest/resources/js/components/websites/mn_1697707753_sQfFGN/', $siteDirectoryCommand, $homeComponentCommand, $navbarCommand, $heroCommand, $categoryCommand, $featuredProductsCommand, $offersCommand, $blogsCommand, $shippingDetailsCommand, $footerCommand, 'cd /var/www/zebralinetest && npm run prod'],
                         // 'commands' => ['cd /var/www/zebralinetest && npm run prod']
-                        'commands' => [$siteDirectoryCommand, $homeComponentCommand, $navbarCommand, $heroCommand, $categoryCommand, $featuredProductsCommand, $offersCommand, $blogsCommand, $shippingDetailsCommand, $footerCommand, 'cd /var/www/zebralinetest && npm run prod'],
+                        // 'commands' => [$siteDirectoryCommand, $homeComponentCommand, $navbarCommand, $heroCommand, $categoryCommand, $featuredProductsCommand, $offersCommand, $blogsCommand, $shippingDetailsCommand, $footerCommand, 'cd /var/www/zebralinetest && npm run prod'],
                     ],
                 ]);
                 $commandID = $n1Command['Command']['CommandId'];
@@ -517,7 +517,7 @@ class AWSUtility
     {
         $result = $this->ssmClient->listCommandInvocations(
             [
-                'CommandId' => '561ea25d-9b03-456d-8b57-d37b1ef41e24',
+                'CommandId' => 'b83b464e-3bdc-4645-8336-3df4cad38d64',
                 'Details' => true,
                 'InstanceId' => 'i-01f1d0e3ed7035edb',
                 // "NextToken" => "AAEAASiaH2XV9X6gYzh6sJ201/MOh1ryQY/Ixll+fRvoBwGlAAAAAGRMD9I1IdZhNLKZNX1PHoNwZFKtsE6yJer9otpcugjtbW26TJSXP+C9iwejqL9pdDAsk9fnE7HZwytd4THp+c2ThMxK68JwvXvunVJR0ZE6xUJnqypbqrQ4iAxqKL+hOXUlheh36KoYRk/svRAG7+HwOz1s+3sq737nlgoaAXNIxnpYYT3Uyq7xKmA9aIYIYTCfjZhjcyQ55uAIqucAy+9/LXiTEiNvTcPLxi3XCctQf4a53giAAMFceiDT9Zp420wVTJLt91uQTWSSaZWv8GbE3n6oUbRCon29nigdvbfJm4N/mXvPF4wcRls0xy8SD16ljI9ykCNzXgzLj3iGO2eyAU4hWnUkGRD+0B/JqXkE6954Rs48z3+F+uR2hQcHrSrhXYIbdxfT3ZzbA1F95PKJ/RbSYPtaTwAGI5/fhBSk0JllJOuxGnsO5doa0LCAm79QS+fxIVqfDxStEmB282ldKgOAkiNEOvdi4VOtdpJAzsE6HcihH5KdB9qLRDb9URkcOkssAijrSJO5v8lUuLMIfWeGyb2Qu4zptLC5BFmiIGoY37fBU1aRCBeeoap+ffXirUGsxS9wTz5w4icq8o8Ta9pYfsTMYpSv8YOKM1+IqKFj4GHOXGx39YPexrS2BnI9taArt1YBrG6dCr7GrbbvU5SxcWKRXl9SmiuwYVGO1UJ+mEc3flGnxoDXM6Txgb7ImFDlGLOrLTZyDoTfFIJwVPes1b4LTk1nkr/hTaAB8l8pGwonNANhxX0s6hUMesgsTDKqcKUiA+Xc7LiwHMvxGBAk2KRko39bOUQcOawyee6BjPpmmpyQg0NML9H/uchTqxJfDQWAX5di1yOmKKbK/Ecvf2SrQl17Uw0gJl88PVyWaUnSxIo3dXkhdHac1jPVklVTH7bYMT3sEf73vDGndV+k7pz/sw9kuO6sunhmBAcXcRHPFqQiAIdQA9p33yWiBYHUTKkIhas0nprq8t7FkRP+iVftpAeD1yZcOdo/KbznbDJPTodgGowDn3LG90VMqrHD532Swi/9UM5q7T2Ot2y7fa500RQHo3zSBoBHxi/SE4siHEQ7AikH+V1BaZohoX5i4M6B1RVal/2rpssQyB2jYsdajhEDGVrfEbwAFXIlmyc57hC72+jiC7bF3vDR45avBnix81e0gOfRTVw4a+ssgCkaPSa+rpUSpYu6Rg5dpA==",

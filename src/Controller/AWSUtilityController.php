@@ -68,6 +68,10 @@ class AWSUtilityController
             default: header("HTTP/1.1 404 Not Found");
             exit();
         }
+        // header($response['status_code_header']);
+        // if ($response['body']) {
+        //     echo $response['body'];
+        // }
     }
 
     private function dbConnection(){
@@ -256,7 +260,7 @@ class AWSUtilityController
         // if (! $this->validateDomain($input)) {
         //     return $this->unprocessableEntityResponse();
         // }
-        $result = $this->awsUtilityGateway->getAllZones([]);
+        $result = $this->awsUtilityGateway->listCommand([]);
         // $response['status_code_header'] = 'HTTP/1.1 200 OK';
         $response['body'] = json_encode($result);
         return $response;
