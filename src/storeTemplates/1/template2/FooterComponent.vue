@@ -151,6 +151,9 @@
                 // Implement your subscribe logic here
                 // You can access the email input value with this.email
             },
+            showSocialEditor() {
+                this.$emit("showSocialEditor", true);
+            },
         },
         props: {
             brandname: String,
