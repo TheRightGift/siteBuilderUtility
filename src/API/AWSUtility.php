@@ -188,14 +188,7 @@ class AWSUtility
                     'InstanceIds' => ['i-01f1d0e3ed7035edb'],
                     'DocumentName' => 'AWS-RunShellScript',
                     'Parameters' => [
-<<<<<<< HEAD
                         'commands' => [$siteDirectoryCommand, $homeComponentCommand, $navbarCommand, $heroCommand, $categoryCommand, $featuredProductsCommand, $offersCommand, $blogsCommand, $shippingDetailsCommand, $footerCommand, $jsCompileCommand],
-=======
-                        'commands' => ['cd /var/www/zebralinetest && npm run prod'],
-                        // 'commands' => ['rm -r /var/www/zebralinetest/resources/js/components/websites/ops_1697793309_2zU5Vr/'], //'cd /var/www/zebralinetest && npm run prod'
-                        // 'commands' => ['cat /var/www/zebralinetest/resources/js/components/websites/n_1697662401_qasotD/FooterComponent.vue']
-                        // 'commands' => [$siteDirectoryCommand, $homeComponentCommand, $navbarCommand, $heroCommand, $categoryCommand, $featuredProductsCommand, $offersCommand, $blogsCommand, $shippingDetailsCommand, $footerCommand, 'cd /var/www/zebralinetest && npm run prod'],
->>>>>>> 67e541a2fbed6fc62880272d5c4f81c363fa499f
                     ],
                 ]);
                 $commandId = $n1Command['Command']['CommandId'];
