@@ -1,5 +1,5 @@
 <template>
-    <div class="productCatSection" id="productCategorySection">
+    <div class="productCatSection" id="productCategorySection"  @click="showCategoryEditEditor">
         <div
             v-if="categories && categories.length > 0"
             class="productCatSectionInner"
@@ -37,7 +37,6 @@
                                             category.id ?? `category_id`,
                                     },
                                 }"
-                                v-if="!loggedIn"
                                 >Shop Now</router-link
                             >
                         </div>
@@ -90,7 +89,20 @@
                         image: "https://websitedemos.net/brandstore-02/wp-content/uploads/sites/150/2018/12/footwear-free-img.jpg",
                     },
                 ],
+                imgDimensionHeight: 880,
+                imgDimensionWidth: 800,
             };
+        },
+        methods: {
+            showCategoryEditEditor() {
+                if (this.loggedIn) {
+                    this.$emit("showEditNavMenu", {
+                        evt: true,
+                        width: this.imgDimensionWidth,
+                        height: this.imgDimensionHeight,
+                    });
+                }
+            },
         },
         props: {
             categories: Array,

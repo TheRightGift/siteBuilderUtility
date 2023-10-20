@@ -2,7 +2,7 @@
     <div>
         <NavbarComponent :brandname="brandname" :categories="categories" :loggedIn="loggedIn" @showEditNavMenu="showEditNavMenu($event)" :email="email"/>
         <HeroComponent :loggedIn="loggedIn" @showHeroEditor="showHeroEditor($event)" :hero="hero" :timestamp="timestamp" />
-        <CategoryComponent :categories="categories" />
+        <CategoryComponent :categories="categories" :loggedIn="loggedIn" @showEditNavMenu="showEditNavMenu($event)" />
         <FeaturedProductsComponent :products="products" @showProductEditor="showProductEditor" :loggedIn="loggedIn"/>
         <BlogComponent @showEditBlogMenu="showEditBlogMenu" :loggedIn="loggedIn" :blogs="blogs"/>
         <OffersComponent :loggedIn="loggedIn" @showOffersEditor="showOffersEditor($event)" :hero="hero" :timestamp="timestamp" :offers="offers"/>
