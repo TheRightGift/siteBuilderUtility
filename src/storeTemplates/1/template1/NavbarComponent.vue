@@ -274,6 +274,9 @@
                     categoryId: 0,
                     productName: "",
                 },
+                editFlag: null,
+                imgDimensionHeight: 880,
+                imgDimensionWidth: 800,
             };
         },
         mounted() {
@@ -328,7 +331,11 @@
             },
             showCategoryEditEditor() {
                 if (this.loggedIn) {
-                    this.$emit("showEditNavMenu", true);
+                    this.$emit("showEditNavMenu", {
+                        evt: true,
+                        width: this.imgDimensionWidth,
+                        height: this.imgDimensionHeight,
+                    });
                 }
             },
         },
