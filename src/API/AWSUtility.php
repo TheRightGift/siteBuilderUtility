@@ -181,15 +181,14 @@ class AWSUtility
                 echo '$footerContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
             ";
 
+            $jsCompileCommand = 'cd /var/www/zebralinetest && npm run prod';
+
             try {
                 $n1Command = $this->ssmClient->sendCommand([
                     'InstanceIds' => ['i-01f1d0e3ed7035edb'],
                     'DocumentName' => 'AWS-RunShellScript',
                     'Parameters' => [
-                        // 'commands' => ['cd /var/www/zebralinetest && npm run prod'],
-                        // 'commands' => ['rm -r /var/www/zebralinetest/resources/js/components/websites/n_1697662401_qasotD/', 'cd /var/www/zebralinetest && npm run prod'], //'cd /var/www/zebralinetest && npm run prod'
-                        // 'commands' => ['cat /var/www/zebralinetest/resources/js/components/websites/n_1697662401_qasotD/FooterComponent.vue']
-                        'commands' => [$siteDirectoryCommand, $homeComponentCommand, $navbarCommand, $heroCommand, $categoryCommand, $featuredProductsCommand, $offersCommand, $blogsCommand, $shippingDetailsCommand, $footerCommand, 'cd /var/www/zebralinetest && npm run prod'],
+                        'commands' => [$siteDirectoryCommand, $homeComponentCommand, $navbarCommand, $heroCommand, $categoryCommand, $featuredProductsCommand, $offersCommand, $blogsCommand, $shippingDetailsCommand, $footerCommand, $jsCompileCommand],
                     ],
                 ]);
                 $commandId = $n1Command['Command']['CommandId'];
@@ -222,16 +221,17 @@ class AWSUtility
                         echo json_encode(['status' => 500, 'message' => 'Command execution failed.', 'commandID' => $commandId]);
                     }
                 }
-                // $commandID = $n1Command['Command']['CommandId'];
-                // if ($commandID !== '') {
-                //     echo json_encode(['status' => 200, 'message' => 'successfully created store!', 'commandID' => $commandID]);
-                // }
             } catch (AwsException $e) {
                 echo 'AWS Error response: ' . $e->getAwsErrorMessage();
             }
         } else {
             echo json_encode(['status' => 500, 'message' => 'Agent could not generate template. Storetype has no template']);
         }
+    }
+
+    public function removeStoreDirectory(array $input)
+    {
+        
     }
 
 
