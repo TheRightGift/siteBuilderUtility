@@ -164,6 +164,7 @@
                     if (newBlog.length > 0) {
                         this.blogSeeder = [...newBlog]; // Make a copy of the new products
                     }
+                    M.AutoInit();
                 },
                 deep: true, // Enable deep watching to detect changes within the array
             },
