@@ -89,12 +89,14 @@
                     title: "25% Off On All Products",
                     type: "welcome",
                 },
+                imgDimensionHeight: 880,
+                imgDimensionWidth: 800, 
             };
         },
         methods: {
             showHeroEditor() {
                 if (this.loggedIn) {
-                    this.$emit("showHeroEditor", true);
+                    this.$emit("showHeroEditor", {evt: true, width: this.imgDimensionWidth, height: this.imgDimensionHeight});
                 }
             },
         },
@@ -123,7 +125,7 @@
                     if (parallax.length > 0 || carousel.length === 0) {
                         this.heroSeeder = newVal[0];
                     } else if (carousel.length > 0) {
-                        this.heroSeeder = newVal;
+                        this.heroSeeder = newVal[0];
                     }
                 }
             },

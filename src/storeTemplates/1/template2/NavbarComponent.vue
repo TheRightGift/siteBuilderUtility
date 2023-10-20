@@ -99,28 +99,28 @@
                             <a
                                 :href="!isAuthenticated ? `/auth/signin` : `#`"
                                 :class="classObject"
-                                data-target="authDropdown"
+                                data-target="authDropdownLarge"
                             >
                                 <i class="material-icons">person_outline</i>
                             </a>
+                            <ul
+                                id="authDropdownLarge"
+                                v-if="isAuthenticated"
+                                class="dropdown-content"
+                            >
+                                <li>
+                                    <a
+                                        :href="
+                                            role == `Admin`
+                                                ? `/vendor/dashboard`
+                                                : `/your_account/dashboard`
+                                        "
+                                        >{{ names }}</a
+                                    >
+                                </li>
+                                <li><a href="#!" @click="logout">Logout</a></li>
+                            </ul>
                         </li>
-                        <ul
-                            id="authDropdown"
-                            v-if="isAuthenticated"
-                            class="dropdown-content"
-                        >
-                            <li>
-                                <a
-                                    :href="
-                                        role == `Admin`
-                                            ? `/vendor/dashboard`
-                                            : `/your_account/dashboard`
-                                    "
-                                    >{{ names }}</a
-                                >
-                            </li>
-                            <li><a href="#!" @click="logout">Logout</a></li>
-                        </ul>
                         <li>
                             <a href="#" class="iconLinks withBadge">
                                 <i class="material-icons">favorite_border</i>
@@ -152,25 +152,25 @@
                         data-target="authDropdown"
                     >
                         <i class="material-icons">person_outline</i>
-                        <ul
-                            id="authDropdown"
-                            v-if="isAuthenticated"
-                            class="dropdown-content"
-                            @click="showCategoryEditEditor"
-                        >
-                            <li >
-                                <a
-                                    :href="
-                                        role == `Admin`
-                                            ? `/vendor/dashboard`
-                                            : `/your_account/dashboard`
-                                    "
-                                    >{{ names }}</a
-                                >
-                            </li>
-                            <li><a href="#!" @click="logout">Logout</a></li>
-                        </ul>
                     </a>
+                    <ul
+                        id="authDropdown"
+                        v-if="isAuthenticated"
+                        class="dropdown-content"
+                        @click="showCategoryEditEditor"
+                    >
+                        <li>
+                            <a
+                                :href="
+                                    role == `Admin`
+                                        ? `/vendor/dashboard`
+                                        : `/your_account/dashboard`
+                                "
+                                >{{ names }}</a
+                            >
+                        </li>
+                        <li><a href="#!" @click="logout">Logout</a></li>
+                    </ul>
                     <a href="" class="iconLinks withBadge">
                         <i class="material-icons">shopping_cart</i>
                         <span class="notify">0</span>
@@ -282,7 +282,7 @@
   
   <script>
     import fetchData from "@/mixin/apiMixin";
-    import { useCartStore } from "@/store/store.js";
+    import { useCartStore } from "../../../store/store.js";
     export default {
         mixins: [fetchData],
         data() {
@@ -293,7 +293,7 @@
                 },
                 editFlag: null,
                 imgDimensionHeight: 880,
-                imgDimensionWidth: 800, 
+                imgDimensionWidth: 800,
             };
         },
         mounted() {
@@ -310,46 +310,35 @@
                 endingTop: "5%",
             });
         },
-        updated() {
-            var dropdown1 = document.querySelectorAll(
-                ".dropdown-trigger"
-            );
-            // var dropdown2 = document.querySelectorAll(".authDropdownPhone")
-            var dropdownOptions = {
-                closeOnClick: true,
-            };
-            if (window.innerWidth < 768) {
-                // This is a mobile screen (assuming 768px is the breakpoint for mobile)
-               dropdownOptions.hover = false;
-            } else {
-                // This is medium-sized and above
-                dropdownOptions.hover = true;
-                dropdownOptions.alignment = "right";
-            }
-            M.Dropdown.init(dropdown1, dropdownOptions);
-
-        },
+        // updated() {
+        //     var dropdown1 = document.querySelectorAll(".dropdown-trigger");
+        //         // var dropdown2 = document.querySelectorAll(".authDropdownPhone")
+        //         var dropdownOptions = {
+        //             closeOnClick: true,
+        //         };
+        //         if (window.innerWidth < 768) {
+        //             // This is a mobile screen (assuming 768px is the breakpoint for mobile)
+        //             dropdownOptions.hover = false;
+        //         } else {
+        //             // This is medium-sized and above
+        //             dropdownOptions.hover = true;
+        //             dropdownOptions.alignment = "right";
+        //         }
+        // },
         computed: {
-            classObject() {
-                return {
-                    iconLinks: true,
-                    "dropdown-trigger": this.isAuthenticated 
-                }
-            },
             isAuthenticated() {
-                const cartStore = useCartStore();
-                return cartStore.isAuthenticated;
+                return useCartStore().isAuthenticated;
             },
             names() {
-                const cartStore = useCartStore();
-                const names = cartStore.user.names;
+                const names = useCartStore().user.names;
                 const nameParts = names.split(" ");
+
+                M.AutoInit()
                 return nameParts[0];
             },
             role() {
-                const cartStore = useCartStore();
-                const role = cartStore.user.role;
-
+                const role = useCartStore().user.role;
+                M.AutoInit()
                 return role;
             },
             cartCount() {
@@ -366,6 +355,12 @@
                     `?subject=Contact%20Us&body=Hello%20Team`
                 );
             },
+            classObject() {
+                return {
+                    iconLinks: true,
+                    "dropdown-trigger": this.isAuthenticated,
+                };
+            },
         },
         methods: {
             searchProducts() {
@@ -373,7 +368,11 @@
             },
             showCategoryEditEditor() {
                 if (this.loggedIn) {
-                    this.$emit("showEditNavMenu", {evt: true, width: this.imgDimensionWidth, height: this.imgDimensionHeight});
+                    this.$emit("showEditNavMenu", {
+                        evt: true,
+                        width: this.imgDimensionWidth,
+                        height: this.imgDimensionHeight,
+                    });
                 }
             },
             async logout() {
@@ -435,7 +434,7 @@
     ul li .link {
         padding: 0 0.7vw;
         height: inherit;
-    line-height: inherit;
+        line-height: inherit;
     }
     ul li a,
     ul li .link {

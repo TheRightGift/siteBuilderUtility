@@ -186,7 +186,7 @@ class AWSUtility
                     'InstanceIds' => ['i-01f1d0e3ed7035edb'],
                     'DocumentName' => 'AWS-RunShellScript',
                     'Parameters' => [
-                        // 'commands' => ['cd /var/www/zebralinetest/resources/js/components/websites/ && ls'],
+                        // 'commands' => ['cd /var/www/zebralinetest && npm run prod'],
                         // 'commands' => ['rm -r /var/www/zebralinetest/resources/js/components/websites/n_1697662401_qasotD/', 'cd /var/www/zebralinetest && npm run prod'], //'cd /var/www/zebralinetest && npm run prod'
                         // 'commands' => ['cat /var/www/zebralinetest/resources/js/components/websites/n_1697662401_qasotD/FooterComponent.vue']
                         'commands' => [$siteDirectoryCommand, $homeComponentCommand, $navbarCommand, $heroCommand, $categoryCommand, $featuredProductsCommand, $offersCommand, $blogsCommand, $shippingDetailsCommand, $footerCommand, 'cd /var/www/zebralinetest && npm run prod'],

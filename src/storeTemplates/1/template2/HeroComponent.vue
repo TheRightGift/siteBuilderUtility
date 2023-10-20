@@ -149,7 +149,7 @@
                     if (parallax.length > 0 || carousel.length === 0) {
                         this.heroSeeder = newVal[0];
                     } else if (carousel.length > 0) {
-                        this.heroSeeder = newVal;
+                        this.heroSeeder = newVal[0];
                     }
                 }
             },
