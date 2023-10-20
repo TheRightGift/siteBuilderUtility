@@ -141,7 +141,6 @@
         data() {
             return {
                 yourMail: "",
-                brandShortsDesc: "",
                 social: "",
             };
         },
@@ -169,6 +168,13 @@
                     "?subject=Contact%20Us&body=Hello%20Team"
                 );
             },
+            brandShortsDesc() {
+                if (this.branddesc !== "") {
+                    return this.branddesc;
+                } else {
+                    return "Pulvinar aenean dignissim porttitor sed risus urna, pretium quis non id.";
+                }
+            },
         },
         watch: {
             socials(newVal) {
@@ -177,13 +183,6 @@
                     if (Object.entries(newVal).length !== 0) {
                         this.social = newVal;
                     }
-                }
-            },
-            branddesc(newVal) {
-                if (newVal !== "") {
-                    this.brandShortsDesc = newVal;
-                } else {
-                    this.brandShortsDesc = "Pulvinar aenean dignissim porttitor sed risus urna, pretium quis non id.";
                 }
             },
         },
