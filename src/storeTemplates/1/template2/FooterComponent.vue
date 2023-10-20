@@ -141,7 +141,6 @@
         data() {
             return {
                 yourMail: "",
-                womenItems: [],
                 brandShortsDesc: "",
                 social: "",
             };
