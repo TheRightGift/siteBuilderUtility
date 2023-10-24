@@ -240,9 +240,16 @@ class AWSUtilityController
     }
 
     private function listcommands(){
-        $result = $this->awsUtilityGateway->listCommand();
-        $response['body'] = json_encode($result);
-        print_r($response);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $input = $_POST; //(array) json_decode(file_get_contents('php://input'), true);
+        
+            $result = $this->awsUtilityGateway->listCommandStatus($input);
+            $response['body'] = json_encode($result);
+            
+            return $response;
+        } else {
+            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support '.$_SERVER['REQUEST_METHOD'].' requests.']);
+        }
     }
 
     private function validateStoreThemeColorUpdateData($input){
