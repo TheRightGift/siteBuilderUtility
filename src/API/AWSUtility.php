@@ -364,27 +364,27 @@ class AWSUtility
 
             if ($commandId !== '') {
                 // Poll for command status
-                $status = null;
-                $maxAttempts = 30; // Maximum number of attempts
-                $attempts = 0;
+                // $status = null;
+                // $maxAttempts = 30; // Maximum number of attempts
+                // $attempts = 0;
 
-                while ($status !== 'Success' && $attempts < $maxAttempts) {
-                    // Wait for a few seconds before checking the status again
-                    sleep(10);
+                // while ($status !== 'Success' && $attempts < $maxAttempts) {
+                //     // Wait for a few seconds before checking the status again
+                //     sleep(10);
 
-                    $result = $this->ssmClient->listCommandInvocations([
-                        'CommandId' => $commandId,
-                        'InstanceId' => 'i-01f1d0e3ed7035edb', // Replace with your instance ID
-                    ]);
+                //     $result = $this->ssmClient->listCommandInvocations([
+                //         'CommandId' => $commandId,
+                //         'InstanceId' => 'i-01f1d0e3ed7035edb', // Replace with your instance ID
+                //     ]);
 
-                    if (!empty($result['CommandInvocations'])) {
-                        $status = $result['CommandInvocations'][0]['Status'];
-                    }
+                //     if (!empty($result['CommandInvocations'])) {
+                //         $status = $result['CommandInvocations'][0]['Status'];
+                //     }
 
-                    $attempts++;
-                }
+                //     $attempts++;
+                // }
 
-                return $tatus;
+                return $commandId;
             }
         } catch (AwsException $e) {
             echo 'AWS Error response: ' . $e->getAwsErrorMessage();
