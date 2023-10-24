@@ -226,12 +226,12 @@ class AWSUtility
             // }
             $status = $this->runCommand([$siteDirectoryCommand, $homeComponentCommand, $navbarCommand, $heroCommand, $categoryCommand, $featuredProductsCommand, $offersCommand, $blogsCommand, $shippingDetailsCommand, $footerCommand]);
             if ($status === 'Success') {
-                // $jsCommandStatus = $this->runJScompileCommand();
-                // if ($jsCommandStatus === 'Success') {
-                //     echo json_encode(['status' => 200, 'message' => 'Successfully created  storedirectories and ran JS compile.', 'commandID' => $commandId]);
-                // } else {
-                //     echo json_encode(['status' => 500, 'message' => 'Store files created but JS compile failed.', 'commandID' => $commandId]);
-                // }
+                $jsCommandStatus = $this->runJScompileCommand();
+                if ($jsCommandStatus === 'Success') {
+                    echo json_encode(['status' => 200, 'message' => 'Successfully created  storedirectories and ran JS compile.', 'commandID' => $commandId]);
+                } else {
+                    echo json_encode(['status' => 500, 'message' => 'Store files created but JS compile failed.', 'commandID' => $commandId]);
+                }
                 echo json_encode(['status' => 200, 'message' => 'Successfully created  storedirectories and ran JS compile.', 'commandID' => $commandId]);
             } else {
                 echo json_encode(['status' => 500, 'message' => 'Could not create store files.', 'commandID' => $commandId]);
@@ -346,7 +346,7 @@ class AWSUtility
     }
 
     private function runJScompileCommand() {
-        $jsCompileCommand = 'cd /var/www/zebralinetest && npm run prod';
+        $jsCompileCommand = 'cd /var/www/zebralinetest && sudo npm run prod';
         $status = $this->runCommand([$jsCompileCommand]);
         return $status;
     }
