@@ -56,12 +56,12 @@ class AWSUtilityController
             case '/storeTypeHasTemplate':
                 $response = $this->storeTypeHasTemplate();
                 break;
-            // case '/template/id':
-            //     $response = $this->template();
-            //     break;
-            // case '/updateTemplate':
-            //     $response = $this->updateTemplate();
-            //     break;
+            case '/updateThemeColor':
+                $response = $this->updateThemeColor();
+                break;
+            case '/deleteStoreDirectory':
+                $response = $this->deleteStoreDirectory();
+                break;
             // case '/deleteTemplate':
             //     $response = $this->deleteTemplate();
             //     break;            
@@ -163,6 +163,39 @@ class AWSUtilityController
     //         echo 'No';
     //     }
     // }
+    private function updateThemeColor(){
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $input = $_POST; //(array) json_decode(file_get_contents('php://input'), true);
+            
+            if (count($input) < 1 || count($this->validateStoreThemeColorUpdateData($input)) > 0) {
+                return $this->unprocessableStoreCreationResponse($this->validateStoreThemeColorUpdateData($input));
+            } 
+
+            $result = $this->awsUtilityGateway->updateStoreThemeColor($input);
+            $response['body'] = json_encode($result);
+            // print_r($response);
+            return $response;
+        } else {
+            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support '.$_SERVER['REQUEST_METHOD'].' requests.']);
+        }
+    }
+
+    private function deleteStoreDirectory(){
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $input = $_POST; //(array) json_decode(file_get_contents('php://input'), true);
+            
+            if (count($input) < 1 || count($this->validateStoreDeleteData($input)) > 0) {
+                return $this->unprocessableStoreCreationResponse($this->validateStoreDeleteData($input));
+            } 
+
+            $result = $this->awsUtilityGateway->deleteStoreDirectory($input);
+            $response['body'] = json_encode($result);
+            // print_r($response);
+            return $response;
+        } else {
+            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support '.$_SERVER['REQUEST_METHOD'].' requests.']);
+        }
+    }
 
     private function createStore(){
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -198,6 +231,40 @@ class AWSUtilityController
         $result = $this->awsUtilityGateway->listCommand();
         $response['body'] = json_encode($result);
         print_r($response);
+    }
+
+    private function validateStoreThemeColorUpdateData($input){
+        $errorMsg = [];
+
+        //must be text only
+        // clean input using $this->cleanInput()
+        if(!isset($input['oldThemeColor']) || empty($input['themeColor'])  || !is_string($input['themeColor'])){
+            array_push($errorMsg, 'Store theme color is required and must be a string.');
+        }
+
+        if(!isset($input['newThemeColor']) || empty($input['themeColor'])  || !is_string($input['themeColor'])){
+            array_push($errorMsg, 'Store theme color is required and must be a string.');
+        }
+
+        //must be text only
+        // clean input using $this->cleanInput()
+        if(!isset($input['storeDirectoryName']) || empty($input['storeDirectoryName'])  || !is_string($input['storeDirectoryName'])){
+            array_push($errorMsg, 'Store directory name is required and must be a string.');
+        }
+        
+        return $errorMsg;
+    }
+
+    private function validateStoreDeleteData($input){
+        $errorMsg = [];
+
+        //must be text only
+        // clean input using $this->cleanInput()
+        if(!isset($input['storeDirectoryName']) || empty($input['storeDirectoryName'])  || !is_string($input['storeDirectoryName'])){
+            array_push($errorMsg, 'Store directory name is required and must be a string.');
+        }
+        
+        return $errorMsg;
     }
 
     private function validateStoreCreationData($input){

@@ -131,4 +131,8 @@ export default {
     :root {
       --primary-color: #fff;
     }
+    /* fixes design issues with dark mode */
+    body {
+        background-color: #fff;
+    }
 </style>

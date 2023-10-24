@@ -229,9 +229,108 @@ class AWSUtility
         }
     }
 
-    public function removeStoreDirectory(array $input)
-    {
-        
+    public function deleteStoreDirectory(array $input){
+        $storeDIrectoryName = $input['storeDirectoryName'];
+        $directoryPath = '/var/www/zebralinetest/resources/js/components/website/'.$storeDirectoryName;
+
+        $deleteCommand = 'sudo rm -R '.$directoryPath; 
+
+        try {
+            $n1Command = $this->ssmClient->sendCommand([
+                'InstanceIds' => ['i-01f1d0e3ed7035edb'],
+                'DocumentName' => 'AWS-RunShellScript',
+                'Parameters' => [
+                    'commands' => [$deleteCommand],
+                ],
+            ]);
+            $commandId = $n1Command['Command']['CommandId'];
+
+            if ($commandId !== '') {
+                // Poll for command status
+                $status = null;
+                $maxAttempts = 30; // Maximum number of attempts
+                $attempts = 0;
+
+                while ($status !== 'Success' && $attempts < $maxAttempts) {
+                    // Wait for a few seconds before checking the status again
+                    sleep(10);
+
+                    $result = $this->ssmClient->listCommandInvocations([
+                        'CommandId' => $commandId,
+                        'InstanceId' => 'i-01f1d0e3ed7035edb', // Replace with your instance ID
+                    ]);
+
+                    if (!empty($result['CommandInvocations'])) {
+                        $status = $result['CommandInvocations'][0]['Status'];
+                    }
+
+                    $attempts++;
+                }
+
+                if ($status === 'Success') {
+                    echo json_encode(['status' => 200, 'message' => 'Command execution is successful.', 'commandID' => $commandId]);
+                } else {
+                    echo json_encode(['status' => 500, 'message' => 'Command execution failed.', 'commandID' => $commandId]);
+                }
+            }
+        } catch (AwsException $e) {
+            echo 'AWS Error response: ' . $e->getAwsErrorMessage();
+        }
+    }
+
+    public function updateStoreThemeColor(array $input){
+        $oldThemeColor = $input['oldThemeColor'];
+        $newThemeColor = $input['newThemeColor'];
+        $storeDirectoryName = $input['storeDirectoryName'];
+        $filename = '/var/www/zebralinetest/resources/js/components/website/'.$storeDirectoryName.'/Home.vue';
+
+        $searchString = '--primary-color: '.$oldThemeCOlor.';';
+        $replaceString = '--primary-color: '.$newThemeColor.';';
+
+        $updateCommand = "sed -i 's/$searchString/$replaceString/'$filename";
+        $jsCompileCommand = 'cd /var/www/zebralinetest && npm run prod';
+
+        try {
+            $n1Command = $this->ssmClient->sendCommand([
+                'InstanceIds' => ['i-01f1d0e3ed7035edb'],
+                'DocumentName' => 'AWS-RunShellScript',
+                'Parameters' => [
+                    'commands' => [$jsCompileCommand, $jsCompileCommand],
+                ],
+            ]);
+            $commandId = $n1Command['Command']['CommandId'];
+
+            if ($commandId !== '') {
+                // Poll for command status
+                $status = null;
+                $maxAttempts = 30; // Maximum number of attempts
+                $attempts = 0;
+
+                while ($status !== 'Success' && $attempts < $maxAttempts) {
+                    // Wait for a few seconds before checking the status again
+                    sleep(10);
+
+                    $result = $this->ssmClient->listCommandInvocations([
+                        'CommandId' => $commandId,
+                        'InstanceId' => 'i-01f1d0e3ed7035edb', // Replace with your instance ID
+                    ]);
+
+                    if (!empty($result['CommandInvocations'])) {
+                        $status = $result['CommandInvocations'][0]['Status'];
+                    }
+
+                    $attempts++;
+                }
+
+                if ($status === 'Success') {
+                    echo json_encode(['status' => 200, 'message' => 'Command execution is successful.', 'commandID' => $commandId]);
+                } else {
+                    echo json_encode(['status' => 500, 'message' => 'Command execution failed.', 'commandID' => $commandId]);
+                }
+            }
+        } catch (AwsException $e) {
+            echo 'AWS Error response: ' . $e->getAwsErrorMessage();
+        }
     }
 
 
