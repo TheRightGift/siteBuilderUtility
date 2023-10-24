@@ -62,9 +62,9 @@ class AWSUtilityController
             case '/deleteStoreDirectory':
                 $response = $this->deleteStoreDirectory();
                 break;
-            // case '/deleteTemplate':
-            //     $response = $this->deleteTemplate();
-            //     break;            
+            case '/runJScompileCommand':
+                $response = $this->runJScompileCommand();
+                break;            
             default: header("HTTP/1.1 404 Not Found");
             exit();
         }
@@ -191,6 +191,18 @@ class AWSUtilityController
             $result = $this->awsUtilityGateway->deleteStoreDirectory($input);
             $response['body'] = json_encode($result);
             // print_r($response);
+            return $response;
+        } else {
+            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support '.$_SERVER['REQUEST_METHOD'].' requests.']);
+        }
+    }
+
+    private function runJScompileCommand(){
+        if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+            
+            $result = $this->awsUtilityGateway->runJScompileCommand();
+            $response['body'] = json_encode($result);
+            
             return $response;
         } else {
             echo json_encode(['status' => 404, 'message' => 'This endpoint does not support '.$_SERVER['REQUEST_METHOD'].' requests.']);
