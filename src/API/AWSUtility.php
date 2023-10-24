@@ -181,48 +181,60 @@ class AWSUtility
                 echo '$footerContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
             ";
 
-            $jsCompileCommand = 'cd /var/www/zebralinetest && npm run prod';
+            
 
-            try {
-                $n1Command = $this->ssmClient->sendCommand([
-                    'InstanceIds' => ['i-01f1d0e3ed7035edb'],
-                    'DocumentName' => 'AWS-RunShellScript',
-                    'Parameters' => [
-                        'commands' => [$siteDirectoryCommand, $homeComponentCommand, $navbarCommand, $heroCommand, $categoryCommand, $featuredProductsCommand, $offersCommand, $blogsCommand, $shippingDetailsCommand, $footerCommand, $jsCompileCommand],
-                    ],
-                ]);
-                $commandId = $n1Command['Command']['CommandId'];
+            // try {
+            //     $n1Command = $this->ssmClient->sendCommand([
+            //         'InstanceIds' => ['i-01f1d0e3ed7035edb'],
+            //         'DocumentName' => 'AWS-RunShellScript',
+            //         'Parameters' => [
+            //             'commands' => [$siteDirectoryCommand, $homeComponentCommand, $navbarCommand, $heroCommand, $categoryCommand, $featuredProductsCommand, $offersCommand, $blogsCommand, $shippingDetailsCommand, $footerCommand],
+            //         ],
+            //     ]);
+            //     $commandId = $n1Command['Command']['CommandId'];
 
-                if ($commandId !== '') {
-                    // Poll for command status
-                    $status = null;
-                    $maxAttempts = 30; // Maximum number of attempts
-                    $attempts = 0;
+            //     if ($commandId !== '') {
+            //         // Poll for command status
+            //         $status = null;
+            //         $maxAttempts = 30; // Maximum number of attempts
+            //         $attempts = 0;
 
-                    while ($status !== 'Success' && $attempts < $maxAttempts) {
-                        // Wait for a few seconds before checking the status again
-                        sleep(10);
+            //         while ($status !== 'Success' && $attempts < $maxAttempts) {
+            //             // Wait for a few seconds before checking the status again
+            //             sleep(10);
 
-                        $result = $this->ssmClient->listCommandInvocations([
-                            'CommandId' => $commandId,
-                            'InstanceId' => 'i-01f1d0e3ed7035edb', // Replace with your instance ID
-                        ]);
+            //             $result = $this->ssmClient->listCommandInvocations([
+            //                 'CommandId' => $commandId,
+            //                 'InstanceId' => 'i-01f1d0e3ed7035edb', // Replace with your instance ID
+            //             ]);
 
-                        if (!empty($result['CommandInvocations'])) {
-                            $status = $result['CommandInvocations'][0]['Status'];
-                        }
+            //             if (!empty($result['CommandInvocations'])) {
+            //                 $status = $result['CommandInvocations'][0]['Status'];
+            //             }
 
-                        $attempts++;
-                    }
+            //             $attempts++;
+            //         }
 
-                    if ($status === 'Success') {
-                        echo json_encode(['status' => 200, 'message' => 'Command execution is successful.', 'commandID' => $commandId]);
-                    } else {
-                        echo json_encode(['status' => 500, 'message' => 'Command execution failed.', 'commandID' => $commandId]);
-                    }
+            //         if ($status === 'Success') {
+            //             echo json_encode(['status' => 200, 'message' => 'Command execution is successful.', 'commandID' => $commandId]);
+            //         } else {
+            //             echo json_encode(['status' => 500, 'message' => 'Command execution failed.', 'commandID' => $commandId]);
+            //         }
+            //     }
+            // } catch (AwsException $e) {
+            //     echo 'AWS Error response: ' . $e->getAwsErrorMessage();
+            // }
+            $status = $this->runCommand([$siteDirectoryCommand, $homeComponentCommand, $navbarCommand, $heroCommand, $categoryCommand, $featuredProductsCommand, $offersCommand, $blogsCommand, $shippingDetailsCommand, $footerCommand]);
+            if ($status === 'Success') {
+                $jsCommandStatus = $this->runJScompileCommand();
+                if ($jsCommandStatus === 'Success') {
+                    echo json_encode(['status' => 200, 'message' => 'Successfully created  storedirectories and ran JS compile.', 'commandID' => $commandId]);
+                } else {
+                    echo json_encode(['status' => 500, 'message' => 'Store files created but JS compile failed.', 'commandID' => $commandId]);
                 }
-            } catch (AwsException $e) {
-                echo 'AWS Error response: ' . $e->getAwsErrorMessage();
+                
+            } else {
+                echo json_encode(['status' => 500, 'message' => 'Could not create store files.', 'commandID' => $commandId]);
             }
         } else {
             echo json_encode(['status' => 500, 'message' => 'Agent could not generate template. Storetype has no template']);
@@ -333,6 +345,51 @@ class AWSUtility
         }
     }
 
+    private function runJScompileCommand() {
+        $jsCompileCommand = 'cd /var/www/zebralinetest && npm run prod';
+        $status = $this->runCommand([$jsCompileCommand]);
+        return $status;
+    }
+
+    private function runCommand(array $arg) {
+        try {
+            $n1Command = $this->ssmClient->sendCommand([
+                'InstanceIds' => ['i-01f1d0e3ed7035edb'],
+                'DocumentName' => 'AWS-RunShellScript',
+                'Parameters' => [
+                    'commands' => $arg,
+                ],
+            ]);
+            $commandId = $n1Command['Command']['CommandId'];
+
+            if ($commandId !== '') {
+                // Poll for command status
+                $status = null;
+                $maxAttempts = 30; // Maximum number of attempts
+                $attempts = 0;
+
+                while ($status !== 'Success' && $attempts < $maxAttempts) {
+                    // Wait for a few seconds before checking the status again
+                    sleep(10);
+
+                    $result = $this->ssmClient->listCommandInvocations([
+                        'CommandId' => $commandId,
+                        'InstanceId' => 'i-01f1d0e3ed7035edb', // Replace with your instance ID
+                    ]);
+
+                    if (!empty($result['CommandInvocations'])) {
+                        $status = $result['CommandInvocations'][0]['Status'];
+                    }
+
+                    $attempts++;
+                }
+
+                return $tatus;
+            }
+        } catch (AwsException $e) {
+            echo 'AWS Error response: ' . $e->getAwsErrorMessage();
+        }
+    }
 
     public function storeTypeHasTemplate(array $input)
     {
