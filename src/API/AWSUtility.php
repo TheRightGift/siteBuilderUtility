@@ -350,7 +350,7 @@ class AWSUtility
     public function runJScompileCommand() {
         $jsCompileCommand = 'cd /var/www/zebralinetest && sudo npm run prod';
         $status = $this->runCommand([$jsCompileCommand]);
-        return $status;
+        echo json_encode(['status' => 200, 'message' => $status]);
     }
 
     private function runCommand(array $arg) {
