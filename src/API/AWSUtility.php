@@ -225,17 +225,19 @@ class AWSUtility
             //     echo 'AWS Error response: ' . $e->getAwsErrorMessage();
             // }
             $status = $this->runCommand([$siteDirectoryCommand, $homeComponentCommand, $navbarCommand, $heroCommand, $categoryCommand, $featuredProductsCommand, $offersCommand, $blogsCommand, $shippingDetailsCommand, $footerCommand]);
-            if ($status === 'Success') {
-                // $jsCommandStatus = $this->runJScompileCommand();
-                // if ($jsCommandStatus === 'Success') {
-                //     echo json_encode(['status' => 200, 'message' => 'Successfully created  storedirectories and ran JS compile.', 'commandID' => $commandId]);
-                // } else {
-                //     echo json_encode(['status' => 500, 'message' => 'Store files created but JS compile failed.', 'commandID' => $commandId]);
-                // }
-                echo json_encode(['status' => 200, 'message' => 'Successfully created  storedirectories and ran JS compile.', 'commandID' => $commandId]);
-            } else {
-                echo json_encode(['status' => 500, 'message' => 'Could not create store files.', 'commandID' => $commandId]);
-            }
+            // if ($status === 'Success') {
+            //     $jsCommandStatus = $this->runJScompileCommand();
+            //     if ($jsCommandStatus === 'Success') {
+            //         echo json_encode(['status' => 200, 'message' => 'Successfully created  storedirectories and ran JS compile.', 'commandID' => $commandId]);
+            //     } else {
+            //         echo json_encode(['status' => 500, 'message' => 'Store files created but JS compile failed.', 'commandID' => $commandId]);
+            //     }
+            //     echo json_encode(['status' => 200, 'message' => 'Successfully created  storedirectories and ran JS compile.', 'commandID' => $commandId]);
+            // } else {
+            //     echo json_encode(['status' => 500, 'message' => 'Could not create store files.', 'commandID' => $commandId]);
+            // }
+
+            echo json_encode(['status' => 200, 'message' => $status]);
         } else {
             echo json_encode(['status' => 500, 'message' => 'Agent could not generate template. Storetype has no template']);
         }
