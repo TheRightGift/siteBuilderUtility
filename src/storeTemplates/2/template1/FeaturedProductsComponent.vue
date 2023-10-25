@@ -1,18 +1,7 @@
 <template>
-    <div class="grey lighten-3"  @click="showProductEditor">
+    <div class="grey lighten-3" @click="showProductEditor">
         <div class="container">
             <div class="row" @click="showProductEditor">
-                
-                <!-- <div class="col s12">
-                    <ul class="tabs">
-                        <li class="tab col s3">
-                            <a href="#test1 active">Best Deals</a>
-                        </li>
-                        <li class="tab col s3">
-                            <a class="" href="#test2">TV & Video</a>
-                        </li>
-                    </ul>
-                </div> -->
                 <div id="test1" class="col s12">
                     <div class="row">
                         <h3 class="blogHeader">Featured Products</h3>
@@ -59,15 +48,15 @@
                                                     loggedIn
                                                         ? `#!`
                                                         : {
-                                                            name: `product-details`,
-                                                            params: {
-                                                                product_name:
-                                                                    product.title,
-                                                            },
-                                                        }
+                                                              name: `product-details`,
+                                                              params: {
+                                                                  product_name:
+                                                                      product.title,
+                                                              },
+                                                          }
                                                 "
                                                 class="cartContener"
-                                            > 
+                                            >
                                                 <i
                                                     class="fa-solid fa-cart-arrow-down"
                                                 ></i
@@ -92,10 +81,13 @@
                                         <a
                                             href="#!"
                                             class="flex items-center gap-1"
-                                            
                                             @click.prevent="wishlist(product)"
                                         >
-                                            <i class="fa-regular fa-heart" :class="classObject(product)" title="Add to Wishlist"></i>
+                                            <i
+                                                class="fa-regular fa-heart"
+                                                :class="classObject(product)"
+                                                title="Add to Wishlist"
+                                            ></i>
                                             <!-- v-if="!checkWishlist(product)" -->
                                             <span></span>
                                         </a>
@@ -123,14 +115,14 @@
     .blogHeader::after {
         width: 84px;
 
-        content: ' ';
-    height: 2px;
-    width: 114px;
-    display: block;
-    background-color: var(--primary-color);
-    position: absolute;
-    bottom: -1px;
-    left: 0;
+        content: " ";
+        height: 2px;
+        width: 114px;
+        display: block;
+        background-color: var(--primary-color);
+        position: absolute;
+        bottom: -1px;
+        left: 0;
     }
     .rating i {
         font-size: 1rem;
@@ -201,7 +193,7 @@
 </style>
 <script>
     import priceMixixn from "@/mixin/priceMixin";
-    import { useCartStore } from '../../../store/store';
+    import { useCartStore } from "../../../store/store";
     export default {
         computed: {
             displayedProducts() {
@@ -352,7 +344,7 @@
                     this.addOrRemove(prd);
                 } else {
                     M.toast({
-                        html: 'Hello, please &nbsp; <a href="/auth/signin"> Login</a>',
+                        html: `Hello, please &nbsp; <a href="/auth/signin"> Login</a>`,
                         displayLength: 9000,
                         classes: "primary",
                     });
@@ -373,7 +365,7 @@
                 return wished;
             },
             classObject(prd) {
-                return {"is-active" : this.checkWishlist(prd)}
+                return { "is-active": this.checkWishlist(prd) };
             },
             showProductEditor() {
                 if (this.loggedIn) {
@@ -391,7 +383,7 @@
             },
             renderImage(prd) {
                 if (prd !== undefined && prd.images[0] !== undefined) {
-                    return prd.images[0].url
+                    return prd.images[0].url;
                 }
             },
         },

@@ -1,44 +1,48 @@
 <template>
-    <div class="mt-10" @click="showHeroEditor">
+    <div @click="showHeroEditor">
         <div class="carousel carousel-slider" id="promo">
-            <div class="carousel-item" :href="`#`+index" :id="index" v-for="promo, index in heroSeeder" :key="index">
+            <div
+                class="carousel-item"
+                :href="`#` + index"
+                :id="index"
+                v-for="(promo, index) in heroSeeder"
+                :key="index"
+            >
                 <div class="overlay"></div>
                 <div class="container carouselContainer">
                     <div class="flex h-inherit justify-between items-center">
                         <div>
-                            <h4 class="heading m-0 fw-700">{{ promo.title }}</h4>
+                            <h4 class="heading m-0 fw-700">
+                                {{ promo.title }}
+                            </h4>
                             <p class="desc">{{ promo.description }}</p>
-                            <!-- <p class="desc amount">
-                                <span class="dblock">From</span>
-                                <span class="discount"
-                                    ><sup>$</sup>749<sup>99</sup></span
-                                >
-                            </p> -->
+
                             <button
                                 class="btn startNowBtn fw-700 capitalize waves waves-effect flex items-center justify-center"
                             >
-                                
                                 <router-link
                                     :to="
                                         loggedIn
                                             ? `#!`
                                             : {
-                                                name: `product-search-category`,
-                                                params: {
-                                                    category_name:
-                                                        heroSeeder.type == `welcome`
-                                                            ? `all`
-                                                            : heroSeeder.title ??
+                                                  name: `product-search-category`,
+                                                  params: {
+                                                      category_name:
+                                                          heroSeeder.type ==
+                                                          `welcome`
+                                                              ? `all`
+                                                              : heroSeeder.title ??
                                                                 `offer`,
-                                                },
-                                                query: {
-                                                    additionalOfferData:
-                                                        heroSeeder.type == `welcome`
-                                                            ? `all`
-                                                            : heroSeeder.id ??
+                                                  },
+                                                  query: {
+                                                      additionalOfferData:
+                                                          heroSeeder.type ==
+                                                          `welcome`
+                                                              ? `all`
+                                                              : heroSeeder.id ??
                                                                 `offer_id`,
-                                                },
-                                            }
+                                                  },
+                                              }
                                     "
                                     ><span> Start Buying</span></router-link
                                 >
@@ -58,7 +62,7 @@
 </template>
 <script>
     export default {
-        computed:{
+        computed: {
             imageUrlWithTimestamp() {
                 // Append the timestamp as a query parameter to the image URL
                 return `${this.heroSeeder[this.index].image}?t=${this.timestamp}`;
@@ -73,18 +77,8 @@
                         image: "https://transvelo.github.io/electro-html/2.0/assets/img/416X420/img1.png",
                         others: "Under favorable smartwatches",
                     },
-                    {
-                        description: "The new Standard",
-                        image: "https://transvelo.github.io/electro-html/2.0/assets/img/416X420/img2.png",
-                        others: "Under favorable smartwatches",
-                    },
-                    {
-                        description: "The new Standard",
-                        image: "https://transvelo.github.io/electro-html/2.0/assets/img/416X420/img3.png",
-                        others: "Under favorable smartwatches",
-                    },
                 ],
-                imgDimensionWidth: 416, 
+                imgDimensionWidth: 416,
                 imgDimensionHeight: 420,
             };
         },
@@ -135,14 +129,18 @@
             },
             showHeroEditor() {
                 if (this.loggedIn) {
-                    this.$emit("showHeroEditor", {evt: true, width: this.imgDimensionWidth, height: this.imgDimensionHeight});
+                    this.$emit("showHeroEditor", {
+                        evt: true,
+                        width: this.imgDimensionWidth,
+                        height: this.imgDimensionHeight,
+                    });
                 }
             },
         },
         props: {
             loggedIn: Boolean,
             hero: Array,
-            timestamp: Number
+            timestamp: Number,
         },
         watch: {
             hero(newVal, oldVal) {
@@ -151,8 +149,8 @@
                 }
                 this.initCarousel();
                 M.AutoInit();
-            }
-        }
+            },
+        },
     };
 </script>
 <style>
@@ -168,9 +166,6 @@
     .justify-center {
         justify-content: center;
     }
-    /* .flex-col {
-                flex-direction: column;
-            } */
     .carousel .indicators .indicator-item.active {
         background-color: var(--primary-color) !important;
         width: 5vh !important;
@@ -232,20 +227,6 @@
         width: 100%;
         height: 100%;
         color: white;
-    }
-    #one {
-        /* background-image: url("https://transvelo.github.io/electro-html/2.0/assets/img/1920X422/img1.jpg"); */
-        background-repeat: no-repeat;
-        background-size: cover;
-        background-position: center;
-        /* position: relative; */
-    }
-
-    #two {
-        /* background-image: url("https://transvelo.github.io/electro-html/2.0/assets/img/1920X422/img1.jpg"); */
-        background-repeat: no-repeat;
-        background-size: cover;
-        background-position: center;
     }
     .heading,
     .desc {
@@ -322,9 +303,6 @@
     @media only screen and (min-width: 1024px) {
         .carouselContainer {
             width: 50%;
-        }
-        .mt-10 {
-            margin-top: 10vh;
         }
     }
     @media only screen and (min-width: 768px) and (max-width: 1023px) {

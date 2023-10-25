@@ -346,7 +346,7 @@ class AWSUtilityController
         // if (! $this->validateDomain($input)) {
         //     return $this->unprocessableEntityResponse();
         // }
-        $result = $this->awsUtilityGateway->listCommand([]);
+        $result = $this->awsUtilityGateway->getAllZones([]);
         // $response['status_code_header'] = 'HTTP/1.1 200 OK';
         $response['body'] = json_encode($result);
         return $response;

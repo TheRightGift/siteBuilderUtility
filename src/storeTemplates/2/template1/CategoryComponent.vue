@@ -201,24 +201,29 @@
         display: flex;
         align-items: center;
     }
+
     .bgGrey {
         background-color: #f5f5f5;
         padding: 0.5vh 1vh !important;
         font-family: "Open Sans", Helvetica, Arial, sans-serif;
     }
+
     .dealText {
         font-size: 1.12525rem;
         text-transform: uppercase;
         color: #333e48;
         font-family: "Open Sans", Helvetica, Arial, sans-serif;
     }
+
     .mt-3 {
         margin-top: 3vh;
     }
+
     .shopLink {
         color: #333e48;
         font-weight: 700;
     }
+
     .chevyRight {
         display: inline-block;
         background-color: var(--primary-color);
@@ -230,39 +235,49 @@
         text-align: center;
         border-radius: 100%;
     }
+
     .chevyRight i {
         color: #fff;
     }
+
     .gap-2 {
         gap: 2vh;
     }
+
     .gap-1 {
         gap: 1vh;
     }
+
     strong {
         font-weight: 700;
     }
+
     @media only screen and (min-width: 1024px) {
         .container {
             width: 85%;
         }
     }
+
     @media only screen and (min-width: 768px) and (max-width: 1023px) {
         .container {
             width: 90%;
         }
+
         .md-mt-3 {
             margin-bottom: 3vh;
         }
     }
+
     @media only screen and (max-width: 767px) {
         .sm-mt-3 {
             margin-top: 3vh;
         }
+
         .chevyRight {
             width: 2vh;
             height: 2vh;
         }
+
         .chevyRight i {
             font-size: 0.8rem;
         }
