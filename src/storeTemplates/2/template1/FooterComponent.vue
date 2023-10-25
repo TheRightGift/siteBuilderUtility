@@ -6,21 +6,7 @@
                     <div class="brand-logo">
                         {{ brandname }} Logo
                     </div>
-                    <!-- <div class="flex items-center gap-2">
-                        <i class="fa-solid fa-headset"></i>
-                        <p>
-                            <span class="callText"
-                                >Got questions? Call us 24/7!</span
-                            >
-                            <span class="phone"
-                                >(800) 8001-8588, (0600) 874548</span
-                            >
-                        </p>
-                    </div> -->
                     <h6>Contact Info</h6>
-                    <!-- <p class="address">
-                        17 Princess Road, London, Greater London NW1 8JR, UK
-                    </p> -->
                     <div class="flex">
                         <a :href="social.facebook" class="btnSocial">
                             <i class="fa-brands fa-facebook-f"></i>
@@ -118,21 +104,6 @@
                         <li>
                             <a href="/your_account/wishlist">Wish List</a>
                         </li>
-                        <!-- <li>
-                            <a href="">Wish List</a>
-                        </li>
-                        <li>
-                            <a href="">Customer Service</a>
-                        </li>
-                        <li>
-                            <a href="">FAQs</a>
-                        </li>
-                        <li>
-                            <a href="">Product Support</a>
-                        </li>
-                        <li>
-                            <a href="">Returns and Exchange</a>
-                        </li> -->
                     </ul>
                 </div>
             </div>
