@@ -125,22 +125,6 @@
     .rating i {
         font-size: 1rem;
     }
-    .tabs {
-        background-color: #eeeeee;
-    }
-    .tabs .tab a {
-        color: #343f49;
-    }
-    .tabs .tab a:hover,
-    .tabs .tab a.active {
-        background-color: transparent;
-        color: #343f49;
-        font-weight: 700;
-    }
-    .tabs .tab a:focus,
-    .tabs .tab a:focus.active {
-        background-color: transparent;
-    }
     .card {
         box-shadow: none;
     }
