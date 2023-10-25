@@ -103,9 +103,10 @@ class AWSUtility
             $randomTemplateNumber = rand(1, $countTemplatesForStoreType);
             $defaultColorTheme = '--primary-color: #fff;';
             $storeColorTheme = "--primary-color: $themeColor;";
-
+            
             // Make store directory if the store does not exist
             $siteDirectoryCommand = "sudo mkdir -p /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName";
+            
             // MainHomeComponent
             $homeComponent = dirname(__DIR__) . "/storeTemplates/" . $storeTypeId . "/template" . $randomTemplateNumber . "/Home.vue";
             $homeComponentContent = $this->storeFileSetup($homeComponent, $defaultColorTheme, $storeColorTheme);
@@ -113,9 +114,6 @@ class AWSUtility
             $homeComponentCommand = "sudo nano $componentName
                 echo '$homeComponentContent' >> /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
             ";
-
-            // Home partials
-            // $siteHomePartialsDirectoryCommand = "sudo mkdir -p /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/homePartials";
 
             // NAVBAR
             $navbar = dirname(__DIR__) . "/storeTemplates/" . $storeTypeId . "/template" . $randomTemplateNumber . "/NavbarComponent.vue";
@@ -181,63 +179,10 @@ class AWSUtility
                 echo '$footerContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
             ";
 
-            
-
-            // try {
-            //     $n1Command = $this->ssmClient->sendCommand([
-            //         'InstanceIds' => ['i-01f1d0e3ed7035edb'],
-            //         'DocumentName' => 'AWS-RunShellScript',
-            //         'Parameters' => [
-            //             'commands' => [$siteDirectoryCommand, $homeComponentCommand, $navbarCommand, $heroCommand, $categoryCommand, $featuredProductsCommand, $offersCommand, $blogsCommand, $shippingDetailsCommand, $footerCommand],
-            //         ],
-            //     ]);
-            //     $commandId = $n1Command['Command']['CommandId'];
-
-            //     if ($commandId !== '') {
-            //         // Poll for command status
-            //         $status = null;
-            //         $maxAttempts = 30; // Maximum number of attempts
-            //         $attempts = 0;
-
-            //         while ($status !== 'Success' && $attempts < $maxAttempts) {
-            //             // Wait for a few seconds before checking the status again
-            //             sleep(10);
-
-            //             $result = $this->ssmClient->listCommandInvocations([
-            //                 'CommandId' => $commandId,
-            //                 'InstanceId' => 'i-01f1d0e3ed7035edb', // Replace with your instance ID
-            //             ]);
-
-            //             if (!empty($result['CommandInvocations'])) {
-            //                 $status = $result['CommandInvocations'][0]['Status'];
-            //             }
-
-            //             $attempts++;
-            //         }
-
-            //         if ($status === 'Success') {
-            //             echo json_encode(['status' => 200, 'message' => 'Command execution is successful.', 'commandID' => $commandId]);
-            //         } else {
-            //             echo json_encode(['status' => 500, 'message' => 'Command execution failed.', 'commandID' => $commandId]);
-            //         }
-            //     }
-            // } catch (AwsException $e) {
-            //     echo 'AWS Error response: ' . $e->getAwsErrorMessage();
-            // }
+            // 
             $status = $this->runCommand([$siteDirectoryCommand, $homeComponentCommand, $navbarCommand, $heroCommand, $categoryCommand, $featuredProductsCommand, $offersCommand, $blogsCommand, $shippingDetailsCommand, $footerCommand]);
-            // if ($status === 'Success') {
-            //     $jsCommandStatus = $this->runJScompileCommand();
-            //     if ($jsCommandStatus === 'Success') {
-            //         echo json_encode(['status' => 200, 'message' => 'Successfully created  storedirectories and ran JS compile.', 'commandID' => $commandId]);
-            //     } else {
-            //         echo json_encode(['status' => 500, 'message' => 'Store files created but JS compile failed.', 'commandID' => $commandId]);
-            //     }
-            //     echo json_encode(['status' => 200, 'message' => 'Successfully created  storedirectories and ran JS compile.', 'commandID' => $commandId]);
-            // } else {
-            //     echo json_encode(['status' => 500, 'message' => 'Could not create store files.', 'commandID' => $commandId]);
-            // }
-
             echo json_encode(['status' => 200, 'message' => $status]);
+            
         } else {
             echo json_encode(['status' => 500, 'message' => 'Agent could not generate template. Storetype has no template']);
         }

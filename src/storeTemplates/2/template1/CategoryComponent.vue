@@ -30,8 +30,7 @@
                                         <div class="dealText">
                                             Catch Big
                                             <div>
-                                                <strong>deals</strong> on the
-                                                <!-- <strong>{{ category.description.slice(0, 25) }}</strong> -->
+                                                <strong>deals</strong> on the 
                                                 {{ category.name }}
                                             </div>
                                         </div>
@@ -162,7 +161,6 @@
                 }
             },
             imageUrlWithTimestamp(cate) {
-                // Append the catetimestamp as a query parameter to the image URL
                 return `${cate.image}?t=${this.catetimestamp}`;
             },
         },
@@ -176,14 +174,12 @@
                 if (newVal) {
                     newVal.forEach((category, i) => {
                         if (i < this.seeder.length) {
-                            // Update existing seeder items
                             this.seeder[i].name = category.name;
                             this.seeder[i].image =
                                 category.image || this.seeder[i].image;
                             this.seeder[i].description =
                                 category.description || this.seeder[i].description;
                         } else {
-                            // Create new seeder items if there are more categories
                             this.seeder.push({
                                 name: category.name,
                                 image: category.image || null,
@@ -201,29 +197,24 @@
         display: flex;
         align-items: center;
     }
-
     .bgGrey {
         background-color: #f5f5f5;
         padding: 0.5vh 1vh !important;
         font-family: "Open Sans", Helvetica, Arial, sans-serif;
     }
-
     .dealText {
         font-size: 1.12525rem;
         text-transform: uppercase;
         color: #333e48;
         font-family: "Open Sans", Helvetica, Arial, sans-serif;
     }
-
     .mt-3 {
         margin-top: 3vh;
     }
-
     .shopLink {
         color: #333e48;
         font-weight: 700;
     }
-
     .chevyRight {
         display: inline-block;
         background-color: var(--primary-color);
@@ -235,49 +226,39 @@
         text-align: center;
         border-radius: 100%;
     }
-
     .chevyRight i {
         color: #fff;
     }
-
     .gap-2 {
         gap: 2vh;
     }
-
     .gap-1 {
         gap: 1vh;
     }
-
     strong {
         font-weight: 700;
     }
-
     @media only screen and (min-width: 1024px) {
         .container {
             width: 85%;
         }
     }
-
     @media only screen and (min-width: 768px) and (max-width: 1023px) {
         .container {
             width: 90%;
         }
-
         .md-mt-3 {
             margin-bottom: 3vh;
         }
     }
-
     @media only screen and (max-width: 767px) {
         .sm-mt-3 {
             margin-top: 3vh;
         }
-
         .chevyRight {
             width: 2vh;
             height: 2vh;
         }
-
         .chevyRight i {
             font-size: 0.8rem;
         }

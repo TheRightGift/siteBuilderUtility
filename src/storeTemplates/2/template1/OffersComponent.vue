@@ -41,7 +41,6 @@
                                 ></router-link
                             >
                         </button>
-                        <!-- <button><em>Starting at</em> <span class="amount"><sup>$</sup>79<sup>99</sup></span></button> -->
                     </div>
                 </div>
             </div>
@@ -110,7 +109,6 @@
         gap: 3vh;
     }
     .bgImg {
-        /* background: url("https://transvelo.github.io/electro-html/2.0/assets/img/1400X206/img1.jpg"); */
         text-transform: uppercase;
         padding: 3.5rem 1.5rem 1.5rem 1.5rem;
         color: #333e48;

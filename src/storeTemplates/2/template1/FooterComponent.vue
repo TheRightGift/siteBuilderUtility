@@ -250,17 +250,14 @@
         mounted() {
             // Get the button element by its ID
             const scrollToTopButton = document.getElementById("scrollToTopButton");
-
-            // Add a click event listener to the button
+            
             scrollToTopButton.addEventListener("click", () => {
-                // Scroll to the top of the page smoothly
                 window.scrollTo({
                     top: 0,
                     behavior: "smooth",
                 });
             });
 
-            // Show or hide the button based on the user's scroll position
             window.addEventListener("scroll", () => {
                 if (
                     document.body.scrollTop > 20 ||

@@ -234,11 +234,9 @@
         top: 50%;
         transform: translateY(-50%);
     }
-
     .carousel-control-prev {
         left: 20px;
     }
-
     .carousel-control-next {
         right: 10px;
     }
@@ -250,11 +248,9 @@
         background-repeat: no-repeat;
         font-family: "Open Sans", Helvetica, Arial, sans-serif;
     }
-
     .carouselContainer {
         height: 100%;
     }
-
     @media only screen and (min-width: 1024px) {
         .carouselContainer {
             width: 50%;

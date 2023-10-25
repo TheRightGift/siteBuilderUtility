@@ -464,7 +464,6 @@
         border-bottom: 1px solid var(--primary-color) !important;
         font-size: 0.93712rem;
         outline: none;
-        /* margin-right: 1vh; */
     }
 
     select {

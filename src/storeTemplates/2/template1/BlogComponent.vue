@@ -162,11 +162,11 @@
             blogs: {
                 handler(newBlog) {
                     if (newBlog.length > 0) {
-                        this.blogSeeder = [...newBlog]; // Make a copy of the new products
+                        this.blogSeeder = [...newBlog];
                     }
                     M.AutoInit();
                 },
-                deep: true, // Enable deep watching to detect changes within the array
+                deep: true,
             },
         },
         mounted() {

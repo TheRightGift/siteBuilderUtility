@@ -88,7 +88,6 @@
                                                 :class="classObject(product)"
                                                 title="Add to Wishlist"
                                             ></i>
-                                            <!-- v-if="!checkWishlist(product)" -->
                                             <span></span>
                                         </a>
                                     </div>
@@ -114,7 +113,6 @@
     }
     .blogHeader::after {
         width: 84px;
-
         content: " ";
         height: 2px;
         width: 114px;
@@ -130,7 +128,6 @@
     .tabs {
         background-color: #eeeeee;
     }
-
     .tabs .tab a {
         color: #343f49;
     }
@@ -150,8 +147,7 @@
     .card:hover {
         box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14),
             0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
-    }
-    .pt-2 {
+    }    .pt-2 {
         padding-top: 2vh;
     }
     .gap-1 {
@@ -164,13 +160,11 @@
     .blue-text {
         font-size: 0.875rem;
         font-weight: 700;
-    }
-    .categoryText {
+    }    .categoryText {
         font-size: 0.74987rem;
         color: #878787 !important;
         display: block;
-    }
-    .cartContener {
+    }    .cartContener {
         width: 4vh;
         height: 4vh;
         display: flex;
@@ -227,7 +221,6 @@
                                 url: "https://transvelo.github.io/electro-html/2.0/assets/img/212X200/img1.jpg",
                             },
                         ],
-
                         link: "#",
                     },
                     {
@@ -242,7 +235,6 @@
                                 url: "https://transvelo.github.io/electro-html/2.0/assets/img/190X150/img4.png",
                             },
                         ],
-
                         link: "#",
                     },
                     {
@@ -257,7 +249,6 @@
                                 url: "https://transvelo.github.io/electro-html/2.0/assets/img/212X200/img3.jpg",
                             },
                         ],
-
                         link: "#",
                     },
                     {
@@ -272,7 +263,6 @@
                                 url: "https://transvelo.github.io/electro-html/2.0/assets/img/212X200/img4.jpg",
                             },
                         ],
-
                         link: "#",
                     },
                     {
@@ -287,7 +277,6 @@
                                 url: "	https://transvelo.github.io/electro-html/2.0/assets/img/212X200/img5.jpg",
                             },
                         ],
-
                         link: "#",
                     },
                     {
@@ -302,37 +291,6 @@
                                 url: "https://transvelo.github.io/electro-html/2.0/assets/img/212X200/img6.jpg",
                             },
                         ],
-
-                        link: "#",
-                    },
-                    {
-                        title: "PSP 5",
-                        category: {
-                            name: "Games",
-                        },
-                        amount: "$120.00",
-                        rating: 2,
-                        images: [
-                            {
-                                url: "	https://transvelo.github.io/electro-html/2.0/assets/img/212X200/img7.jpg",
-                            },
-                        ],
-
-                        link: "#",
-                    },
-                    {
-                        title: "Sony IPS Camera",
-                        category: {
-                            name: "Camera",
-                        },
-                        amount: "$120.00",
-                        rating: 3,
-                        images: [
-                            {
-                                url: "https://transvelo.github.io/electro-html/2.0/assets/img/212X200/img8.jpg",
-                            },
-                        ],
-
                         link: "#",
                     },
                 ],
@@ -400,10 +358,10 @@
             products: {
                 handler(newProducts) {
                     if (newProducts.length > 0) {
-                        this.seededProducts = [...newProducts]; // Make a copy of the new products
+                        this.seededProducts = [...newProducts]; 
                     }
                 },
-                deep: true, // Enable deep watching to detect changes within the array
+                deep: true,
             },
         },
     };
