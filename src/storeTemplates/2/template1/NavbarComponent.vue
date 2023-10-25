@@ -139,14 +139,14 @@
                       <router-link
                         :to="
                           loggedIn
-                            ? '#!'
+                            ? `#!`
                             : {
-                                name: 'product-search-category',
+                                name: `product-search-category`,
                                 params: {
-                                  category_name: category.name ?? 'category',
+                                  category_name: category.name ?? `category`,
                                 },
                                 query: {
-                                  additionalData: category.id ?? 'category_id',
+                                  additionalData: category.id ?? `category_id`,
                                 },
                               }
                         "
