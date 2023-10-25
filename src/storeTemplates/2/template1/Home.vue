@@ -74,4 +74,47 @@ export default {
     body {
         background-color: #fff;
     }
+    .flex {
+        display: flex;
+    }
+    .justify-between {
+        justify-content: space-between;
+    }
+    .items-center {
+        align-items: center;
+    }
+    .justify-center {
+        justify-content: center;
+    }
+    .carousel .indicators .indicator-item.active {
+        background-color: var(--primary-color) !important;
+        width: 5vh !important;
+        border-radius: 5px;
+    }
+    .carousel .indicators {
+        left: 5% !important;
+        text-align: left !important;
+    }
+    .carousel .indicators .indicator-item {
+        background-color: #bcbcbc !important;
+    }
+    .tabs .indicator {
+        background-color: var(--primary-color) !important;
+    }
+    @media only screen and (min-width: 1024px) {
+        .carousel .indicators {
+            left: 25% !important;
+            text-align: left !important;
+        }
+    }
+    @media only screen and (min-width: 768px) and (max-width: 1023px) {
+        .carousel .indicators .indicator-item.active {
+            width: 3vh !important;
+        }
+    }
+    @media only screen and (max-width: 767px) {
+        .container {
+            width: 95% !important;
+        }
+    }
 </style>
