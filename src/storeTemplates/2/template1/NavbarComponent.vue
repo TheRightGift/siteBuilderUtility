@@ -119,22 +119,7 @@
                       :key="category.id"
                       @click="showCategoryEditEditor"
                     >
-                      <router-link
-                        :to="
-                          loggedIn
-                            ? `#!`
-                            : {
-                                name: `product-search-category`,
-                                params: {
-                                  category_name: category.name ?? `category`,
-                                },
-                                query: {
-                                  additionalData: category.id ?? `category_id`,
-                                },
-                              }
-                        "
-                        >{{ category.name }}</router-link
-                      >
+                      <router-link :to="link(category)">{{ category.name }}</router-link>
                     </li>
                   </ul>
                   <li>
@@ -293,6 +278,19 @@ export default {
     },
   },
   methods: {
+    link(category) {
+      return this.loggedIn
+        ? `#!`
+        : {
+            name: `product-search-category`,
+            params: {
+              category_name: category.name ?? `category`,
+            },
+            query: {
+              additionalData: category.id ?? `category_id`,
+            },
+          };
+    },
     searchProducts() {
       // Add your search logic here
     },
