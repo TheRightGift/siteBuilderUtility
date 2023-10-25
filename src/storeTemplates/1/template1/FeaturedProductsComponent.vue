@@ -24,7 +24,7 @@
 						>
 							<img
 								class="responsive-img"
-								:src="product.images[0].url"
+								:src="renderImage(product)"
 								alt=""
 								loading="lazy"
 							/>
@@ -39,7 +39,7 @@
                                 v-if="product.oldPrice"
                                 >{{ product.oldPrice }}</span
                             >
-                            <span class="curPrice">{{ product.curPrice }}</span>
+                            <span class="curPrice">{{ formatPrice(product.amount) }}</span>
                         </span>
                         <div class="rating">
                             <i
@@ -61,6 +61,7 @@
 </template>
 
 <script>
+    import priceMixixn from "@/mixin/priceMixin";
     export default {
         computed: {
             displayedProducts() {
@@ -73,8 +74,14 @@
                 }
             },
         },
+        mixins: [priceMixixn],
         data() {
             return {
+                renderImage(prd) {
+                    if (prd !== undefined && prd.images[0] !== undefined) {
+                        return prd.images[0].url
+                    }
+                },
 				seededProducts: [
                     {
                         title: "Yellow Shoes",

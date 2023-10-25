@@ -245,7 +245,7 @@ class AWSUtility
 
     public function deleteStoreDirectory(array $input){
         $storeDIrectoryName = $input['storeDirectoryName'];
-        $directoryPath = '/var/www/zebralinetest/resources/js/components/website/'.$storeDirectoryName;
+        $directoryPath = '/var/www/zebralinetest/resources/js/components/website/'.$storeDIrectoryName;
 
         $deleteCommand = 'sudo rm -R '.$directoryPath; 
 
@@ -298,7 +298,7 @@ class AWSUtility
         $storeDirectoryName = $input['storeDirectoryName'];
         $filename = '/var/www/zebralinetest/resources/js/components/website/'.$storeDirectoryName.'/Home.vue';
 
-        $searchString = '--primary-color: '.$oldThemeCOlor.';';
+        $searchString = '--primary-color: '.$oldThemeColor.';';
         $replaceString = '--primary-color: '.$newThemeColor.';';
 
         $updateCommand = "sed -i 's/$searchString/$replaceString/'$filename";
