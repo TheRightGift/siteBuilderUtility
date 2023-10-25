@@ -14,19 +14,7 @@
                 <div class="card-content">
                   <span class="categoryText">{{ product.category.name }}</span>
 
-                  <router-link
-                    :to="
-                      loggedIn
-                        ? `#!`
-                        : {
-                            name: `product-details`,
-                            params: {
-                              product_name: product.title,
-                            },
-                          }
-                    "
-                    class="blue-text"
-                  >
+                  <router-link :to="link(product)" class="blue-text">
                     {{ title(product) }}
                   </router-link>
                   <img
@@ -40,19 +28,7 @@
                       {{ formatPrice(product.amount) }}
                     </p>
                     <div class="hide-on-med-and-down">
-                      <router-link
-                        :to="
-                          loggedIn
-                            ? `#!`
-                            : {
-                                name: `product-details`,
-                                params: {
-                                  product_name: product.title,
-                                },
-                              }
-                        "
-                        class="cartContener"
-                      >
+                      <router-link :to="link(product)" class="cartContener">
                         <i class="fa-solid fa-cart-arrow-down"></i
                       ></router-link>
                     </div>
@@ -282,6 +258,16 @@ export default {
     };
   },
   methods: {
+    link(product) {
+      return this.loggedIn
+        ? `#!`
+        : {
+            name: `product-details`,
+            params: {
+              product_name: product.title,
+            },
+          };
+    },
     wishlist(prd) {
       if (this.isAuthenticated) {
         this.addOrRemove(prd);

@@ -99,10 +99,28 @@
                 </button>
                 <ul>
                   <span v-show="categories.length < 3">
-                    <li v-for="category in categories" :key="category.id" @click="showCategoryEditEditor">
-                        <router-link :to=" loggedIn ? `#!` : {name: `product-search-category`, params: {category_name: category.name ?? `category`}, query: {additionalData: category.id ?? `category_id`}}">
-                            {{ category.name }}
-                        </router-link>
+                    <li
+                      v-for="category in categories"
+                      :key="category.id"
+                      @click="showCategoryEditEditor"
+                    >
+                      <router-link
+                        :to="
+                          loggedIn
+                            ? `#!`
+                            : {
+                                name: `product-search-category`,
+                                params: {
+                                  category_name: category.name ?? `category`,
+                                },
+                                query: {
+                                  additionalData: category.id ?? `category_id`,
+                                },
+                              }
+                        "
+                      >
+                        {{ category.name }}
+                      </router-link>
                     </li>
                   </span>
                   <li v-show="categories.length > 3">
@@ -119,7 +137,9 @@
                       :key="category.id"
                       @click="showCategoryEditEditor"
                     >
-                      <router-link :to="link(category)">{{ category.name }}</router-link>
+                      <router-link :to="link(category)">{{
+                        category.name
+                      }}</router-link>
                     </li>
                   </ul>
                   <li>
@@ -178,22 +198,9 @@
               :key="category.id"
               @click="showCategoryEditEditor"
             >
-              <router-link
-                :to="
-                  loggedIn
-                    ? `#!`
-                    : {
-                        name: `product-search-category`,
-                        params: {
-                          category_name: category.name ?? `category`,
-                        },
-                        query: {
-                          additionalData: category.id ?? `category_id`,
-                        },
-                      }
-                "
-                >{{ category.name }}</router-link
-              >
+              <router-link :to="link(category)">{{
+                category.name
+              }}</router-link>
             </li>
           </span>
           <li><a href="#!">Blog</a></li>
@@ -211,23 +218,9 @@
         :key="category.id"
         @click="showCategoryEditEditor"
       >
-        <router-link
-          class="waves-effect"
-          :to="
-            loggedIn
-              ? `#!`
-              : {
-                  name: `product-search-category`,
-                  params: {
-                    category_name: category.name ?? `category`,
-                  },
-                  query: {
-                    additionalData: category.id ?? `category_id`,
-                  },
-                }
-          "
-          >{{ category.name }}</router-link
-        >
+        <router-link class="waves-effect" :to="link(category)">{{
+          category.name
+        }}</router-link>
       </li>
       <li><a class="waves-effect" href="#!">Blog</a></li>
     </ul>
