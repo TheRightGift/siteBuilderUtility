@@ -213,14 +213,14 @@ h6:first-of-type {
   right: 20px;
   background-color: var(
     --primary-color
-  ); /* Adjust the button's background color */
+  );
   color: #fff; /* Button text color */
   border: none;
   border-radius: 50%;
   padding: 10px;
   cursor: pointer;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  z-index: 1000; /* Ensure it's above other content */
+  z-index: 1000;
 }
 
 .scroll-to-top-button i.material-icons {
