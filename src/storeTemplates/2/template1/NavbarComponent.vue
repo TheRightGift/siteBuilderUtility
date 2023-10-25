@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="lg-h22">
         <div class="topbar hide-on-med-and-down">
             <div class="container">
                 <div class="topbar-content">
@@ -514,7 +514,7 @@
         border-bottom: 1px solid var(--primary-color) !important;
         font-size: 0.93712rem;
         outline: none;
-        margin-right: 1vh;
+        /* margin-right: 1vh; */
     }
 
     select {
@@ -624,11 +624,14 @@
             border-top-left-radius: 1rem;
             font-family: "Open Sans", Helvetica, Arial, sans-serif;
         }
+        .lg-h22 {
+            height: 24.4vh;
+        }
     }
 
     @media only screen and (min-width: 768px) and (max-width: 1023px) {
         nav .brand-logo {
-            left: 10%;
+            left: 12%;
         }
         nav {
             background-color: var(--primary-color);

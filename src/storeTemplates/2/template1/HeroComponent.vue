@@ -1,5 +1,5 @@
 <template>
-    <div class="mt-10" @click="showHeroEditor">
+    <div @click="showHeroEditor">
         <div class="carousel carousel-slider" id="promo">
             <div class="carousel-item" :href="`#`+index" :id="index" v-for="promo, index in heroSeeder" :key="index">
                 <div class="overlay"></div>
