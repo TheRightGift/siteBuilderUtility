@@ -4,7 +4,7 @@
             <div class="card"  @click="showSellingPointEditor">
                 <div class="card-content">
                     <div class="row noMarginBottom">
-                        <div class="col l3 m6 s12" v-for="(sellPoint, index) in sellPoint" :key="index">
+                        <div class="col l4 m6 s12 mobilePoint" v-for="(sellPoint, index) in sellPoint" :key="index">
                             <div class="img">
                                 <img
                                     :src="sellPoint.image_or_icon"
@@ -32,7 +32,7 @@
             return {
                 sellingPSeeder: [
 					{
-                        title: "Shipping",
+                        title: "Free Shipping",
                         image_or_icon:
                             "https://risingtheme.com/html/demo-suruchi-v1/suruchi/assets/img/other/shipping1.png",
                         description: "From handpicked sellers",
@@ -44,11 +44,12 @@
                         description: "From handpicked sellers",
                     },
                     {
-                        title: "Return",
+                        title: "60 days Return",
                         image_or_icon:
                             "https://risingtheme.com/html/demo-suruchi-v1/suruchi/assets/img/other/shipping3.png",
                         description: "From handpicked sellers",
                     },
+                    
                 ],
             };
         },
@@ -70,7 +71,7 @@
 
 <style scoped>
     .container {
-        width: 88%;
+        width: 80%;
         max-width: unset;
     }
     #sellingPoint {
@@ -106,12 +107,15 @@
     /* MOBILE */
     @media only screen and (max-width: 767px) {
         #sellingPoint .card-content .col .img {
-            width: 37%;
+            width: 40%;
             display: flex;
-            justify-content: unset;
+            justify-content: flex-start;
+        }
+        #sellingPoint .card-content .col .detail {
+            width: 60%;
         }
 
-        #sellingPoint .card-content .col {
+        .mobilePoint {
             margin-bottom: 3vh;
         }
     }

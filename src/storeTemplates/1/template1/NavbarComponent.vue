@@ -437,14 +437,19 @@
     .iconLinks .notify {
         background-color: var(--primary-color);
         color: #ffffff;
-        font-size: 0.7rem;
-        padding: 0 0.2vw;
+        font-size: 0.8rem;
         border-radius: 30%;
-        height: 1.8vh;
-        line-height: 1.8vh;
         position: relative;
         right: 0.7vw;
         bottom: -4vh;
+        height: 2vh;
+        line-height: 2vh;
+        position: relative;
+        right: 0.7vw;
+        font-weight: 700;
+        width: 2vh;
+        display: flex;
+        justify-content: center;
     }
 
     .searchbar {
