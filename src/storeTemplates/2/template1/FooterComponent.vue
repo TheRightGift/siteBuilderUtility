@@ -311,6 +311,11 @@ export default {
       const cartStore = useCartStore();
       return cartStore.isAuthenticated;
     },
+    role() {
+      const cartStore = useCartStore();
+      const role = cartStore.user.role;
+      return role;
+    },
   },
   watch: {
     socials(newVal) {

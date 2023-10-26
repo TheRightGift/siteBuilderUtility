@@ -193,7 +193,7 @@ export default {
           rating: 2,
           images: [
             {
-              url: "https://transvelo.github.io/electro-html/2.0/assets/img/190X150/img4.png",
+              url: "https://transvelo.github.io/electro-html/2.0/assets/img/212X200/img2.jpg",
             },
           ],
           link: "#",
