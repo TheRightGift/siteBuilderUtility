@@ -175,7 +175,7 @@ export default {
             name: "Men",
           },
           oldPrice: "$150.00",
-          amount: "$120.00",
+          amount: "12000",
           rating: 3,
           images: [
             {
@@ -189,7 +189,7 @@ export default {
           category: {
             name: "Men",
           },
-          amount: "$150.00",
+          amount: "15000",
           rating: 2,
           images: [
             {
@@ -203,7 +203,7 @@ export default {
           category: {
             name: "Speakers",
           },
-          amount: "$150.00",
+          amount: "15000",
           rating: 3,
           images: [
             {
@@ -217,7 +217,7 @@ export default {
           category: {
             name: "Speakers",
           },
-          amount: "$130.00",
+          amount: "13000",
           rating: 4,
           images: [
             {
@@ -231,7 +231,7 @@ export default {
           category: {
             name: "Camera",
           },
-          amount: "$120.00",
+          amount: "12000",
           rating: 5,
           images: [
             {
@@ -245,7 +245,7 @@ export default {
           category: {
             name: "Printers",
           },
-          amount: "$120.00",
+          amount: "12000",
           rating: 4,
           images: [
             {
