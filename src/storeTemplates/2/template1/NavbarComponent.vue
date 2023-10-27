@@ -78,7 +78,7 @@
                   "
                   >{{ names }}</a
                 >
-                <span class="relative">
+                <span class="relative cursor">
                   <router-link :to="{ name: `Cart` }"
                     ><i class="fa-solid fa-bag-shopping"></i
                   ></router-link>
@@ -183,7 +183,7 @@
               >{{ names }}</a
             >
           </li>
-          <li class="relative">
+          <li class="relative cursor">
             <router-link :to="{ name: `Cart` }"
               ><i class="fa-solid fa-bag-shopping"></i
             ></router-link>

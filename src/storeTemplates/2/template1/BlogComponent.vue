@@ -2,7 +2,7 @@
   <div>
     <div class="container" @click="showBlogEditor" id="blog">
       <div class="row">
-        <h1 class="centerAlign center">Blogs</h1>
+        <h3 class="blogHeader">Blogs</h3>
         <div class="col s12 l4 m4 mb-4" v-for="blog in blogSeeder" :key="blog">
           <img
             :src="blog.images[0].url"
@@ -43,25 +43,36 @@
   width: 80%;
   max-width: unset;
 }
-.customer-title {
-  text-align: center;
-  margin-top: 2vh;
-  margin-bottom: 15vh;
-  font-size: 200%;
-  font-family: "Merriweather", serif;
-}
 .mb-4 {
   margin-bottom: 4vh;
 }
 button.btn {
   background-color: var(--primary-color);
   box-shadow: none;
-  color: #fff;
+  color: #333e48;
 }
 button.btn:hover {
   background-color: #fff;
-  border: 1px solid var(--primary-color);
-  color: var(--primary-color);
+  border: 1px solid #333e48;
+}
+h3 {
+  font-size: 1.37462rem;
+  margin-bottom: 2vh;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #e7eaf3 !important;
+  position: relative;
+}
+.blogHeader::after {
+  width: 84px;
+
+  content: " ";
+  height: 2px;
+  width: 114px;
+  display: block;
+  background-color: var(--primary-color);
+  position: absolute;
+  bottom: -1px;
+  left: 0;
 }
 </style>
 <script>
