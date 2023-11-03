@@ -111,153 +111,153 @@
     </div>
 </template>
 <script>
-import templateMixin from "@/mixin/templateMixin";
-export default {
-    computed: {},
-    mixins: [templateMixin],
-    data() {
-        return {
-            seeder: [
-                {
-                    name: "Camera",
-                    description:
-                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ac dictum.",
-                    image: "https://transvelo.github.io/electro-html/2.0/assets/img/190X150/img1.png",
-                },
-                {
-                    name: "TV Sets",
-                    description:
-                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ac dictum.",
-                    image: "https://transvelo.github.io/electro-html/2.0/assets/img/190X150/img2.jpg",
-                },
-                {
-                    name: "Computers",
-                    description:
-                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ac dictum.",
-                    image: "https://transvelo.github.io/electro-html/2.0/assets/img/190X150/img3.jpg",
-                },
-                {
-                    name: "Cameras",
-                    description:
-                        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ac dictum.",
-                    image: "https://transvelo.github.io/electro-html/2.0/assets/img/190X150/img4.png",
-                },
-            ],
-            imgDimensionWidth: 190,
-            imgDimensionHeight: 150,
-        };
-    },
-    methods: {
-        classObject(index) {
+    import templateMixin from "@/mixin/templateMixin";
+    export default {
+        computed: {},
+        mixins: [templateMixin],
+        data() {
             return {
-                "sm-mt-3 md-mt-3": index === 1,
-                "sm-mt-3": index === 2 || index === 3,
+                seeder: [
+                    {
+                        name: "Camera",
+                        description:
+                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ac dictum.",
+                        image: "https://transvelo.github.io/electro-html/2.0/assets/img/190X150/img1.png",
+                    },
+                    {
+                        name: "TV Sets",
+                        description:
+                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ac dictum.",
+                        image: "https://transvelo.github.io/electro-html/2.0/assets/img/190X150/img2.jpg",
+                    },
+                    {
+                        name: "Computers",
+                        description:
+                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ac dictum.",
+                        image: "https://transvelo.github.io/electro-html/2.0/assets/img/190X150/img3.jpg",
+                    },
+                    {
+                        name: "Cameras",
+                        description:
+                            "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin ac dictum.",
+                        image: "https://transvelo.github.io/electro-html/2.0/assets/img/190X150/img4.png",
+                    },
+                ],
+                imgDimensionWidth: 190,
+                imgDimensionHeight: 150,
             };
         },
-        imageUrlWithTimestamp(cate) {
-            // Append the catetimestamp as a query parameter to the image URL
-            return `${cate.image}?t=${this.catetimestamp}`;
+        methods: {
+            classObject(index) {
+                return {
+                    "sm-mt-3 md-mt-3": index === 1,
+                    "sm-mt-3": index === 2 || index === 3,
+                };
+            },
+            imageUrlWithTimestamp(cate) {
+                // Append the catetimestamp as a query parameter to the image URL
+                return `${cate.image}?t=${this.catetimestamp}`;
+            },
         },
-    },
-    props: {
-        categories: Array,
-        loggedIn: Boolean,
-        catetimestamp: Number,
-    },
-    watch: {
-        categories(newVal) {
-            if (newVal) {
-                newVal.forEach((category, i) => {
-                    if (i < this.seeder.length) {
-                        // Update existing seeder items
-                        this.seeder[i].name = category.name;
-                        this.seeder[i].image =
-                            category.image || this.seeder[i].image;
-                        this.seeder[i].description =
-                            category.description || this.seeder[i].description;
-                    } else {
-                        // Create new seeder items if there are more categories
-                        this.seeder.push({
-                            name: category.name,
-                            image: category.image || null,
-                            description: category.description || null,
-                        });
-                    }
-                });
-            }
+        props: {
+            categories: Array,
+            loggedIn: Boolean,
+            catetimestamp: Number,
         },
-    },
-};
+        watch: {
+            categories(newVal) {
+                if (newVal) {
+                    newVal.forEach((category, i) => {
+                        if (i < this.seeder.length) {
+                            // Update existing seeder items
+                            this.seeder[i].name = category.name;
+                            this.seeder[i].image =
+                                category.image || this.seeder[i].image;
+                            this.seeder[i].description =
+                                category.description || this.seeder[i].description;
+                        } else {
+                            // Create new seeder items if there are more categories
+                            this.seeder.push({
+                                name: category.name,
+                                image: category.image || null,
+                                description: category.description || null,
+                            });
+                        }
+                    });
+                }
+            },
+        },
+    };
 </script>
 <style scoped>
-.flex {
-    display: flex;
-    align-items: center;
-}
-.bgGrey {
-    background-color: #f5f5f5;
-    padding: 0.5vh 1vh !important;
-    font-family: "Open Sans", Helvetica, Arial, sans-serif;
-}
-.dealText {
-    font-size: 1.12525rem;
-    text-transform: uppercase;
-    color: #333e48;
-    font-family: "Open Sans", Helvetica, Arial, sans-serif;
-}
-.mt-3 {
-    margin-top: 3vh;
-}
-.shopLink {
-    color: #333e48;
-    font-weight: 700;
-}
-.chevyRight {
-    display: inline-block;
-    background-color: var(--primary-color);
-    width: 1.5vh;
-    height: 1.5vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    border-radius: 100%;
-}
-.chevyRight i {
-    color: #fff;
-}
-.gap-2 {
-    gap: 2vh;
-}
-.gap-1 {
-    gap: 1vh;
-}
-strong {
-    font-weight: 700;
-}
-@media only screen and (min-width: 1024px) {
-    .container {
-        width: 85%;
+    .flex {
+        display: flex;
+        align-items: center;
     }
-}
-@media only screen and (min-width: 768px) and (max-width: 1023px) {
-    .container {
-        width: 90%;
+    .bgGrey {
+        background-color: #f5f5f5;
+        padding: 0.5vh 1vh !important;
+        font-family: "Open Sans", Helvetica, Arial, sans-serif;
     }
-    .md-mt-3 {
-        margin-bottom: 3vh;
+    .dealText {
+        font-size: 1.12525rem;
+        text-transform: uppercase;
+        color: #333e48;
+        font-family: "Open Sans", Helvetica, Arial, sans-serif;
     }
-}
-@media only screen and (max-width: 767px) {
-    .sm-mt-3 {
+    .mt-3 {
         margin-top: 3vh;
     }
+    .shopLink {
+        color: #333e48;
+        font-weight: 700;
+    }
     .chevyRight {
-        width: 2vh;
-        height: 2vh;
+        display: inline-block;
+        background-color: var(--primary-color);
+        width: 1.5vh;
+        height: 1.5vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        border-radius: 100%;
     }
     .chevyRight i {
-        font-size: 0.8rem;
+        color: #fff;
     }
-}
+    .gap-2 {
+        gap: 2vh;
+    }
+    .gap-1 {
+        gap: 1vh;
+    }
+    strong {
+        font-weight: 700;
+    }
+    @media only screen and (min-width: 1024px) {
+        .container {
+            width: 85%;
+        }
+    }
+    @media only screen and (min-width: 768px) and (max-width: 1023px) {
+        .container {
+            width: 90%;
+        }
+        .md-mt-3 {
+            margin-bottom: 3vh;
+        }
+    }
+    @media only screen and (max-width: 767px) {
+        .sm-mt-3 {
+            margin-top: 3vh;
+        }
+        .chevyRight {
+            width: 2vh;
+            height: 2vh;
+        }
+        .chevyRight i {
+            font-size: 0.8rem;
+        }
+    }
 </style>
