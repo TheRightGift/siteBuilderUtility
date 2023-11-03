@@ -39,7 +39,7 @@
                                 v-if="product.oldPrice"
                                 >{{ product.oldPrice }}</span
                             >
-                            <span class="curPrice">{{ formatPrice(product.amount) }}</span>
+                           <span class="curPrice">{{ formatPrice(product.amount) }}</span>
                         </span>
                         <div class="rating">
                             <i
@@ -88,8 +88,8 @@
                         category: {
                             name: "Men",
                         },
-                        oldPrice: "$150.00",
-                        curPrice: "$120.00",
+                        oldPrice: "150.00",
+                        amount: "120.00",
                         rating: 3,
                         images: [
                             {
@@ -104,7 +104,7 @@
                         category: {
                             name: "Men",
                         },
-                        curPrice: "$150.00",
+                       amount: "150.00",
                         rating: 2,
                         images: [
                             {
@@ -119,7 +119,7 @@
                         category: {
                             name: "Men",
                         },
-                        curPrice: "$150.00",
+                       amount: "150.00",
                         rating: 3,
                         images: [
                             {
@@ -134,7 +134,7 @@
                         category: {
                             name: "Men",
                         },
-                        curPrice: "$130.00",
+                       amount: "130.00",
                         rating: 4,
                         images: [
                             {
@@ -149,7 +149,7 @@
                         category: {
                             name: "Men",
                         },
-                        curPrice: "$120.00",
+                       amount: "120.00",
                         rating: 5,
                         images: [
                             {
@@ -164,7 +164,7 @@
                         category: {
                             name: "Men",
                         },
-                        curPrice: "$120.00",
+                       amount: "120.00",
                         rating: 4,
                         images: [
                             {
@@ -179,7 +179,7 @@
                         category: {
                             name: "Men",
                         },
-                        curPrice: "$120.00",
+                       amount: "120.00",
                         rating: 2,
                         images: [
                             {
@@ -194,7 +194,7 @@
                         category: {
                             name: "Men",
                         },
-                        curPrice: "$120.00",
+                       amount: "120.00",
                         rating: 3,
                         images: [
                             {
