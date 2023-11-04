@@ -7,7 +7,7 @@
       >
         <div class="flex items-center justify-center gap-3 overflow-auto">
           <div class="flex-shrink-0">
-            <h1 v-html="heroSeeder.description"></h1>
+            <h1 v-html="offerSeeder.description"></h1>
           </div>
           <div class="flex-shrink-0">
             <button>
@@ -18,16 +18,16 @@
                     : {
                         name: `product-search-category`,
                         params: {
-                          category_name: heroSeeder.title ?? `offer`,
+                          category_name: offerSeeder.title ?? `offer`,
                         },
                         query: {
-                          additionalOfferData: heroSeeder.id ?? `offer_id`,
+                          additionalOfferData: offerSeeder.id ?? `offer_id`,
                         },
                       }
                 "
                 ><em>Starting at</em>
                 <span class="amount"
-                  >{{ heroSeeder.discount_percentage }}<sup>%</sup></span
+                  >{{ offerSeeder.discount_percentage }}<sup>%</sup></span
                 ></router-link
               >
             </button>
@@ -43,7 +43,7 @@ import templateMixin from "@/mixin/templateMixin";
 export default {
   data() {
     return {
-      heroSeeder: {
+      offerSeeder: {
         title: "Special Offer",
         subtitle: "Get 20% Discount, Use Code OFF20",
         description: "SHOP AND, <strong>SAVE BIG</strong> ON HOTTEST TABLETS",
@@ -58,27 +58,13 @@ export default {
   mixins: [templateMixin],
   mounted() {
     if (this.offers.length > 0) {
-      this.heroSeeder = this.offers[0];
+      this.offerSeeder = this.offers[0];
     }
   },
-  methods: {},
   computed: {
     imageUrlWithTimestamp() {
       // Append the timestamp as a query parameter to the image URL
-      return `${this.heroSeeder.cover}?t=${this.timestamp}`;
-    },
-  },
-  props: {
-    loggedIn: Boolean,
-    hero: Array,
-    offers: Array,
-    timestamp: Number,
-  },
-  watch: {
-    offers(newVal) {
-      if (Object.entries(newVal).length > 0) {
-        this.heroSeeder = newVal[0];
-      }
+      return `${this.offerSeeder.cover}?t=${this.timestamp}`;
     },
   },
 };

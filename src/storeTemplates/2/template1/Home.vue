@@ -120,7 +120,8 @@ export default {
 <style>
 /* #TODO */
 :root {
-  --primary-color: #fff;
+  /* --primary-color: #fff; */
+  --primary-color: #d10e01;
 }
 /* fixes design issues with dark mode */
 body {

@@ -152,22 +152,6 @@ export default {
       ],
     };
   },
-  methods: {},
-  props: {
-    blogs: Array,
-    loggedIn: Boolean,
-  },
-  watch: {
-    blogs: {
-      handler(newBlog) {
-        if (newBlog.length > 0) {
-          this.blogSeeder = [...newBlog]; // Make a copy of the new products
-        }
-        M.AutoInit();
-      },
-      deep: true, // Enable deep watching to detect changes within the array
-    },
-  },
   mounted() {
     this.editFlag = localStorage.getItem("editFlag");
     if (this.blogs.length > 0) {

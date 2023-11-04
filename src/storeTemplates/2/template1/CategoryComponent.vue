@@ -97,7 +97,6 @@
 <script>
 import templateMixin from "@/mixin/templateMixin";
 export default {
-  computed: {},
   mixins: [templateMixin],
   data() {
     return {
@@ -145,33 +144,6 @@ export default {
     imageUrlWithTimestamp(cate) {
       // Append the catetimestamp as a query parameter to the image URL
       return `${cate.image}?t=${this.catetimestamp}`;
-    },
-  },
-  props: {
-    categories: Array,
-    loggedIn: Boolean,
-    catetimestamp: Number,
-  },
-  watch: {
-    categories(newVal) {
-      if (newVal) {
-        newVal.forEach((category, i) => {
-          if (i < this.seeder.length) {
-            // Update existing seeder items
-            this.seeder[i].name = category.name;
-            this.seeder[i].image = category.image || this.seeder[i].image;
-            this.seeder[i].description =
-              category.description || this.seeder[i].description;
-          } else {
-            // Create new seeder items if there are more categories
-            this.seeder.push({
-              name: category.name,
-              image: category.image || null,
-              description: category.description || null,
-            });
-          }
-        });
-      }
     },
   },
 };

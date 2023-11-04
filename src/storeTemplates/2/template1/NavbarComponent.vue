@@ -9,6 +9,16 @@
               : branddesc
           }}</a>
           <div class="flex-right">
+            <!-- <a href="#">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <span>Store Locator</span>
+                        </a>
+                        <div class="divider"></div> -->
+            <!-- <a href="#">
+                            <i class="fa-solid fa-truck-fast"></i>
+                            <span>Track your order</span>
+                        </a> -->
+            <!-- <div class="divider"></div> -->
             <a href="#">
               <i class="fa-solid fa-dollar-sign"></i>
               <span>Dollar (US)</span>
@@ -302,12 +312,10 @@
   </div>
 </template>
 <script>
-import apiMixin from "@/mixin/apiMixin";
-import { useCartStore } from "@/store/store";
 import templateMixin from "@/mixin/templateMixin";
 
 export default {
-  mixins: [apiMixin, templateMixin],
+  mixins: [templateMixin],
   data() {
     return {
       isOpen: false,
@@ -320,46 +328,6 @@ export default {
       M.Dropdown.init(dropdowns[i]);
     }
   },
-  computed: {
-    isAuthenticated() {
-      const cartStore = useCartStore();
-      return cartStore.isAuthenticated;
-    },
-    names() {
-      const cartStore = useCartStore();
-      const names = cartStore.user.names;
-      const nameParts = names.split(" ");
-      return nameParts[0];
-    },
-    role() {
-      const cartStore = useCartStore();
-      const role = cartStore.user.role;
-      return role;
-    },
-    cartCount() {
-      const cartStore = useCartStore();
-      return cartStore.cartCount;
-    },
-    wishlistCount() {
-      return useCartStore().wishlistItemCount;
-    },
-    mailUs() {
-      return `mailto:` + this.email + `?subject=Contact%20Us&body=Hello%20Team`;
-    },
-  },
-  methods: {
-    toggleCollapsible() {
-      this.isOpen = !this.isOpen; // Toggle the isOpen state
-    },
-  },
-  props: {
-    brandname: String,
-    categories: Array,
-    loggedIn: Boolean,
-    email: String,
-    branddesc: String,
-  },
-  watch: {},
 };
 </script>
 

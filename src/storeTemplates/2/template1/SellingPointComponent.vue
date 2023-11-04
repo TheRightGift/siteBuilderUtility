@@ -13,7 +13,9 @@
                 <img :src="sellPoint.image_or_icon" alt="" loading="lazy" />
               </div>
               <div class="detail">
-                <h4 class="noMarginTop">{{ sellPoint.title }}</h4>
+                <h4 class="noMarginTop">
+                  {{ sellPoint.title }}
+                </h4>
                 <span class="grey-text">{{ sellPoint.description }}</span>
               </div>
             </div>
@@ -29,10 +31,6 @@ import templateMixin from "@/mixin/templateMixin";
 
 export default {
   mixins: [templateMixin],
-  props: {
-    loggedIn: Boolean,
-    sellPoint: Array,
-  },
 };
 </script>
 

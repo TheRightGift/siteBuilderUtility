@@ -12,7 +12,8 @@
             <h6 class="client-name">Nike Mardson</h6>
             <p class="client-brand">fashion</p>
             <p class="client-description">
-              Lorem ipsum dolor sit amet, consectetur adipiscing <br />
+              Lorem ipsum dolor sit amet, consectetur adipiscing
+              <br />
               elit. Sed non nisi ante. <br />
               Vestibulum mattis ligula a commodo semper
             </p>
@@ -50,7 +51,8 @@
             <h6 class="client-name">Laura Joghnson</h6>
             <p class="client-brand">fashion</p>
             <p class="client-description">
-              Lorem ipsum dolor sit amet, consectetur adipiscing <br />
+              Lorem ipsum dolor sit amet, consectetur adipiscing
+              <br />
               elit. Sed non nisi ante. <br />
               Vestibulum mattis ligula a commodo semper
             </p>
@@ -88,7 +90,8 @@
             <h6 class="client-name">Richard Smith</h6>
             <p class="client-brand">fashion</p>
             <p class="client-description">
-              Lorem ipsum dolor sit amet, consectetur adipiscing <br />
+              Lorem ipsum dolor sit amet, consectetur adipiscing
+              <br />
               elit. Sed non nisi ante. <br />
               Vestibulum mattis ligula a commodo semper
             </p>
