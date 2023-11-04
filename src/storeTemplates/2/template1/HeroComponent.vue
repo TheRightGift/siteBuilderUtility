@@ -12,7 +12,9 @@
         <div class="container carouselContainer">
           <div class="flex h-inherit justify-between items-center">
             <div>
-              <h4 class="heading m-0 fw-700">{{ promo.title }}</h4>
+              <h4 class="heading m-0 fw-700">
+                {{ promo.title }}
+              </h4>
               <p class="desc">{{ promo.description }}</p>
               <button
                 class="btn startNowBtn fw-700 capitalize waves waves-effect flex items-center justify-center"
@@ -137,26 +139,6 @@ export default {
     }
   },
   mixins: [templateMixin],
-  methods: {},
-  props: {
-    loggedIn: Boolean,
-    hero: Array,
-    timestamp: Number,
-    defaultHero: Number,
-  },
-  watch: {
-    hero(newVal, oldVal) {
-      if (Object.entries(newVal).length > 0) {
-        if (this.defaultHero == undefined) {
-          this.heroSeeder = newVal[0];
-        } else {
-          this.heroSeeder = newVal;
-          this.initCarousel();
-          M.AutoInit();
-        }
-      }
-    },
-  },
 };
 </script>
 <style>

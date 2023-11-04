@@ -237,95 +237,14 @@ h6:first-of-type {
 }
 </style>
 <script>
-import { useCartStore } from "@/store/store";
+import templateMixin from "../../../mixin/templateMixin";
 export default {
-  mounted() {
-    // Get the button element by its ID
-    const scrollToTopButton = document.getElementById("scrollToTopButton");
-
-    scrollToTopButton.addEventListener("click", () => {
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
-    });
-
-    window.addEventListener("scroll", () => {
-      if (
-        document.body.scrollTop > 20 ||
-        document.documentElement.scrollTop > 20
-      ) {
-        scrollToTopButton.style.display = "block";
-      } else {
-        scrollToTopButton.style.display = "none";
-      }
-    });
-  },
   data() {
     return {
       yourMail: "",
       social: "",
     };
   },
-  methods: {
-    showSocialEditor() {
-      this.$emit("showSocialEditor", true);
-    },
-  },
-  props: {
-    brandname: String,
-    categories: Array,
-    socials: Object,
-    loggedIn: Boolean,
-    email: String,
-    branddesc: String,
-  },
-  computed: {
-    sliceSixCate() {
-      if (this.categories != undefined) {
-        return this.categories.slice(0, 6);
-      }
-    },
-    sliceSvenEnd() {
-      if (this.categories != undefined) {
-        return this.categories.slice(7, 12);
-      }
-    },
-    mailUs() {
-      return "mailto:" + this.email + "?subject=Contact%20Us&body=Hello%20Team";
-    },
-    brandShortsDesc() {
-      if (this.branddesc !== "") {
-        return this.branddesc;
-      } else {
-        return "Pulvinar aenean dignissim porttitor sed risus urna, pretium quis non id.";
-      }
-    },
-    isAuthenticated() {
-      const cartStore = useCartStore();
-      return cartStore.isAuthenticated;
-    },
-    role() {
-      const cartStore = useCartStore();
-      const role = cartStore.user.role;
-      return role;
-    },
-  },
-  watch: {
-    socials(newVal) {
-      this.social = {
-        facebook: "",
-        youtube: "",
-        tiktok: "",
-        twitter: "",
-        instagram: "",
-      };
-      if (newVal !== null && newVal !== undefined) {
-        if (Object.entries(newVal).length !== 0) {
-          this.social = newVal;
-        }
-      }
-    },
-  },
+  mixins: [templateMixin],
 };
 </script>

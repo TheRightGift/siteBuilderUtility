@@ -177,34 +177,10 @@ h3 {
 }
 </style>
 <script>
-import priceMixixn from "@/mixin/priceMixin";
 import templateMixin from "@/mixin/templateMixin";
 import { useCartStore } from "../../../store/store";
 export default {
-  computed: {
-    displayedProducts() {
-      if (this.products && this.products.length > 0) {
-        return this.products;
-      } else if (this.seededProducts && this.seededProducts.length > 0) {
-        return this.seededProducts;
-      } else {
-        return [];
-      }
-    },
-    isAuthenticated() {
-      const cartStore = useCartStore();
-      return cartStore.isAuthenticated;
-    },
-    fx() {
-      const cartStore = useCartStore();
-      return cartStore.fx;
-    },
-    location() {
-      const cartStore = useCartStore();
-      return cartStore.location;
-    },
-  },
-  mixins: [priceMixixn, templateMixin],
+  mixins: [templateMixin],
   data() {
     return {
       seededProducts: [
@@ -336,16 +312,6 @@ export default {
     classObject(prd) {
       return { "is-active": this.checkWishlist(prd) };
     },
-
-    title(prd) {
-      if (prd !== undefined) {
-        if (prd.title > 6) {
-          return prd.title.slice(0, 6) + "...";
-        } else {
-          return prd.title;
-        }
-      }
-    },
   },
   mounted() {
     if (this.products.length > 0) {
@@ -353,20 +319,6 @@ export default {
     }
     const cartStore = useCartStore();
     cartStore.getIPFromAmazon();
-  },
-  props: {
-    products: Array,
-    loggedIn: Boolean,
-  },
-  watch: {
-    products: {
-      handler(newProducts) {
-        if (newProducts.length > 0) {
-          this.seededProducts = [...newProducts]; // Make a copy of the new products
-        }
-      },
-      deep: true, // Enable deep watching to detect changes within the array
-    },
   },
 };
 </script>
