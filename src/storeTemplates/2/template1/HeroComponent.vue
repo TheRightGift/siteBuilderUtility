@@ -71,22 +71,27 @@ export default {
       index: 0,
       heroSeeder: [
         {
+          "id": 1,
+          "description": "Lorem Ipsum statica",
           description: "The new Standard",
           image:
             "https://transvelo.github.io/electro-html/2.0/assets/img/416X420/img1.png",
-          others: "Under favorable smartwatches",
+          "subtitle": "The Best Standard Bow Ties",
+          "title": "Bow Tie Galore",
+          "type": "welcome",
+          "created_at": "2023-10-25T09:40:26.000000Z",
+          "updated_at": "2023-11-03T14:36:51.000000Z"
         },
         {
+          "id": 2,
           description: "The new Standard",
           image:
             "https://transvelo.github.io/electro-html/2.0/assets/img/416X420/img2.png",
-          others: "Under favorable smartwatches",
-        },
-        {
-          description: "The new Standard",
-          image:
-            "https://transvelo.github.io/electro-html/2.0/assets/img/416X420/img3.png",
-          others: "Under favorable smartwatches",
+          "subtitle": "The Best Standard Bow Ties",
+          "title": "Bow Tie Galore",
+          "type": "welcome",
+          "created_at": "2023-10-25T09:40:26.000000Z",
+          "updated_at": "2023-11-03T14:36:51.000000Z"
         },
       ],
       imgDimensionWidth: 416,
