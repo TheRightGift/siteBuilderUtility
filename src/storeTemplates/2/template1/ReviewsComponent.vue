@@ -3,11 +3,7 @@
     <div class="container">
       <div class="row">
         <h4 class="header">Our Clients Say</h4>
-        <div
-          class="col s12 l4 m4"
-          v-for="review in sortedReviews"
-          :key="review.id"
-        >
+        <div class="col s12 l4 m4" v-for="review in sortedReviews" :key="review.id">
           <div class="card py-4">
             <img
               src="/media/imgs/user.png"
@@ -17,17 +13,8 @@
             <p class="client-brand">{{ review.product.title }}</p>
             <p class="client-description" v-html="review.comment"></p>
             <div class="ratings">
-              <i
-                v-for="i in userRating"
-                :key="i"
-                class="fa-solid fa-star"
-                :class="{ active: i <= review.rating }"
-              ></i>
-              <i
-                v-for="i in 5 - review.rating"
-                :key="i"
-                class="fa-solid fa-star"
-              ></i>
+              <i v-for="i in userRating" :key="i" class="fa-solid fa-star" :class="{ active: i <= review.rating }"></i>
+              <i v-for="i in 5 - review.rating" :key="i" class="fa-solid fa-star"></i>
             </div>
           </div>
         </div>

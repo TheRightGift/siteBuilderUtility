@@ -14,47 +14,16 @@
                 <div class="card-content">
                   <span class="categoryText">{{ product.category.name }}</span>
 
-                  <router-link
-                    :to="
-                      loggedIn
-                        ? `#!`
-                        : {
-                            name: `product-details`,
-                            params: {
-                              product_name: product.title,
-                            },
-                          }
-                    "
-                    class="blue-text"
-                  >
+                  <router-link :to=" loggedIn ? `#!` : { name: `product-details`, params: { product_name: product.title, } } " class="blue-text">
                     {{ title(product) }}
                   </router-link>
-                  <img
-                    :src="renderImage(product)"
-                    :alt="product.title"
-                    loading="lazy"
-                    class="responsive-img"
-                  />
+                  <img :src="renderImage(product)" :alt="product.title" loading="lazy" class="responsive-img" />
                   <div class="flex justify-between mt-1">
-                    <p class="amount">
-                      {{ formatPrice(product.amount, fx, location) }}
-                    </p>
+                    <p class="amount"> {{ formatPrice(product.amount, fx, location) }} </p>
                     <div class="hide-on-med-and-down">
-                      <router-link
-                        :to="
-                          loggedIn
-                            ? `#!`
-                            : {
-                                name: `product-details`,
-                                params: {
-                                  product_name: product.title,
-                                },
-                              }
-                        "
-                        class="cartContener"
-                      >
-                        <i class="fa-solid fa-cart-arrow-down"></i
-                      ></router-link>
+                      <router-link :to=" loggedIn ? `#!` : { name: `product-details`, params: { product_name: product.title } } " class="cartContener">
+                        <i class="fa-solid fa-cart-arrow-down"></i>
+                      </router-link>
                     </div>
                   </div>
                   <div class="flex justify-between pt-2 links hide">

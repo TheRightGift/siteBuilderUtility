@@ -32,22 +32,9 @@
               :key="category.id"
               @click="showCategoryEditEditor"
             >
-              <router-link
-                :to="
-                  loggedIn
-                    ? `#!`
-                    : {
-                        name: `product-search-category`,
-                        params: {
-                          category_name: category.name ?? `category`,
-                        },
-                        query: {
-                          additionalData: category.id ?? `category_id`,
-                        },
-                      }
-                "
-                >{{ category.name }}</router-link
-              >
+              <router-link :to=" loggedIn ? `#!` : { name: `product-search-category`, params: { category_name: category.name ?? `category` }, query: { additionalData: category.id ?? `category_id` } }">
+                {{ category.name }}
+              </router-link>
             </li>
           </ul>
         </div>
@@ -59,22 +46,9 @@
               :key="category.id"
               @click="showCategoryEditEditor"
             >
-              <router-link
-                :to="
-                  loggedIn
-                    ? `#!`
-                    : {
-                        name: `product-search-category`,
-                        params: {
-                          category_name: category.name ?? `category`,
-                        },
-                        query: {
-                          additionalData: category.id ?? `category_id`,
-                        },
-                      }
-                "
-                >{{ category.name }}</router-link
-              >
+            <router-link :to=" loggedIn ? `#!` : { name: `product-search-category`, params: { category_name: category.name ?? `category` }, query: { additionalData: category.id ?? `category_id` } }">
+              {{ category.name }}
+            </router-link>
             </li>
           </ul>
         </div>
@@ -82,16 +56,7 @@
           <h6>Customer Service</h6>
           <ul class="">
             <li>
-              <a
-                :href="
-                  !isAuthenticated
-                    ? `/auth/signin`
-                    : role == `Admin`
-                    ? `/vendor/dashboard`
-                    : `/your_account/dashboard`
-                "
-                >My Account</a
-              >
+              <a :href="!isAuthenticated ? `/auth/signin` : role == `Admin` ? `/vendor/dashboard` : `/your_account/dashboard`">My Account</a>
             </li>
             <li>
               <a href="/your_account/wishlist">Wish List</a>
