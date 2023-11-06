@@ -4,33 +4,14 @@
       <div class="row">
         <h3 class="blogHeader">Blogs</h3>
         <div class="col s12 l3 m4 mb-4" v-for="blog in blogSeeder" :key="blog">
-          <img
-            :src="blog.images[0].url"
-            alt="Blog post image"
-            class="responsive-img"
-          />
+          <img :src="blog.images[0].url" alt="Blog post image" class="responsive-img"/>
           <p class="blog-description">February 03, 2022</p>
           <h6 class="blog_description">
             {{ blog.title.slice(0, 30) }}..., <br />
             {{ blog.category.name }}
           </h6>
 
-          <router-link
-            :class="classObject"
-            :to="
-              loggedIn
-                ? `#!`
-                : {
-                    name: `blog-detail`,
-                    params: {
-                      blog: blog.title,
-                    },
-                    query: {
-                      additionalData: blog.id ?? `blog_id`,
-                    },
-                  }
-            "
-          >
+          <router-link :class="classObject" :to=" loggedIn ? `#!` : { name: `blog-detail`, params: { blog: blog.title, }, query: { additionalData: blog.id ?? `blog_id` } }">
             Read more
           </router-link>
         </div>

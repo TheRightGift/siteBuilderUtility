@@ -11,25 +11,10 @@
           </div>
           <div class="flex-shrink-0">
             <button>
-              <router-link
-                :to="
-                  loggedIn
-                    ? `#!`
-                    : {
-                        name: `product-search-category`,
-                        params: {
-                          category_name: offerSeeder.title ?? `offer`,
-                        },
-                        query: {
-                          additionalOfferData: offerSeeder.id ?? `offer_id`,
-                        },
-                      }
-                "
-                ><em>Starting at</em>
-                <span class="amount"
-                  >{{ offerSeeder.discount_percentage }}<sup>%</sup></span
-                ></router-link
-              >
+              <router-link :to=" loggedIn ? `#!` : { name: `product-search-category`, params: {  category_name: offerSeeder.title ?? `offer` }, query: { additionalOfferData: offerSeeder.id ?? `offer_id` } }">
+                <em>Starting at</em>
+                <span class="amount">{{ offerSeeder.discount_percentage }}<sup>%</sup></span>
+              </router-link>
             </button>
           </div>
         </div>

@@ -19,28 +19,9 @@
               <button
                 class="btn startNowBtn fw-700 capitalize waves waves-effect flex items-center justify-center"
               >
-                <router-link
-                  :to="
-                    loggedIn
-                      ? `#!`
-                      : {
-                          name: `product-search-category`,
-                          params: {
-                            category_name:
-                              heroSeeder.type == `welcome`
-                                ? `all`
-                                : heroSeeder.title ?? `offer`,
-                          },
-                          query: {
-                            additionalOfferData:
-                              heroSeeder.type == `welcome`
-                                ? `all`
-                                : heroSeeder.id ?? `offer_id`,
-                          },
-                        }
-                  "
-                  ><span> Start Buying</span></router-link
-                >
+                <router-link :to=" loggedIn ? `#!` : { name: `product-search-category`, params: { category_name: heroSeeder.type == `welcome` ? `all` : heroSeeder.title ?? `offer` }, query: { additionalOfferData: heroSeeder.type == `welcome` ? `all` : heroSeeder.id ?? `offer_id` } }">
+                  <span>Start Buying</span>
+                </router-link>
               </button>
             </div>
             <div class="">
@@ -63,29 +44,8 @@
           {{ heroSeeder.description }}
         </p>
         <div class="heroCtaContainer">
-          <router-link
-            class="cta"
-            :to="
-              loggedIn
-                ? `#!`
-                : {
-                    name: `product-search-category`,
-                    params: {
-                      category_name:
-                        heroSeeder.type == `welcome`
-                          ? `all`
-                          : heroSeeder.title ?? `offer`,
-                    },
-                    query: {
-                      additionalOfferData:
-                        heroSeeder.type == `welcome`
-                          ? `all`
-                          : heroSeeder.id ?? `offer_id`,
-                    },
-                  }
-            "
-            style="cursor: pointer"
-            >Shop Collection
+          <router-link class="cta" :to=" loggedIn ? `#!` : { name: `product-search-category`, params: { category_name: heroSeeder.type == `welcome` ? `all` : heroSeeder.title ?? `offer` }, query: { additionalOfferData: heroSeeder.type == `welcome` ? `all` : heroSeeder.id ?? `offer_id` } }" style="cursor: pointer">
+            Shop Collection
           </router-link>
         </div>
       </div>

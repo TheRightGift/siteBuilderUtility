@@ -3,119 +3,18 @@
     <div class="container">
       <div class="row">
         <h4 class="header">Our Clients Say</h4>
-        <div class="col s12 l4 m4">
+        <div class="col s12 l4 m4" v-for="review in sortedReviews" :key="review.id">
           <div class="card py-4">
             <img
-              src="https://risingtheme.com/html/demo-suruchi-v1/suruchi/assets/img/other/testimonial-thumb1.png"
+              src="/media/imgs/user.png"
               alt="responsive-img king client-pic"
             />
-            <h6 class="client-name">Nike Mardson</h6>
-            <p class="client-brand">fashion</p>
-            <p class="client-description">
-              Lorem ipsum dolor sit amet, consectetur adipiscing
-              <br />
-              elit. Sed non nisi ante. <br />
-              Vestibulum mattis ligula a commodo semper
-            </p>
+            <h6 class="client-name">{{ review.user.names }}</h6>
+            <p class="client-brand">{{ review.product.title }}</p>
+            <p class="client-description" v-html="review.comment"></p>
             <div class="ratings">
-              <i
-                class="fa-solid fa-star"
-                style="color: var(--primary-color)"
-              ></i>
-              <i
-                class="fa-solid fa-star"
-                style="color: var(--primary-color)"
-              ></i>
-              <i
-                class="fa-solid fa-star"
-                style="color: var(--primary-color)"
-              ></i>
-              <i
-                class="fa-solid fa-star"
-                style="color: var(--primary-color)"
-              ></i>
-              <i
-                class="fa-solid fa-star"
-                style="color: var(--primary-color)"
-              ></i>
-            </div>
-          </div>
-        </div>
-
-        <div class="col s12 l4 m4">
-          <div class="card py-4">
-            <img
-              src="https://risingtheme.com/html/demo-suruchi-v1/suruchi/assets/img/other/testimonial-thumb2.png"
-              alt=" ressponsive-img queen client-pic"
-            />
-            <h6 class="client-name">Laura Joghnson</h6>
-            <p class="client-brand">fashion</p>
-            <p class="client-description">
-              Lorem ipsum dolor sit amet, consectetur adipiscing
-              <br />
-              elit. Sed non nisi ante. <br />
-              Vestibulum mattis ligula a commodo semper
-            </p>
-            <div class="ratings">
-              <i
-                class="fa-solid fa-star"
-                style="color: var(--primary-color)"
-              ></i>
-              <i
-                class="fa-solid fa-star"
-                style="color: var(--primary-color)"
-              ></i>
-              <i
-                class="fa-solid fa-star"
-                style="color: var(--primary-color)"
-              ></i>
-              <i
-                class="fa-solid fa-star"
-                style="color: var(--primary-color)"
-              ></i>
-              <i
-                class="fa-solid fa-star"
-                style="color: var(--primary-color)"
-              ></i>
-            </div>
-          </div>
-        </div>
-
-        <div class="col s12 l4 m4">
-          <div class="card py-4">
-            <img
-              src="https://risingtheme.com/html/demo-suruchi-v1/suruchi/assets/img/other/testimonial-thumb3.png"
-              alt="responsive-img prince client-pic"
-            />
-            <h6 class="client-name">Richard Smith</h6>
-            <p class="client-brand">fashion</p>
-            <p class="client-description">
-              Lorem ipsum dolor sit amet, consectetur adipiscing
-              <br />
-              elit. Sed non nisi ante. <br />
-              Vestibulum mattis ligula a commodo semper
-            </p>
-            <div class="ratings">
-              <i
-                class="fa-solid fa-star"
-                style="color: var(--primary-color)"
-              ></i>
-              <i
-                class="fa-solid fa-star"
-                style="color: var(--primary-color)"
-              ></i>
-              <i
-                class="fa-solid fa-star"
-                style="color: var(--primary-color)"
-              ></i>
-              <i
-                class="fa-solid fa-star"
-                style="color: var(--primary-color)"
-              ></i>
-              <i
-                class="fa-solid fa-star"
-                style="color: var(--primary-color)"
-              ></i>
+              <i v-for="i in userRating" :key="i" class="fa-solid fa-star" :class="{ active: i <= review.rating }"></i>
+              <i v-for="i in 5 - review.rating" :key="i" class="fa-solid fa-star"></i>
             </div>
           </div>
         </div>
@@ -179,6 +78,9 @@
   margin: 0%;
   color: #807d7d;
   font-weight: lighter;
+}
+.rating .fa-star.active {
+  color: gold;
 }
 </style>
 <script>

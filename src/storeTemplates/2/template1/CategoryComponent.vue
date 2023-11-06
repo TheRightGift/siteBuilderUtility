@@ -3,24 +3,12 @@
     <div class="container mt-3">
       <div class="row">
         <div v-if="categories && categories.length > 0">
-          <div
-            class="col s12 l3 m6 md-mt-3"
-            :class="classObject(index)"
-            v-for="(category, index) in categories.slice(0, 4)"
-            :key="index"
-          >
+          <div class="col s12 l3 m6 md-mt-3" :class="classObject(index)" v-for="(category, index) in categories.slice(0, 4)" :key="index" >
             <div class="bgGrey">
               <a href="#!">
                 <div class="flex gap-2">
                   <div>
-                    <img
-                      :src="
-                        !category.image
-                          ? imageUrlWithTimestamp(seeder[index])
-                          : imageUrlWithTimestamp(category)
-                      "
-                      class="responsive-img"
-                    />
+                    <img :src=" !category.image ? imageUrlWithTimestamp(seeder[index]) : imageUrlWithTimestamp(category)" class="responsive-img" />
                   </div>
                   <div>
                     <div class="dealText">
@@ -31,21 +19,10 @@
                         {{ category.name }}
                       </div>
                     </div>
-                    <router-link
-                      class="flex gap-1"
-                      :to="{
-                        name: `product-search-category`,
-                        params: {
-                          category_name: category.name ?? `category`,
-                        },
-                        query: {
-                          additionalData: category.id ?? `category_id`,
-                        },
-                      }"
-                      ><span class="shopLink">Shop now</span
-                      ><span class="chevyRight"
-                        ><i class="fa-solid fa-chevron-right"></i></span
-                    ></router-link>
+                    <router-link class="flex gap-1" :to="{ name: `product-search-category`, params: { category_name: category.name ?? `category` }, query: { additionalData: category.id ?? `category_id` } }">
+                      <span class="shopLink">Shop now</span>
+                      <span class="chevyRight"><i class="fa-solid fa-chevron-right"></i></span>
+                    </router-link>
                   </div>
                 </div>
               </a>
@@ -53,12 +30,7 @@
           </div>
         </div>
         <div v-else>
-          <div
-            class="col s12 l3 m6 md-mt-3"
-            :class="classObject(index)"
-            v-for="(category, index) in seeder.slice(0, 4)"
-            :key="index"
-          >
+          <div class="col s12 l3 m6 md-mt-3" :class="classObject(index)" v-for="(category, index) in seeder.slice(0, 4)" :key="index">
             <div class="bgGrey">
               <a href="">
                 <div class="flex gap-2">

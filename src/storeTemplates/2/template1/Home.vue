@@ -30,6 +30,9 @@
       :loggedIn="loggedIn"
       :blogs="blogs"
     />
+    <ReviewsComponent
+      :reviews="reviews"
+    />
     <OffersComponent
       :loggedIn="loggedIn"
       @showOffersEditor="showOffersEditor($event)"
@@ -62,6 +65,7 @@ import OffersComponent from "./OffersComponent.vue";
 import FooterComponent from "./FooterComponent.vue";
 import BlogComponent from "./BlogComponent.vue";
 import SellingPointComponent from "./SellingPointComponent.vue";
+import ReviewsComponent from "./ReviewsComponent.vue";
 
 export default {
   components: {
@@ -73,7 +77,8 @@ export default {
     FooterComponent,
     SellingPointComponent,
     BlogComponent,
-  },
+    ReviewsComponent
+},
   props: {
     loggedIn: Boolean,
     brandname: String,
@@ -82,6 +87,7 @@ export default {
     hero: Object,
     offers: Array,
     products: Array,
+    reviews: Array,
     blogs: Array,
     timestamp: Number,
     catetimestamp: Number,
