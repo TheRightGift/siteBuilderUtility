@@ -163,6 +163,14 @@ class AWSUtility
                 echo '$blogsContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
             ";
 
+            // Reviews
+            $reviews = dirname(__DIR__) . "/storeTemplates/" . $storeTypeId . "/template" . $randomTemplateNumber . "/ReviewsComponent.vue";
+            $reviewsContent = $this->storeFileSetup($reviews);
+            $componentName = 'ReviewsComponent.vue';
+            $reviewsCommand = "sudo nano $componentName
+                echo '$reviewsContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
+            ";
+
             // SHIPPING DETAILS
             $shippingDetails = dirname(__DIR__) . "/storeTemplates/" . $storeTypeId . "/template" . $randomTemplateNumber . "/SellingPointComponent.vue";
             $shippingDetailsContent = $this->storeFileSetup($shippingDetails);
@@ -180,7 +188,7 @@ class AWSUtility
             ";
 
             // 
-            $status = $this->runCommand([$siteDirectoryCommand, $homeComponentCommand, $navbarCommand, $heroCommand, $categoryCommand, $featuredProductsCommand, $offersCommand, $blogsCommand, $shippingDetailsCommand, $footerCommand]);
+            $status = $this->runCommand([$siteDirectoryCommand, $homeComponentCommand, $navbarCommand, $heroCommand, $categoryCommand, $featuredProductsCommand, $offersCommand, $blogsCommand, $reviewsCommand, $shippingDetailsCommand, $footerCommand]);
             echo json_encode(['status' => 200, 'message' => $status]);
             
         } else {
