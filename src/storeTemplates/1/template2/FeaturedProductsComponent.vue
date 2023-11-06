@@ -272,7 +272,7 @@ h2 {
     }
 
     .product h3 {
-        font-size: 1.8rem;
+        font-size: 1rem;
         margin: 0.5rem 0;
         padding: 0;
         color: #000;
