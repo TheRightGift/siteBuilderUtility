@@ -30,7 +30,7 @@
       :loggedIn="loggedIn"
       :blogs="blogs"
     />
-    <ReviewsComponent
+    <ReviewsComponent v-if="reviews.length != 0"
       :reviews="reviews"
     />
     <OffersComponent
@@ -124,10 +124,8 @@ export default {
 };
 </script>
 <style>
-/* #TODO */
 :root {
-  /* --primary-color: #fff; */
-  --primary-color: #d10e01;
+  --primary-color: #fff;
 }
 /* fixes design issues with dark mode */
 body {
