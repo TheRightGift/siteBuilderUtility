@@ -4,16 +4,14 @@
       <div class="row">
         <h4 class="header">Our Clients Say</h4>
         <div class="col s12 l4 m4" v-for="review in sortedReviews" :key="review.id">
-          <div class="card py-4">
-            <img
-              src="/media/imgs/user.png"
-              alt="responsive-img king client-pic"
-            />
+          <div class="card py-4 px-4">
+            <div class="circle" :style="itemStyle(review)">
+              {{ getInitials(review.user.names) }}
+            </div>
             <h6 class="client-name">{{ review.user.names }}</h6>
-            <p class="client-brand">{{ review.product.title }}</p>
-            <p class="client-description" v-html="review.comment"></p>
+            <p class="client-description" v-html="comment(review.comment)"></p>
             <div class="ratings">
-              <i v-for="i in userRating" :key="i" class="fa-solid fa-star" :class="{ active: i <= review.rating }"></i>
+              <i v-for="i in review.rating" :key="i" class="fa-solid fa-star" :class="{ active: i <= review.rating }"></i>
               <i v-for="i in 5 - review.rating" :key="i" class="fa-solid fa-star"></i>
             </div>
           </div>
@@ -23,6 +21,19 @@
   </div>
 </template>
 <style scoped>
+.circle {
+  border-radius: 50%;
+  width: 5.5vw;
+  height: 10.5vh;
+  background-color: rgb(202, 200, 200);
+
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  font-size: 2.5rem;
+}
 .py-4 {
   padding-top: 4vh;
   padding-bottom: 4vh;
@@ -60,16 +71,7 @@
 .client-name {
   font-weight: 500;
   font-size: 1.5rem;
-  font-family: "Inter", sans-serif;
   font-family: "Jost", sans-serif;
-  margin: 0%;
-}
-
-.client-brand {
-  font-family: "Inter", sans-serif;
-  font-family: "Jost", sans-serif;
-  color: #a9a7a7;
-  font-size: 120%;
   margin: 0%;
 }
 
@@ -77,12 +79,25 @@
   text-align: center;
   margin: 0%;
   color: #807d7d;
-  font-weight: lighter;
+  font-family: "Jost", sans-serif;
+  font-weight: 400;
 }
-.rating .fa-star.active {
+.ratings .fa-star.active {
   color: gold;
 }
 </style>
 <script>
-export default {};
+import templateMixin from "@/mixin/templateMixin";
+
+export default {
+  mixins: [templateMixin],
+  created() {
+    if (this.reviews.length > 0) {
+      this.reviews.forEach((item) => {
+          item.color = this.getRandomColor();
+      });
+    }
+  },
+};
 </script>
+

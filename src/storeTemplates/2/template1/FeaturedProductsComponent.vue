@@ -158,8 +158,8 @@ export default {
           category: {
             name: "Men",
           },
-          oldPrice: "$150.00",
-          amount: "$120.00",
+          oldPrice: "150.00",
+          amount: "120.00",
           rating: 3,
           images: [
             {
@@ -174,11 +174,11 @@ export default {
           category: {
             name: "Men",
           },
-          amount: "$150.00",
+          amount: "150.00",
           rating: 2,
           images: [
             {
-              url: "https://transvelo.github.io/electro-html/2.0/assets/img/190X150/img4.png",
+              url: "	https://transvelo.github.io/electro-html/2.0/assets/img/212X200/img2.jpg",
             },
           ],
 
@@ -189,7 +189,7 @@ export default {
           category: {
             name: "Speakers",
           },
-          amount: "$150.00",
+          amount: "150.00",
           rating: 3,
           images: [
             {
@@ -204,7 +204,7 @@ export default {
           category: {
             name: "Speakers",
           },
-          amount: "$130.00",
+          amount: "130.00",
           rating: 4,
           images: [
             {
@@ -219,7 +219,7 @@ export default {
           category: {
             name: "Camera",
           },
-          amount: "$120.00",
+          amount: "120.00",
           rating: 5,
           images: [
             {
@@ -234,7 +234,7 @@ export default {
           category: {
             name: "Printers",
           },
-          amount: "$120.00",
+          amount: "120.00",
           rating: 4,
           images: [
             {
@@ -249,7 +249,7 @@ export default {
           category: {
             name: "Games",
           },
-          amount: "$120.00",
+          amount: "120.00",
           rating: 2,
           images: [
             {
@@ -264,7 +264,7 @@ export default {
           category: {
             name: "Camera",
           },
-          amount: "$120.00",
+          amount: "120.00",
           rating: 3,
           images: [
             {
