@@ -118,6 +118,11 @@ h3 {
 .blue-text {
   font-size: 0.875rem;
   font-weight: 700;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
 }
 .categoryText {
   font-size: 0.74987rem;
