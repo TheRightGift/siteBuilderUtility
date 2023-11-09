@@ -49,7 +49,7 @@
                                 </div>
                             </form>
                             <div class="flexed gap-2">
-                                <a href="/your_account/wishlist"><i class="fa-solid fa-heart"></i></a>
+                                <a href="/your_account/favorites"><i class="fa-solid fa-heart"></i></a>
                                 <a href="/auth/signin" v-if="!isAuthenticated"><i class="fa-regular fa-user"></i></a>
                                 <a v-else :href="role == `Admin` ? `/vendor/dashboard` : `/your_account/dashboard`">{{ names }}</a>
                                 <span class="relative cursor">
