@@ -385,7 +385,8 @@
         }
         .allDeptBtn {
             background-color: var(--primary-color);
-            color: #333e48;
+            /* color: #333e48; */
+            color: #FFF;
             padding: 1.5vh 4vh;
             font-weight: 700;
             border: none;
