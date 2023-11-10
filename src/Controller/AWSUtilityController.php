@@ -286,6 +286,18 @@ class AWSUtilityController
         return $errorMsg;
     }
 
+    private function validateCreateZoneData($input){
+        $errorMsg = [];
+
+        //must be text only
+        // clean input using $this->cleanInput()
+        if(!isset($input['DomainName']) || empty($input['DomainName'])  || !is_string($input['DomainName'])){
+            array_push($errorMsg, 'DomainName is required and must be a string.');
+        }
+        
+        return $errorMsg;
+    }
+
     private function validateStoreCreationData($input){
         $errorMsg = [];
 
@@ -318,26 +330,38 @@ class AWSUtilityController
 
     private function createZone()
     {
-        $input = (array) json_decode(file_get_contents('php://input'), true);
-        if (! $this->validateDomain($input)) {
-            return $this->unprocessableEntityResponse();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $input = $_POST; //(array) json_decode(file_get_contents('php://input'), true);
+            
+            if (count($input) < 1 || count($this->validateCreateZoneData($input)) > 0) {
+                return $this->unprocessableStoreCreationResponse($this->validateCreateZoneData($input));
+            } 
+
+            $result = $this->awsUtilityGateway->createHostedZone($input);
+            $response['body'] = json_encode($result);
+            // print_r($response);
+            return $response;
+        } else {
+            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support '.$_SERVER['REQUEST_METHOD'].' requests.']);
         }
-        $result = $this->awsUtilityGateway->createHostedZone($input);
-        // $response['status_code_header'] = 'HTTP/1.1 200 OK';
-        $response['body'] = json_encode($result);
-        return $response;
     }
 
     private function createDomainForwarding()
     {
-        $input = (array) json_decode(file_get_contents('php://input'), true);
-        if (! $this->validateDomain($input)) {
-            return $this->unprocessableEntityResponse();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $input = $_POST; //(array) json_decode(file_get_contents('php://input'), true);
+            
+            if (count($input) < 1 || count($this->validateCreateZoneData($input)) > 0) {
+                return $this->unprocessableStoreCreationResponse($this->validateCreateZoneData($input));
+            } 
+
+            $result = $this->awsUtilityGateway->createDomain($input);
+            $response['body'] = json_encode($result);
+            // print_r($response);
+            return $response;
+        } else {
+            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support '.$_SERVER['REQUEST_METHOD'].' requests.']);
         }
-        $result = $this->awsUtilityGateway->createDomain($input);
-        // $response['status_code_header'] = 'HTTP/1.1 200 OK';
-        $response['body'] = json_encode($result);
-        return $response;
     }
 
     private function getcreatedZone()

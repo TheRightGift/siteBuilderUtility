@@ -726,7 +726,8 @@ class AWSUtility
 
                 // Get the response body as a string
                 $body = $response->getBody()->getContents();
-                $alias = "consultancy";
+                // $alias = "consultancy";
+                $alias = "inquiry";
                 $responseData = json_decode($body, true);
 
                 if (isset($responseData['created_at'])) {
