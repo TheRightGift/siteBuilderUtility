@@ -1,7 +1,7 @@
 <template>
   <div class="mt-4 bgGray">
     <div class="container">
-      <div class="row" @click="showSocialEditor">
+      <div class="row addPtopNRemMgBtm" @click="showSocialEditor">
         <div class="col s12 m12 l4">
           <div class="brand-logo">{{ brandname }} Logo</div>
           <h6>Contact Info</h6>
@@ -79,11 +79,18 @@
   </div>
 </template>
 <style scoped>
+.addPtopNRemMgBtm {
+  padding-top: 4vh;
+  margin: 0;
+}
 .mt-4 {
   margin-top: 4vh;
 }
 .logo {
   padding: 2vh 0;
+}
+.brand-logo {
+  font-size: 1.5rem;
 }
 .gap-2 {
   gap: 2vh;
