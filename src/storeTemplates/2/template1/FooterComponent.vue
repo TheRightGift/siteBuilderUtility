@@ -1,6 +1,6 @@
 <template>
-  <div class="mt-4 bgGray">
-    <div class="container">
+  <div class="mt-4 bgGray" >
+    <div class="container" >
       <div class="row addPtopNRemMgBtm" @click="showSocialEditor">
         <div class="col s12 m12 l4">
           <div class="brand-logo">{{ brandname }} Logo</div>

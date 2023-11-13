@@ -1,5 +1,5 @@
 <template>
-  <div @click="showCategoryEditEditor" class="productCatSectionInner">
+  <div @click="showCategoryEditEditor" class="productCatSectionInner" >
     <div class="container mt-3">
       <div class="row">
         <div v-if="categories && categories.length > 0">
