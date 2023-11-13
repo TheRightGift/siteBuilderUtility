@@ -35,50 +35,49 @@ export default {
 </script>
 
 <style scoped>
-.container {
-  width: 88%;
-  max-width: unset;
-}
-#sellingPoint {
-  padding: 5vh 0;
-}
-.noMarginTop {
-  margin-top: 0 !important;
-}
-.noMarginBottom {
-  margin-bottom: 0 !important;
-}
-/* Add your custom styles here */
+    #sellingPoint {
+        padding: 5vh 0;
+    }
+    .noMarginTop {
+        margin-top: 0 !important;
+    }
+    .noMarginBottom {
+        margin-bottom: 0 !important;
+    }
+    /* Add your custom styles here */
 
-#sellingPoint .card-content .col {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-#sellingPoint .card-content .col .img {
-  width: 37%;
-  display: flex;
-  justify-content: flex-end;
-}
+    #sellingPoint .card-content .col {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    #sellingPoint .card-content .col .img {
+        width: 37%;
+        display: flex;
+        justify-content: flex-end;
+    }
 
-#sellingPoint .card-content .col .detail {
-  width: 58%;
-}
-#sellingPoint .card-content .col .detail h4 {
-  font-size: 1.75rem;
-  margin-bottom: 0.5vh;
-}
+    #sellingPoint .card-content .col .detail {
+        width: 58%;
+    }
+    #sellingPoint .card-content .col .detail h4 {
+        font-size: 1.75rem;
+        margin-bottom: 0.5vh;
+    }
 
-/* MOBILE */
-@media only screen and (max-width: 767px) {
-  #sellingPoint .card-content .col .img {
-    width: 37%;
-    display: flex;
-    justify-content: unset;
-  }
+    /* MOBILE */
+    @media only screen and (max-width: 767px) {
+        #sellingPoint .card-content .col .img {
+            width: 40%;
+            display: flex;
+            justify-content: flex-start;
+        }
+        #sellingPoint .card-content .col .detail {
+            width: 60%;
+        }
 
-  #sellingPoint .card-content .col {
-    margin-bottom: 3vh;
-  }
-}
+        .mobilePoint {
+            margin-bottom: 3vh;
+        }
+    }
 </style>

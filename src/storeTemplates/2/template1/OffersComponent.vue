@@ -63,7 +63,7 @@ a {
 }
 .bgImg {
   text-transform: uppercase;
-  padding: 3.5rem 1.5rem 1.5rem 1.5rem;
+  padding: 1.5rem 1.5rem;
   color: #333e48;
 }
 .container {

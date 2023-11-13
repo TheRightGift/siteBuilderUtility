@@ -318,7 +318,7 @@
             justify-content: space-between;
         }
         .container {
-            width: 90%;
+            width: 85%;
         }
         .flex-right {
             display: flex;

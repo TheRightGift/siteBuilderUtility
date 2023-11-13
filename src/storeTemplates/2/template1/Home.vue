@@ -52,7 +52,7 @@
       @showSellingPointEditor="showSellingPointEditor($event)"
       :loggedIn="loggedIn"
       :sellPoint="sellPoint"
-      id="sellingPointSection"
+      id="sellingPoint"
       :class="{styleEditHover: loggedIn, isEditing: isEditingSellingPoint}" :title="loggedIn ? `Click to edit sell point section` : ``"
     />
     <FooterComponent
