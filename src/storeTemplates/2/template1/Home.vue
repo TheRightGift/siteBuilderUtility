@@ -126,6 +126,7 @@ export default {
 <style>
 :root {
   --primary-color: #fff;
+  --secondary-color: #000;
 }
 /* fixes design issues with dark mode */
 body {
