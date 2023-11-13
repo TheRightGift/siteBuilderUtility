@@ -5,16 +5,6 @@
                 <div class="topbar-content">
                     <a href="#" class="welcome">{{branddesc == "" ? "Welcome to Worldwide Electronics Store" : branddesc}}</a>
                     <div class="flex-right">
-                        <!-- <a href="#">
-                            <i class="fa-solid fa-location-dot"></i>
-                            <span>Store Locator</span>
-                        </a>
-                        <div class="divider"></div> -->
-                        <!-- <a href="#">
-                            <i class="fa-solid fa-truck-fast"></i>
-                            <span>Track your order</span>
-                        </a> -->
-                        <!-- <div class="divider"></div> -->
                         <a href="#">
                             <i class="fa-solid fa-dollar-sign"></i>
                             <span>Dollar (US)</span>
