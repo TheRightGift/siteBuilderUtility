@@ -1,5 +1,5 @@
 <template>
-    <div class="lg-h22">
+    <div class="">
         <div class="topbar hide-on-med-and-down">
             <div class="container">
                 <div class="topbar-content">
@@ -19,77 +19,61 @@
                 </div>
             </div>
         </div>
-        <div class="container hide-on-med-and-down">
-            <div class="">
-                <nav>
-                    <div class="nav-wrapper">
-                        <div class="flexed">
-                            <div class="flexed gap-7">
-                                <a href="#" class="logo">{{ brandname }}</a>
-                                <a href="#" data-target="slide-out" class="trigger sidenav-trigger"><i class="material-icons">menu</i></a>
-                            </div>
-                            <form>
-                                <div class="search-container">
-                                    <input type="search" class="search-input browser-default" placeholder="Search for Products"/>
-                                    <select class="search-select browser-default">
-                                        <option value="option1">All Categories</option>
-                                        <option :value="category.id" v-for="category in categories" :key="category.id">{{ category.name }}</option>
-                                    </select>
-                                    <div class="searchIcon"><i class="fa-solid fa-magnifying-glass"></i></div>
-                                </div>
-                            </form>
-                            <div class="flexed gap-2">
-                                <a href="/your_account/favorites"><i class="fa-solid fa-heart"></i></a>
-                                <a href="/auth/signin" v-if="!isAuthenticated"><i class="fa-regular fa-user"></i></a>
-                                <a v-else :href="role == `Admin` ? `/vendor/dashboard` : `/your_account/dashboard`">{{ names }}</a>
-                                <span class="relative cursor">
-                                    <router-link :to="{ name: `Cart` }"><i class="fa-solid fa-bag-shopping"></i></router-link>
-                                    <div class="badge-under fw-700">{{ cartCount }}</div>
-                                </span>
-                            </div>
-                        </div>
-                        <div class="flexed mainNav">
-                            <div class="flexed">
-                                <button class="allDeptBtn flexed gap-2 collapsible" @click="toggleCollapsible">
-                                    <i class="fa-solid fa-list"></i>
-                                    <span>All Departments</span>
-                                </button>
-                                <ul>
-                                    <span v-show="categories.length < 3">
-                                        <li v-for="category in categories" :key="category.id" @click="showCategoryEditEditor">
-                                            <router-link :to=" loggedIn ? `#!` : { name: `product-search-category`, params: { category_name: category.name ?? `category` }, query: { additionalData: category.id ?? `category_id` } }">
-												{{ category.name }}
-											</router-link>
-                                        </li>
-                                    </span>
-                                    <li v-show="categories.length > 3">
-                                        <a class="dropdown-trigger" href="#productCatSectionInner" data-target="dropdownCategory">Categories</a>
+        
+        <nav class="hide-on-med-and-down">
+            <div class="container">
+                <div class="nav-wrapper">
+                    <div class="flexed">
+                        <div class="flexed gap-7">
+                            <a href="#" class="logo">{{ brandname }}</a>
+                            <ul>
+                                <span v-show="categories.length < 6">
+                                    <li v-for="category in categories" :key="category.id" @click="showCategoryEditEditor">
+                                        <router-link :to=" loggedIn ? `#!` : { name: `product-search-category`, params: { category_name: category.name ?? `category` }, query: { additionalData: category.id ?? `category_id` } }">
+                                            {{ category.name }}
+                                        </router-link>
                                     </li>
-                                    <ul id="dropdownCategory" class="dropdown-content">
-                                        <li v-for="category in categories" :key="category.id" @click="showCategoryEditEditor">
-                                            <router-link :to=" loggedIn ? `#!` : { name: `product-search-category`, params: { category_name: category.name ?? `category`, }, query: { additionalData: category.id ?? `category_id`} }">
-												{{ category.name }}
-												</router-link>
-                                        </li>
-                                    </ul>
-                                    <li>
-                                        <a href="">Blog</a>
+                                </span>
+                                <li v-show="categories.length > 6">
+                                    <a class="dropdown-trigger" href="#productCatSectionInner" data-target="dropdownCategory">Categories</a>
+                                </li>
+                                <ul id="dropdownCategory" class="dropdown-content">
+                                    <li v-for="category in categories" :key="category.id" @click="showCategoryEditEditor">
+                                        <router-link :to=" loggedIn ? `#!` : { name: `product-search-category`, params: { category_name: category.name ?? `category`, }, query: { additionalData: category.id ?? `category_id`} }">
+                                            {{ category.name }}
+                                        </router-link>
                                     </li>
                                 </ul>
+                                <li>
+                                    <a href="#!">Blog</a>
+                                </li>
+                            </ul>
+                            <!-- <a href="#" data-target="slide-out" class="trigger sidenav-trigger"><i class="material-icons">menu</i></a> -->
+                        </div>
+                        <form>
+                            <div class="search-container">
+                                <input type="search" class="search-input browser-default" placeholder="Search for Products"/>
+                                <select class="search-select browser-default">
+                                    <option value="option1">All Categories</option>
+                                    <option :value="category.id" v-for="category in categories" :key="category.id">{{ category.name }}</option>
+                                </select>
+                                <div class="searchIcon"><i class="fa-solid fa-magnifying-glass"></i></div>
                             </div>
-                            <!-- <a href="">Free Shipping on orders $50+</a> -->
-                            <div class="collapsible-contents" v-if="isOpen">
-                                <!-- Content for the collapsible element -->
-                                <p>
-                                    This is the collapsible content. You can add
-                                    any content here.
-                                </p>
-                            </div>
+                        </form>
+                        <div class="flexed gap-2">
+                            <a href="/your_account/favorites"><i class="fa-solid fa-heart"></i></a>
+                            <a href="/auth/signin" v-if="!isAuthenticated"><i class="fa-regular fa-user"></i></a>
+                            <a v-else :href="role == `Admin` ? `/vendor/dashboard` : `/your_account/dashboard`">{{ names }}</a>
+                            <span class="relative cursor">
+                                <router-link :to="{ name: `Cart` }"><i class="fa-solid fa-bag-shopping"></i></router-link>
+                                <div class="badge-under fw-700">{{ cartCount }}</div>
+                            </span>
                         </div>
                     </div>
-                </nav>
+                </div>
             </div>
-        </div>
+        </nav>
+        
         <nav class="hide-on-large-only">
             <div class="nav-wrapper">
                 <a href="#" data-target="slide-out" class="sidenav-trigger"
@@ -324,7 +308,7 @@
             justify-content: space-between;
         }
         .container {
-            width: 85%;
+            width: 90%;
         }
         .flex-right {
             display: flex;
@@ -352,6 +336,7 @@
             box-shadow: none;
             padding: 3vh 0;
             line-height: unset;
+            height: unset;
         }
         nav .logo {
             width: 9.375rem;

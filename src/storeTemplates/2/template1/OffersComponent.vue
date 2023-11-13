@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container" >
     <a href="#!" @click="showOffersEditor">
       <div
         class="bgImg"
