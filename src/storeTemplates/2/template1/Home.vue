@@ -145,13 +145,8 @@ export default {
 </script>
 <style>
 :root {
-<<<<<<< HEAD
   --primary-color: #fff;
   --secondary-color: #000;
-=======
-  /* --primary-color: #fff; */
-  --primary-color: #d91a1a;
->>>>>>> 4fd60eacb1e0a8f1d70f89c5ded1143335d3867c
 }
 /* fixes design issues with dark mode */
 body {
