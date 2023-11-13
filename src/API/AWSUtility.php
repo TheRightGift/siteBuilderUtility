@@ -163,14 +163,6 @@ class AWSUtility
                 echo '$blogsContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
             ";
 
-            // Reviews
-            $reviews = dirname(__DIR__) . "/storeTemplates/" . $storeTypeId . "/template" . $randomTemplateNumber . "/ReviewsComponent.vue";
-            $reviewsContent = $this->storeFileSetup($reviews);
-            $componentName = 'ReviewsComponent.vue';
-            $reviewsCommand = "sudo nano $componentName
-                echo '$reviewsContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
-            ";
-
             // SHIPPING DETAILS
             $shippingDetails = dirname(__DIR__) . "/storeTemplates/" . $storeTypeId . "/template" . $randomTemplateNumber . "/SellingPointComponent.vue";
             $shippingDetailsContent = $this->storeFileSetup($shippingDetails);
@@ -181,14 +173,15 @@ class AWSUtility
 
             // FOOTER
             $footer = dirname(__DIR__) . "/storeTemplates/" . $storeTypeId . "/template" . $randomTemplateNumber . "/FooterComponent.vue";
-            $footerContent = $this->storeFileSetup($footer, $defaultStoreName, $storeName);
+            // $footerContent = $this->storeFileSetup($footer, $defaultStoreName, $storeName);
+            $footerContent = $this->storeFileSetup($footer);
             $componentName = 'FooterComponent.vue';
             $footerCommand = "sudo nano $componentName
                 echo '$footerContent' >>  /var/www/zebralinetest/resources/js/components/websites/$storeDirectoryName/$componentName && sudo mv '$componentName'$'\r' $componentName
             ";
 
             // 
-            $status = $this->runCommand([$siteDirectoryCommand, $homeComponentCommand, $navbarCommand, $heroCommand, $categoryCommand, $featuredProductsCommand, $offersCommand, $blogsCommand, $reviewsCommand, $shippingDetailsCommand, $footerCommand]);
+            $status = $this->runCommand([$siteDirectoryCommand, $homeComponentCommand, $navbarCommand, $heroCommand, $categoryCommand, $featuredProductsCommand, $offersCommand, $blogsCommand, $shippingDetailsCommand, $footerCommand]);
             echo json_encode(['status' => 200, 'message' => $status]);
             
         } else {
@@ -330,7 +323,7 @@ class AWSUtility
                 // "NextToken" => "AAEAASiaH2XV9X6gYzh6sJ201/MOh1ryQY/Ixll+fRvoBwGlAAAAAGRMD9I1IdZhNLKZNX1PHoNwZFKtsE6yJer9otpcugjtbW26TJSXP+C9iwejqL9pdDAsk9fnE7HZwytd4THp+c2ThMxK68JwvXvunVJR0ZE6xUJnqypbqrQ4iAxqKL+hOXUlheh36KoYRk/svRAG7+HwOz1s+3sq737nlgoaAXNIxnpYYT3Uyq7xKmA9aIYIYTCfjZhjcyQ55uAIqucAy+9/LXiTEiNvTcPLxi3XCctQf4a53giAAMFceiDT9Zp420wVTJLt91uQTWSSaZWv8GbE3n6oUbRCon29nigdvbfJm4N/mXvPF4wcRls0xy8SD16ljI9ykCNzXgzLj3iGO2eyAU4hWnUkGRD+0B/JqXkE6954Rs48z3+F+uR2hQcHrSrhXYIbdxfT3ZzbA1F95PKJ/RbSYPtaTwAGI5/fhBSk0JllJOuxGnsO5doa0LCAm79QS+fxIVqfDxStEmB282ldKgOAkiNEOvdi4VOtdpJAzsE6HcihH5KdB9qLRDb9URkcOkssAijrSJO5v8lUuLMIfWeGyb2Qu4zptLC5BFmiIGoY37fBU1aRCBeeoap+ffXirUGsxS9wTz5w4icq8o8Ta9pYfsTMYpSv8YOKM1+IqKFj4GHOXGx39YPexrS2BnI9taArt1YBrG6dCr7GrbbvU5SxcWKRXl9SmiuwYVGO1UJ+mEc3flGnxoDXM6Txgb7ImFDlGLOrLTZyDoTfFIJwVPes1b4LTk1nkr/hTaAB8l8pGwonNANhxX0s6hUMesgsTDKqcKUiA+Xc7LiwHMvxGBAk2KRko39bOUQcOawyee6BjPpmmpyQg0NML9H/uchTqxJfDQWAX5di1yOmKKbK/Ecvf2SrQl17Uw0gJl88PVyWaUnSxIo3dXkhdHac1jPVklVTH7bYMT3sEf73vDGndV+k7pz/sw9kuO6sunhmBAcXcRHPFqQiAIdQA9p33yWiBYHUTKkIhas0nprq8t7FkRP+iVftpAeD1yZcOdo/KbznbDJPTodgGowDn3LG90VMqrHD532Swi/9UM5q7T2Ot2y7fa500RQHo3zSBoBHxi/SE4siHEQ7AikH+V1BaZohoX5i4M6B1RVal/2rpssQyB2jYsdajhEDGVrfEbwAFXIlmyc57hC72+jiC7bF3vDR45avBnix81e0gOfRTVw4a+ssgCkaPSa+rpUSpYu6Rg5dpA==",
             ]
         );
-        echo json_encode(['status' => 200, 'message' => $result['CommandInvocations'][0]['Status']]);
+        echo json_encode(['status' => 200, 'message' => $result['CommandInvocations']]);
     }
 
     private function runCommand(array $arg) {
@@ -416,8 +409,10 @@ class AWSUtility
      */
     public function createHostedZone(array $input)
     {
+        
         // Create DB with domainame and caller_refernce
         $domainName = $input['DomainName'];
+        $projectIp = $input['projectIp'];
         $params = [
             'Name' => $domainName,
             'CallerReference' => $this->uniqueNumber($domainName),
@@ -425,7 +420,7 @@ class AWSUtility
                 'Comment' => 'My hosted zone for my domain',
             ],
         ];
-
+        
         try {
             // Create the hosted zone
             $result = $this->route53->createHostedZone($params);
@@ -439,14 +434,14 @@ class AWSUtility
             // Update the DNS settings for the domain
             // This code assumes that you are using the AWS Route 53 DNS service
             // Change the resourceRecords
-            $this->changeNameServers($domainName, $nameServers);
+            // $this->changeNameServers($domainName, $nameServers);
 
-            $this->changeResourceRecords($domainName, $hostedZoneId);
-
-            // echo 'Hosted zone created, namesilo servers updated and DNS updated successfully!' . $hostedZoneId;
+            return $this->changeResourceRecords($domainName, $hostedZoneId, $projectIp);
         } catch (AwsException $e) {
             // Handle any errors that occur
-            echo 'Error creating hosted zone and updating DNS: ' . $e->getMessage();
+            $error['status'] = 501;
+            $error['message'] = 'Error creating hosted zone and updating DNS: ' . $e->getMessage();
+            return $error;
         }
     }
 
@@ -522,9 +517,8 @@ class AWSUtility
      * @param String $hostedZoneId
      * @return void
      */
-    public function changeResourceRecords(String $domainName, String $hostedZoneId) //
-    {// $loadBalancerDns = 'wcd-lb-d7b7e9924c1fc7c5.elb.us-east-1.amazonaws.com';
-        // $loadBalancerHostedZoneId = 'Z26RNL4JYFTOTI';
+    public function changeResourceRecords(String $domainName, String $hostedZoneId, String $projectIp) {
+       
         try {
             $awwwRecord = [
                 'Action' => 'CREATE',
@@ -536,7 +530,7 @@ class AWSUtility
                     'Weight' => 100,
                     'ResourceRecords' => [
                         [
-                            'Value' => '3.228.136.96',
+                            'Value' => $projectIp,
                         ]
                     ]
                 ]
@@ -552,7 +546,7 @@ class AWSUtility
                     'Weight' => 100,
                     'ResourceRecords' => [
                         [
-                            'Value' => '3.228.136.96',
+                            'Value' => $projectIp,
                         ]
                     ]
                 ]
@@ -567,7 +561,7 @@ class AWSUtility
                     'Weight' => 100,
                     'ResourceRecords' => [
                         [
-                            'Value' => '3.228.136.96',
+                            'Value' => $projectIp,
                         ]
                     ]
                 ]
@@ -587,7 +581,9 @@ class AWSUtility
                 'ChangeBatch' => $changeBatch
             ]);
         } catch (AwsException $e) {
-            echo 'Error retrieving hosted zone ID for load balancer: ' . $e->getAwsErrorMessage();
+            $error['status'] = 501;
+            $error['message'] = 'Error Updating Hostede zone resource records: ' . $e->getAwsErrorMessage();
+            return $error;
         } finally {
             if ($result) {
                 $changeId = $result->get('ChangeInfo')['Id'];
@@ -598,7 +594,10 @@ class AWSUtility
                         'MaxAttempts' => 30, // maximum number of attempts to make
                     ],
                 ]);
-                echo json_encode(['status' => 200, 'message' => 'success on creating hosted zone!']);
+
+                $res['status'] = 200;
+                $res['message'] = 'success on creating hosted zone!';
+                return $res;
             }
         }
     }
@@ -615,6 +614,7 @@ class AWSUtility
     public function sendCommand(array $input)
     {
         $domain = $input['DomainName'];
+        $projectDir = $input['projectDir'];
         $uri = '$uri';
         $query_string = '$query_string';
         $realpath_root = '$realpath_root';
@@ -623,7 +623,7 @@ class AWSUtility
             echo 'server {
                 listen 80;
                 server_name $domain www.$domain;
-                root /var/www/whitecoatdomain/public;
+                root /var/www/$projectDir/public;
                 
                 add_header X-XSS-Protection \"1; mode=block\";
                 add_header X-Content-Type-Options \"nosniff\";
@@ -658,10 +658,15 @@ class AWSUtility
             ]);
             $commandID = $n1Command['Command']['CommandId'];
             if ($commandID !== '') {
-                echo json_encode(['status' => 200, 'message' => 'success on creating server!', 'commandID' => $commandID]);
+                $res['status'] = 200;
+                $res['commandID'] = $commandID;
+                $res['message'] = 'success on creating server!';
+                return $res;
             }
         } catch (AwsException $e) {
-            echo 'AWS Error response: ' . $e->getAwsErrorMessage();
+            $error['status'] = 501;
+            $error['message'] = 'AWS Error response: ' . $e->getAwsErrorMessage();
+            return $error;
         }
     }
 
@@ -726,8 +731,7 @@ class AWSUtility
 
                 // Get the response body as a string
                 $body = $response->getBody()->getContents();
-                // $alias = "consultancy";
-                $alias = "inquiry";
+                $alias = "consultancy";
                 $responseData = json_decode($body, true);
 
                 if (isset($responseData['created_at'])) {

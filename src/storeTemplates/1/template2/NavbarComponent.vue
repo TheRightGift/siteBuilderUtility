@@ -305,8 +305,8 @@
                 edge: "left",
             });
 
-            var elems = document.querySelectorAll(".modal");
-            this.serchModalViewState = M.Modal.init(elems, {
+            var modalElems = document.querySelectorAll(".modal");
+            this.serchModalViewState = M.Modal.init(modalElems, {
                 endingTop: "5%",
             });
         },

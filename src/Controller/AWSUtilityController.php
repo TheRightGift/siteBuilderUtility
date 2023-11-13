@@ -286,18 +286,6 @@ class AWSUtilityController
         return $errorMsg;
     }
 
-    private function validateCreateZoneData($input){
-        $errorMsg = [];
-
-        //must be text only
-        // clean input using $this->cleanInput()
-        if(!isset($input['DomainName']) || empty($input['DomainName'])  || !is_string($input['DomainName'])){
-            array_push($errorMsg, 'DomainName is required and must be a string.');
-        }
-        
-        return $errorMsg;
-    }
-
     private function validateStoreCreationData($input){
         $errorMsg = [];
 
@@ -328,40 +316,33 @@ class AWSUtilityController
         return $errorMsg;
     }
 
-    private function createZone()
-    {
+    private function createZone(){
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $input = $_POST; //(array) json_decode(file_get_contents('php://input'), true);
+            $input = (array) json_decode(file_get_contents('php://input'), true); // Use like this when expecting acess from zebraline server
+            if (count($input) < 1 || count($this->validateHostedZoneData($input)) > 0) {                
+                $res =  $this->unprocessableHostedZoneResponse($this->validateHostedZoneData($input));
+                echo json_encode($res);
+                return;
+            }
             
-            if (count($input) < 1 || count($this->validateCreateZoneData($input)) > 0) {
-                return $this->unprocessableStoreCreationResponse($this->validateCreateZoneData($input));
-            } 
-
             $result = $this->awsUtilityGateway->createHostedZone($input);
-            $response['body'] = json_encode($result);
-            // print_r($response);
-            return $response;
+            echo json_encode($result);
         } else {
             echo json_encode(['status' => 404, 'message' => 'This endpoint does not support '.$_SERVER['REQUEST_METHOD'].' requests.']);
         }
+        
     }
 
     private function createDomainForwarding()
     {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $input = $_POST; //(array) json_decode(file_get_contents('php://input'), true);
-            
-            if (count($input) < 1 || count($this->validateCreateZoneData($input)) > 0) {
-                return $this->unprocessableStoreCreationResponse($this->validateCreateZoneData($input));
-            } 
-
-            $result = $this->awsUtilityGateway->createDomain($input);
-            $response['body'] = json_encode($result);
-            // print_r($response);
-            return $response;
-        } else {
-            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support '.$_SERVER['REQUEST_METHOD'].' requests.']);
+        $input = (array) json_decode(file_get_contents('php://input'), true);
+        if (! $this->validateDomain($input)) {
+            return $this->unprocessableEntityResponse();
         }
+        $result = $this->awsUtilityGateway->createDomain($input);
+        // $response['status_code_header'] = 'HTTP/1.1 200 OK';
+        $response['body'] = json_encode($result);
+        return $response;
     }
 
     private function getcreatedZone()
@@ -376,17 +357,54 @@ class AWSUtilityController
         return $response;
     }
 
-    private function sendCommand()
-    {
-        $input = (array) json_decode(file_get_contents('php://input'), true);
-        if (! $this->validateDomain($input)) {
-            return $this->unprocessableEntityResponse();
+    private function sendCommand(){
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $input = (array) json_decode(file_get_contents('php://input'), true); // Use like this when expecting acess from zebraline server
+            
+            if (count($input) < 1 || count($this->validateCommand($input)) > 0) {                
+                $res =  $this->unprocessableCommandResponse($this->validateCommand($input));
+                echo json_encode($res);
+                return;
+            }
+
+            $result = $this->awsUtilityGateway->sendCommand($input);
+            echo json_encode($result);
+        } else {
+            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support '.$_SERVER['REQUEST_METHOD'].' requests.']);
         }
-        $result = $this->awsUtilityGateway->sendCommand($input);
-        // $response['status_code_header'] = 'HTTP/1.1 200 OK';
-        $response['body'] = json_encode($result);
-        return $response;
     }
+
+    private function validateHostedZoneData($input)
+    {
+        $errorMsg = [];
+
+        if (! isset($input['DomainName'])) {
+            array_push($errorMsg, 'Domain name is required and must be a string.');
+            // return false;
+        }
+        if (! isset($input['projectIp'])) {
+            array_push($errorMsg, 'Project IP is required and must be a string.');
+        }
+        return $errorMsg;
+    }
+
+    private function validateCommand($input)
+    {
+        $errorMsg = [];
+
+        if (! isset($input['DomainName'])) {
+            array_push($errorMsg, 'Domain name is required and must be a string.');
+            // return false;
+        }
+        if (! isset($input['projectDir'])) {
+            array_push($errorMsg, 'Project Directory is required and must be a string.');
+        }
+        return $errorMsg;
+    }
+
+    // 
+
+    
 
     private function validateDomain($input)
     {
@@ -402,6 +420,20 @@ class AWSUtilityController
         $response['body'] = json_encode([
             'error' => $errorMsg
         ]);
+        return $response;
+    }
+    private function unprocessableHostedZoneResponse($errMsg)
+    {
+        $response['status_code_header'] = 'HTTP/1.1 422 Unprocessable Entity';
+        $response['status'] = 422;
+        $response['body'] = $errMsg;
+        return $response;
+    }
+    private function unprocessableCommandResponse($errMsg)
+    {
+        $response['status_code_header'] = 'HTTP/1.1 422 Unprocessable Entity';
+        $response['status'] = 422;
+        $response['body'] = $errMsg;
         return $response;
     }
 

@@ -282,13 +282,13 @@
         mounted() {
             localStorage.setItem("previousPage", this.$route.fullPath);
             var elems = document.querySelectorAll(".sidenav");
-            var instances = M.Sidenav.init(elems, {
+            M.Sidenav.init(elems, {
                 edge: "left",
             });
 
             if (this.categories.length > 3) {
-                var elems = document.querySelectorAll(".dropdown-trigger");
-                var instances = M.Dropdown.init(elems, {
+                var dropdownElems = document.querySelectorAll(".dropdown-trigger");
+                M.Dropdown.init(dropdownElems, {
                     constrainWidth: true,
                     coverTrigger: false,
                 });
