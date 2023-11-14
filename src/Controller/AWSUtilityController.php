@@ -69,10 +69,6 @@ class AWSUtilityController
             case '/changenameserversonnamesilo':
                 $response = $this->changenameserversonnamesilo();
                 break;
-            case '/changeresoucerecords':
-                $response = $this->changeresoucerecords();
-                break;
-                
             default: header("HTTP/1.1 404 Not Found");
                 exit();
         }
@@ -229,24 +225,6 @@ class AWSUtilityController
         }
     }
 
-    private function changeresoucerecords()
-    {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $input = (array) json_decode(file_get_contents('php://input'), true); // Use like this when expecting acess from zebraline server
-
-            if (count($input) < 1 || count($this->validateResourceData($input)) > 0) {
-                $res =  $this->unprocessableCommandResponse($this->validateResourceData($input));
-                echo json_encode($res);
-                return;
-            }
-
-            $result = $this->awsUtilityGateway->changeResourceRecords($input);
-            echo json_encode($result);
-        } else {
-            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support ' . $_SERVER['REQUEST_METHOD'] . ' requests.']);
-        }
-    }
-
     private function runJScompileCommand()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
@@ -393,14 +371,19 @@ class AWSUtilityController
 
     private function createDomainForwarding()
     {
-        $input = (array) json_decode(file_get_contents('php://input'), true);
-        if (!$this->validateDomain($input)) {
-            return $this->unprocessableEntityResponse();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $input = (array) json_decode(file_get_contents('php://input'), true); // Use like this when expecting acess from zebraline server
+            if (count($input) < 1 || count($this->validateDomainForwardData($input)) > 0) {
+                $res =  $this->unprocessableHostedZoneResponse($this->validateDomainForwardData($input));
+                echo json_encode($res);
+                return;
+            }
+
+            $result = $this->awsUtilityGateway->createDomain($input);
+            echo json_encode($result);
+        } else {
+            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support ' . $_SERVER['REQUEST_METHOD'] . ' requests.']);
         }
-        $result = $this->awsUtilityGateway->createDomain($input);
-        // $response['status_code_header'] = 'HTTP/1.1 200 OK';
-        $response['body'] = json_encode($result);
-        return $response;
     }
 
     private function getcreatedZone()
@@ -447,6 +430,20 @@ class AWSUtilityController
         return $errorMsg;
     }
 
+    private function validateDomainForwardData($input)
+    {
+        $errorMsg = [];
+
+        if (!isset($input['DomainName'])) {
+            array_push($errorMsg, 'Domain name is required and must be a string.');
+            // return false;
+        }
+        if (!isset($input['email'])) {
+            array_push($errorMsg, 'Email is required and must be a string.');
+        }
+        return $errorMsg;
+    }
+
     private function validateCommand($input)
     {
         $errorMsg = [];
@@ -470,30 +467,10 @@ class AWSUtilityController
             // return false;
         }
         if (!isset($input['nameServers'])) {
-            array_push($errorMsg, 'Project Directory is required and must be a string.');
+            array_push($errorMsg, 'Nameserver is required and must be a array.');
         }
         return $errorMsg;
     }
-
-    private function validateResourceData($input)
-    {
-        $errorMsg = [];
-
-        if (!isset($input['domainName'])) {
-            array_push($errorMsg, 'Domain name is required and must be a string.');
-            // return false;
-        }
-        if (!isset($input['projectIp'])) {
-            array_push($errorMsg, 'Project IP is required and must be a string.');
-        }
-        if (!isset($input['hostedZoneId'])) {
-            array_push($errorMsg, 'Hosted Zone is required and must be a string.');
-        }
-        return $errorMsg;
-    }
-
-    //
-
 
 
     private function validateDomain($input)
