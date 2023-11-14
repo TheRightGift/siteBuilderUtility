@@ -476,9 +476,11 @@ class AWSUtility
             // Update the DNS settings for the domain
             // This code assumes that you are using the AWS Route 53 DNS service
             // Change the resourceRecords
+            // return "here form";
+            return json_encode(['domainName' => $domainName, 'nameservers' => $nameServers, 'hostedzone' => $hostedZoneId, 'projectIp' => $projectIp]);
             // $this->changeNameServers($domainName, $nameServers);
 
-            return $this->changeResourceRecords($domainName, $hostedZoneId, $projectIp);
+            // return $this->changeResourceRecords($domainName, $hostedZoneId, $projectIp);
         } catch (AwsException $e) {
             // Handle any errors that occur
             $error['status'] = 501;
@@ -522,8 +524,11 @@ class AWSUtility
      * @param Array $nameServers
      * @return void
      */
-    public function changeNameServers(String $domainName, array $nameServers)
+    public function changeNameServers(array $input)
     {
+        // String $domainName, array $nameServers
+        $domainName = $input['domainName'];
+        $nameServers = $input['nameServers'];
         $key = $_SERVER['NAMESILO_API_KEY'];
         $ns1 = $nameServers[0];
         $ns2 = $nameServers[1];
@@ -541,9 +546,12 @@ class AWSUtility
             $body = $response->getBody();
             $xml = simplexml_load_string($body);
             if (htmlentities((string)$xml->reply->detail) === 'success' && htmlentities((string)$xml->reply->code) === 300) {
-                // echo "Message ".htmlentities((string)$xml->reply->detail).';'. "Status".htmlentities((string)$xml->reply->detail);
+                $res['status'] = 200;
+                $res['message'] = 'success';
+                return $res;
+                // echo json_encode(["message" => "Message ".htmlentities((string)$xml->reply->detail).';'. "Status".htmlentities((string)$xml->reply->detail), "status" => 300]);
             } else {
-                // echo $body;
+                echo json_encode($xml);
             }
         } catch (\Throwable $th) {
             echo $th->getMessage();
@@ -559,8 +567,11 @@ class AWSUtility
      * @param String $hostedZoneId
      * @return void
      */
-    public function changeResourceRecords(String $domainName, String $hostedZoneId, String $projectIp) {
-       
+    public function changeResourceRecords(array $input) {
+        // String $domainName, String $hostedZoneId, String $projectIp
+        $domainName = $input['domainName'];
+        $projectIp = $input['projectIp'];
+        $hostedZoneId = $input['hostedZoneId'];
         try {
             $awwwRecord = [
                 'Action' => 'CREATE',
@@ -1087,7 +1098,7 @@ class AWSUtility
     {
 
         // $recordSetName = 'www.vendmeqniq.com'; // Replace with the name of the record set you want to delete
-        $domainName = 'vendmeqniq.com';
+        $domainName = 'drdionneibekiemd.com';
         // Set up the changes for the record set
         $awwwRecord = [
             'Action' => 'DELETE',
@@ -1143,7 +1154,7 @@ class AWSUtility
         // Delete the record set
         try {
             $result = $this->route53->changeResourceRecordSets([
-                'HostedZoneId' => '/hostedzone/Z104641933KKYZTXEG1H6',
+                'HostedZoneId' => '/hostedzone/Z008721817O5NKMU5CPE0',
                 'ChangeBatch' => [
                     'Changes' => $changes,
                 ],
@@ -1158,7 +1169,7 @@ class AWSUtility
         try {
             // Delete the hosted zone
             $this->route53->deleteHostedZone([
-                'Id' => '/hostedzone/Z104641933KKYZTXEG1H6' // Z019631217VC5N0L30ZHI
+                'Id' => '/hostedzone/Z008721817O5NKMU5CPE0' // Z019631217VC5N0L30ZHI
             ]);
 
             echo 'Hosted zone deleted successfully.' . PHP_EOL;

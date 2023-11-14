@@ -1,6 +1,7 @@
 <?php
 
 namespace Src\Controller;
+
 use voku\db\DB;
 use Src\API\AWSUtility;
 
@@ -64,9 +65,16 @@ class AWSUtilityController
                 break;
             case '/runJScompileCommand':
                 $response = $this->runJScompileCommand();
-                break;            
+                break;
+            case '/changenameserversonnamesilo':
+                $response = $this->changenameserversonnamesilo();
+                break;
+            case '/changeresoucerecords':
+                $response = $this->changeresoucerecords();
+                break;
+                
             default: header("HTTP/1.1 404 Not Found");
-            exit();
+                exit();
         }
         // header($response['status_code_header']);
         // if ($response['body']) {
@@ -74,7 +82,8 @@ class AWSUtilityController
         // }
     }
 
-    private function dbConnection(){
+    private function dbConnection()
+    {
         $db = DB::getInstance('localhost', 'root', '', 'wcdawsutility');
         // $db = new mysqli('localhost', 'root', '', 'wcdawsutility');
         // if($db->connect_errno)
@@ -85,35 +94,38 @@ class AWSUtilityController
         return $db;
     }
 
-    private function cleanInput($data) {
+    private function cleanInput($data)
+    {
         // Address Magic Quotes.
-       if (ini_get('magic_quotes_gpc')) {
-       $data = stripslashes($data);
-       }
-       // Check for mysql_real_escape_string() support.
-       if (function_exists('mysql_real_escape_string')){
-          global $db; // Need the connection.
-          $data = mysqli_real_escape_string ($db, trim($data));
-       } else {
-          $data = mysqli_real_escape_string ($db, trim($data));
-       }
-       // Return the escaped value.    
-       return $data;
+        if (ini_get('magic_quotes_gpc')) {
+            $data = stripslashes($data);
+        }
+        // Check for mysql_real_escape_string() support.
+        if (function_exists('mysql_real_escape_string')) {
+            global $db; // Need the connection.
+            $data = mysqli_real_escape_string($db, trim($data));
+        } else {
+            $data = mysqli_real_escape_string($db, trim($data));
+        }
+        // Return the escaped value.
+        return $data;
     }
 
 
-    private function createTemplate() {
+    private function createTemplate()
+    {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $db = $this->dbConnection();
-            // $result = $db->query("SELECT * FROM templates");
-            // $templates  = $result->fetchAll();
-            // echo COUNT($templates);
+        // $result = $db->query("SELECT * FROM templates");
+        // $templates  = $result->fetchAll();
+        // echo COUNT($templates);
         } else {
             echo 'No';
         }
     }
 
-    private function allTemplates() {
+    private function allTemplates()
+    {
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             $db = $this->dbConnection();
             $result = $db->query("SELECT * FROM templates");
@@ -145,7 +157,7 @@ class AWSUtilityController
     //         }
     //     } else {
     //         echo 'No';
-    //     }        
+    //     }
     // }
 
     // private function updateTemplate() {
@@ -163,180 +175,226 @@ class AWSUtilityController
     //         echo 'No';
     //     }
     // }
-    private function updateThemeColor(){
+    private function updateThemeColor()
+    {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = $_POST; //(array) json_decode(file_get_contents('php://input'), true);
-            
+
             if (count($input) < 1 || count($this->validateStoreThemeColorUpdateData($input)) > 0) {
                 return $this->unprocessableStoreCreationResponse($this->validateStoreThemeColorUpdateData($input));
-            } 
+            }
 
             $result = $this->awsUtilityGateway->updateStoreThemeColor($input);
             $response['body'] = json_encode($result);
             // print_r($response);
             return $response;
         } else {
-            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support '.$_SERVER['REQUEST_METHOD'].' requests.']);
+            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support ' . $_SERVER['REQUEST_METHOD'] . ' requests.']);
         }
     }
 
-    private function deleteStoreDirectory(){
+    private function deleteStoreDirectory()
+    {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = $_POST; //(array) json_decode(file_get_contents('php://input'), true);
-            
+
             if (count($input) < 1 || count($this->validateStoreDeleteData($input)) > 0) {
                 return $this->unprocessableStoreCreationResponse($this->validateStoreDeleteData($input));
-            } 
+            }
 
             $result = $this->awsUtilityGateway->deleteStoreDirectory($input);
             $response['body'] = json_encode($result);
             // print_r($response);
             return $response;
         } else {
-            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support '.$_SERVER['REQUEST_METHOD'].' requests.']);
+            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support ' . $_SERVER['REQUEST_METHOD'] . ' requests.']);
         }
     }
 
-    private function runJScompileCommand(){
+    private function changenameserversonnamesilo()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $input = (array) json_decode(file_get_contents('php://input'), true); // Use like this when expecting acess from zebraline server
+
+            if (count($input) < 1 || count($this->validateNameServerRec($input)) > 0) {
+                $res =  $this->unprocessableCommandResponse($this->validateNameServerRec($input));
+                echo json_encode($res);
+                return;
+            }
+
+            $result = $this->awsUtilityGateway->changeNameServers($input);
+            echo json_encode($result);
+        } else {
+            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support ' . $_SERVER['REQUEST_METHOD'] . ' requests.']);
+        }
+    }
+
+    private function changeresoucerecords()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $input = (array) json_decode(file_get_contents('php://input'), true); // Use like this when expecting acess from zebraline server
+
+            if (count($input) < 1 || count($this->validateResourceData($input)) > 0) {
+                $res =  $this->unprocessableCommandResponse($this->validateResourceData($input));
+                echo json_encode($res);
+                return;
+            }
+
+            $result = $this->awsUtilityGateway->changeResourceRecords($input);
+            echo json_encode($result);
+        } else {
+            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support ' . $_SERVER['REQUEST_METHOD'] . ' requests.']);
+        }
+    }
+
+    private function runJScompileCommand()
+    {
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
-            
+
             $result = $this->awsUtilityGateway->runJScompileCommand();
             $response['body'] = json_encode($result);
-            
+
             return $response;
         } else {
-            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support '.$_SERVER['REQUEST_METHOD'].' requests.']);
+            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support ' . $_SERVER['REQUEST_METHOD'] . ' requests.']);
         }
     }
 
-    private function createStore(){
+    private function createStore()
+    {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = $_POST; //(array) json_decode(file_get_contents('php://input'), true);
-            
+
             if (count($input) < 1 || count($this->validateStoreCreationData($input)) > 0) {
                 return $this->unprocessableStoreCreationResponse($this->validateStoreCreationData($input));
                 // exit();
-            } 
+            }
 
             $result = $this->awsUtilityGateway->createStoreModule($input);
             $response['body'] = json_encode($result);
             // print_r($response);
             return $response;
         } else {
-            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support '.$_SERVER['REQUEST_METHOD'].' requests.']);
+            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support ' . $_SERVER['REQUEST_METHOD'] . ' requests.']);
         }
-        
+
     }
 
-    private function storeTypeHasTemplate(){
+    private function storeTypeHasTemplate()
+    {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = $_POST;
             $result = $this->awsUtilityGateway->storeTypeHasTemplate($input);
             $response['body'] = json_encode($result);
             return $response;
         } else {
-            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support '.$_SERVER['REQUEST_METHOD'].' requests.']);
+            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support ' . $_SERVER['REQUEST_METHOD'] . ' requests.']);
         }
     }
 
-    private function listcommands(){
+    private function listcommands()
+    {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = $_POST; //(array) json_decode(file_get_contents('php://input'), true);
-        
+
             $result = $this->awsUtilityGateway->listCommandStatus($input);
             $response['body'] = json_encode($result);
-            
+
             return $response;
         } else {
-            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support '.$_SERVER['REQUEST_METHOD'].' requests.']);
+            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support ' . $_SERVER['REQUEST_METHOD'] . ' requests.']);
         }
     }
 
-    private function validateStoreThemeColorUpdateData($input){
+    private function validateStoreThemeColorUpdateData($input)
+    {
         $errorMsg = [];
 
         //must be text only
         // clean input using $this->cleanInput()
-        if(!isset($input['oldThemeColor']) || empty($input['themeColor'])  || !is_string($input['themeColor'])){
+        if(!isset($input['oldThemeColor']) || empty($input['themeColor'])  || !is_string($input['themeColor'])) {
             array_push($errorMsg, 'Store theme color is required and must be a string.');
         }
 
-        if(!isset($input['newThemeColor']) || empty($input['themeColor'])  || !is_string($input['themeColor'])){
+        if(!isset($input['newThemeColor']) || empty($input['themeColor'])  || !is_string($input['themeColor'])) {
             array_push($errorMsg, 'Store theme color is required and must be a string.');
         }
 
         //must be text only
         // clean input using $this->cleanInput()
-        if(!isset($input['storeDirectoryName']) || empty($input['storeDirectoryName'])  || !is_string($input['storeDirectoryName'])){
+        if(!isset($input['storeDirectoryName']) || empty($input['storeDirectoryName'])  || !is_string($input['storeDirectoryName'])) {
             array_push($errorMsg, 'Store directory name is required and must be a string.');
         }
-        
+
         return $errorMsg;
     }
 
-    private function validateStoreDeleteData($input){
+    private function validateStoreDeleteData($input)
+    {
         $errorMsg = [];
 
         //must be text only
         // clean input using $this->cleanInput()
-        if(!isset($input['storeDirectoryName']) || empty($input['storeDirectoryName'])  || !is_string($input['storeDirectoryName'])){
+        if(!isset($input['storeDirectoryName']) || empty($input['storeDirectoryName'])  || !is_string($input['storeDirectoryName'])) {
             array_push($errorMsg, 'Store directory name is required and must be a string.');
         }
-        
+
         return $errorMsg;
     }
 
-    private function validateStoreCreationData($input){
+    private function validateStoreCreationData($input)
+    {
         $errorMsg = [];
 
         //must be text only
         // clean input using $this->cleanInput()
-        if(!isset($input['storeName']) || empty($input['storeName'])  || !is_string($input['storeName'])){
+        if(!isset($input['storeName']) || empty($input['storeName'])  || !is_string($input['storeName'])) {
             array_push($errorMsg, 'Store name is required and must be a string.');
         }
 
         //must be text only
         // clean input using $this->cleanInput()
-        if(!isset($input['themeColor']) || empty($input['themeColor'])  || !is_string($input['themeColor'])){
+        if(!isset($input['themeColor']) || empty($input['themeColor'])  || !is_string($input['themeColor'])) {
             array_push($errorMsg, 'Store theme color is required and must be a string.');
         }
 
         //must be text only
         // clean input using $this->cleanInput()
-        if(!isset($input['storeDirectoryName']) || empty($input['storeDirectoryName'])  || !is_string($input['storeDirectoryName'])){
+        if(!isset($input['storeDirectoryName']) || empty($input['storeDirectoryName'])  || !is_string($input['storeDirectoryName'])) {
             array_push($errorMsg, 'Store directory name is required and must be a string.');
         }
 
         //must be numeric only
         // clean input using $this->cleanInput()
-        if(!isset($input['storeTypeId']) || empty($input['storeTypeId'])  || !is_numeric($input['storeTypeId'])){
+        if(!isset($input['storeTypeId']) || empty($input['storeTypeId'])  || !is_numeric($input['storeTypeId'])) {
             array_push($errorMsg, 'Store type is required and must be an integer.');
         }
-        
+
         return $errorMsg;
     }
 
-    private function createZone(){
+    private function createZone()
+    {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = (array) json_decode(file_get_contents('php://input'), true); // Use like this when expecting acess from zebraline server
-            if (count($input) < 1 || count($this->validateHostedZoneData($input)) > 0) {                
+            if (count($input) < 1 || count($this->validateHostedZoneData($input)) > 0) {
                 $res =  $this->unprocessableHostedZoneResponse($this->validateHostedZoneData($input));
                 echo json_encode($res);
                 return;
             }
-            
+
             $result = $this->awsUtilityGateway->createHostedZone($input);
             echo json_encode($result);
         } else {
-            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support '.$_SERVER['REQUEST_METHOD'].' requests.']);
+            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support ' . $_SERVER['REQUEST_METHOD'] . ' requests.']);
         }
-        
+
     }
 
     private function createDomainForwarding()
     {
         $input = (array) json_decode(file_get_contents('php://input'), true);
-        if (! $this->validateDomain($input)) {
+        if (!$this->validateDomain($input)) {
             return $this->unprocessableEntityResponse();
         }
         $result = $this->awsUtilityGateway->createDomain($input);
@@ -357,11 +415,12 @@ class AWSUtilityController
         return $response;
     }
 
-    private function sendCommand(){
+    private function sendCommand()
+    {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = (array) json_decode(file_get_contents('php://input'), true); // Use like this when expecting acess from zebraline server
-            
-            if (count($input) < 1 || count($this->validateCommand($input)) > 0) {                
+
+            if (count($input) < 1 || count($this->validateCommand($input)) > 0) {
                 $res =  $this->unprocessableCommandResponse($this->validateCommand($input));
                 echo json_encode($res);
                 return;
@@ -370,7 +429,7 @@ class AWSUtilityController
             $result = $this->awsUtilityGateway->sendCommand($input);
             echo json_encode($result);
         } else {
-            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support '.$_SERVER['REQUEST_METHOD'].' requests.']);
+            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support ' . $_SERVER['REQUEST_METHOD'] . ' requests.']);
         }
     }
 
@@ -378,11 +437,11 @@ class AWSUtilityController
     {
         $errorMsg = [];
 
-        if (! isset($input['DomainName'])) {
+        if (!isset($input['DomainName'])) {
             array_push($errorMsg, 'Domain name is required and must be a string.');
             // return false;
         }
-        if (! isset($input['projectIp'])) {
+        if (!isset($input['projectIp'])) {
             array_push($errorMsg, 'Project IP is required and must be a string.');
         }
         return $errorMsg;
@@ -392,23 +451,54 @@ class AWSUtilityController
     {
         $errorMsg = [];
 
-        if (! isset($input['DomainName'])) {
+        if (!isset($input['DomainName'])) {
             array_push($errorMsg, 'Domain name is required and must be a string.');
             // return false;
         }
-        if (! isset($input['projectDir'])) {
+        if (!isset($input['projectDir'])) {
             array_push($errorMsg, 'Project Directory is required and must be a string.');
         }
         return $errorMsg;
     }
 
-    // 
+    private function validateNameServerRec($input)
+    {
+        $errorMsg = [];
 
-    
+        if (!isset($input['domainName'])) {
+            array_push($errorMsg, 'Domain name is required and must be a string.');
+            // return false;
+        }
+        if (!isset($input['nameServers'])) {
+            array_push($errorMsg, 'Project Directory is required and must be a string.');
+        }
+        return $errorMsg;
+    }
+
+    private function validateResourceData($input)
+    {
+        $errorMsg = [];
+
+        if (!isset($input['domainName'])) {
+            array_push($errorMsg, 'Domain name is required and must be a string.');
+            // return false;
+        }
+        if (!isset($input['projectIp'])) {
+            array_push($errorMsg, 'Project IP is required and must be a string.');
+        }
+        if (!isset($input['hostedZoneId'])) {
+            array_push($errorMsg, 'Hosted Zone is required and must be a string.');
+        }
+        return $errorMsg;
+    }
+
+    //
+
+
 
     private function validateDomain($input)
     {
-        if (! isset($input['DomainName'])) {
+        if (!isset($input['DomainName'])) {
             return false;
         }
         return true;
