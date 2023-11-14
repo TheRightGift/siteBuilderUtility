@@ -477,10 +477,13 @@ class AWSUtility
             // This code assumes that you are using the AWS Route 53 DNS service
             // Change the resourceRecords
             // return "here form";
-            return json_encode(['domainName' => $domainName, 'nameservers' => $nameServers, 'hostedzone' => $hostedZoneId, 'projectIp' => $projectIp]);
-            // $this->changeNameServers($domainName, $nameServers);
 
-            // return $this->changeResourceRecords($domainName, $hostedZoneId, $projectIp);
+            $res =  $this->changeResourceRecords($domainName, $hostedZoneId, $projectIp);
+            if($res['status'] === 200){
+                return json_encode(['domainName' => $domainName, 'nameservers' => $nameServers, 'hostedzone' => $hostedZoneId, 'projectIp' => $projectIp]);
+            } else {
+                return json_encode(['status' => $res['status'], 'message' => $res['message']]);
+            }
         } catch (AwsException $e) {
             // Handle any errors that occur
             $error['status'] = 501;
@@ -524,8 +527,7 @@ class AWSUtility
      * @param Array $nameServers
      * @return void
      */
-    public function changeNameServers(array $input)
-    {
+    public function changeNameServers(array $input){
         // String $domainName, array $nameServers
         $domainName = $input['domainName'];
         $nameServers = $input['nameServers'];
