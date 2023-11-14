@@ -474,13 +474,11 @@ class AWSUtility
             $nameServers = $result->get('DelegationSet')['NameServers'];
 
             // Update the DNS settings for the domain
-            // This code assumes that you are using the AWS Route 53 DNS service
             // Change the resourceRecords
-            // return "here form";
 
             $res =  $this->changeResourceRecords($domainName, $hostedZoneId, $projectIp);
             if($res['status'] === 200){
-                return json_encode(['domainName' => $domainName, 'nameservers' => $nameServers, 'hostedzone' => $hostedZoneId, 'projectIp' => $projectIp]);
+                return json_encode(['domainName' => $domainName, 'nameservers' => $nameServers]);
             } else {
                 return json_encode(['status' => $res['status'], 'message' => $res['message']]);
             }
@@ -527,39 +525,45 @@ class AWSUtility
      * @param Array $nameServers
      * @return void
      */
-    public function changeNameServers(array $input){
-        // String $domainName, array $nameServers
+    public function changeNameServers(array $input) {
         $domainName = $input['domainName'];
         $nameServers = $input['nameServers'];
         $key = $_SERVER['NAMESILO_API_KEY'];
-        $ns1 = $nameServers[0];
-        $ns2 = $nameServers[1];
-        $ns3 = $nameServers[2];
-        $ns4 = $nameServers[3];
-        // $key = '19162fabb5d351a3b3a5';
-        // $ns1= 'NS1.NAMESILO.COM ';
-        // $ns2= 'NS2.NAMESILO.COM';
-        // $ns3= 'NS3.NAMESILO.COM';
-        // $ns4= 'NS4.NAMESILO.COM';
+        
+        // Construct the nameserver parameters dynamically
+        $nsParams = [];
+        foreach ($nameServers as $index => $ns) {
+            $nsParams["ns" . ($index + 1)] = $ns;
+        }
+        
         try {
-            $URL = "https://www.namesilo.com/api/changeNameServers?version=1&type=xml&key={$key}&domain={$domainName}&ns1={$ns1}&ns2={$ns2}&ns3={$ns3}&ns4={$ns4}";
-            // $URL = "https://sandbox.namesilo.com/api/changeNameServers?version=1&type=xml&key={$key}&domain={$domainName}&ns1={$ns1}&ns2={$ns2}&ns3={$ns3}&ns4={$ns4}";
+            $params = http_build_query(array_merge([
+                'version' => 1,
+                'type' => 'xml',
+                'key' => $key,
+                'domain' => $domainName
+            ], $nsParams));
+    
+            $URL = "https://www.namesilo.com/api/changeNameServers?" . $params;
             $response = $this->client->request('GET', $URL);
             $body = $response->getBody();
             $xml = simplexml_load_string($body);
-            if (htmlentities((string)$xml->reply->detail) === 'success' && htmlentities((string)$xml->reply->code) === 300) {
-                $res['status'] = 200;
-                $res['message'] = 'success';
-                return $res;
-                // echo json_encode(["message" => "Message ".htmlentities((string)$xml->reply->detail).';'. "Status".htmlentities((string)$xml->reply->detail), "status" => 300]);
+            
+            if ((string)$xml->reply->detail === 'success' && (int)$xml->reply->code === 300) {
+                return [
+                    'status' => 200,
+                    'message' => 'success'
+                ];
             } else {
-                echo json_encode($xml);
+                return json_decode(json_encode($xml), true);
             }
         } catch (\Throwable $th) {
-            echo $th->getMessage();
-            exit;
+            return [
+                'error' => $th->getMessage()
+            ];
         }
     }
+    
 
     /**
      * Creates an A record on the Amazon Route 53
@@ -569,11 +573,7 @@ class AWSUtility
      * @param String $hostedZoneId
      * @return void
      */
-    public function changeResourceRecords(array $input) {
-        // String $domainName, String $hostedZoneId, String $projectIp
-        $domainName = $input['domainName'];
-        $projectIp = $input['projectIp'];
-        $hostedZoneId = $input['hostedZoneId'];
+    public function changeResourceRecords(String $domainName, String $hostedZoneId, String $projectIp) {
         try {
             $awwwRecord = [
                 'Action' => 'CREATE',
@@ -766,45 +766,38 @@ class AWSUtility
      *   -u @api String $user:
      * @param String $domain
      */
-    public function createDomain(array $input)
-    {
+    public function createDomain(array $input) {
         $domain = $input["DomainName"];
         $email = $input['email'];
         $zoneID = $this->requestZoneID($domain);
+        
         if ($zoneID['status'] == 200) {
             $hostedZoneId = $zoneID['zoneID'];
-            $url = $_SERVER['EMAILFORWARD_NET_URL'] . 'domains';
-            $options = [
-                'auth' => [$_SERVER['EMAILFORWARD_NET_USER'], ''],
-                'form_params' => [
-                    'domain' => $domain,
-                ],
-            ];
-
-            try {
-                $response = $this->client->post($url, $options);
-
-                // Get the response body as a string
-                $body = $response->getBody()->getContents();
-                $alias = "consultancy";
-                $responseData = json_decode($body, true);
-
-                if (isset($responseData['created_at'])) {
-                    $verification_record = $responseData['verification_record'];
-                    $this->createDomainAlias($alias, $domain, $email);
-                    $this->updateDNSMXRecordForDomainForwarding($verification_record, $hostedZoneId, $domain);
-                } else {
-                    echo "The 'created_at' field does not exist in the response: $body";
-                }
-            } catch (RequestException $e) {
-                if ($e->hasResponse()) {
-                    $statusCode = $e->getResponse()->getStatusCode();
-                    $errorMessage = $e->getResponse()->getBody()->getContents();
-                    echo "Error Creating Forwrd: {$statusCode} - {$errorMessage}";
-                } else {
-                    echo 'Error Creating Forwrd: ' . $e->getMessage();
-                }
+            $responseData = $this->createDomainForwarding($domain);
+            
+            if (isset($responseData['created_at'])) {
+                $verification_record = $responseData['verification_record'];
+                $this->createDomainAlias('consultancy', $domain, $email);
+                $this->updateDNSMXAndTXTRecords($verification_record, $hostedZoneId, $domain);
+            } else {
+                echo "The 'created_at' field does not exist in the response.";
             }
+        }
+    }
+
+    public function createDomainForwarding(string $domain) {
+        $url = $_SERVER['EMAILFORWARD_NET_URL'] . 'domains';
+        $options = [
+            'auth' => [$_SERVER['EMAILFORWARD_NET_USER'], ''],
+            'form_params' => ['domain' => $domain],
+        ];
+
+        try {
+            $response = $this->client->post($url, $options);
+            return json_decode($response->getBody()->getContents(), true);
+        } catch (RequestException $e) {
+            $this->handleRequestException($e, 'Error Creating Forward');
+            return [];
         }
     }
 
@@ -813,65 +806,33 @@ class AWSUtility
      * -u @api
      * @param String consultancy@+$domain
      */
-    public function createDomainAlias(String $aliasName, String $domain, String $email)
-    {
-        // Set the request URL and options
+    public function createDomainAlias(string $aliasName, string $domain, string $email) {
         $url = $_SERVER['EMAILFORWARD_NET_URL'] . 'domains/' . $domain . '/aliases';
         $options = [
-            'auth' => [$_SERVER['EMAILFORWARD_NET_USER'], ''], // Replace with your API key
-            'headers' => [
-                'Content-Type' => 'application/json',
-            ],
-            'json' => [
-                'name' => $aliasName,
-                'recipients' => $email
-            ],
+            'auth' => [$_SERVER['EMAILFORWARD_NET_USER'], ''],
+            'headers' => ['Content-Type' => 'application/json'],
+            'json' => ['name' => $aliasName, 'recipients' => $email],
         ];
 
         try {
-            $response = $this->client->post($url, $options);
-
-            // $body = $response->getBody()->getContents();
-            // echo $body;
+            $this->client->post($url, $options);
         } catch (RequestException $e) {
-            // Handle request errors
-            if ($e->hasResponse()) {
-                $statusCode = $e->getResponse()->getStatusCode();
-                $errorMessage = $e->getResponse()->getBody()->getContents();
-                echo "Error Creating Alias: {$statusCode} - {$errorMessage}";
-            } else {
-                echo 'Error Creating Alias: ' . $e->getMessage();
-            }
+            $this->handleRequestException($e, 'Error Creating Alias');
         }
     }
 
     /**
      * Update user MX records in AWS Route53
      */
-    public function updateDNSMXRecordForDomainForwarding(String $verification_record, String $hostedZoneId, String $domain)
-    {
-        // MX 10 mx1.forwardemail.net
-        // MX 10 mx2.forwardemail.net
-        // TXT forward-email-site-verification={$verification_record}
-
+    public function updateDNSMXAndTXTRecords(string $verification_record, string $hostedZoneId, string $domain) {
         $mxRecords = [
-            [
-                'Value' => '10 mx1.forwardemail.net.',
-                'Priority' => 10,
-            ],
-            [
-                'Value' => '10 mx2.forwardemail.net.',
-                'Priority' => 10,
-            ],
+            ['Value' => '10 mx1.forwardemail.net.', 'Priority' => 10],
+            ['Value' => '10 mx2.forwardemail.net.', 'Priority' => 10],
         ];
 
-        $txtRecord = [
-            'Value' => "\"forward-email-site-verification={$verification_record}\"",
-
-        ];
+        $txtRecord = ['Value' => "\"forward-email-site-verification={$verification_record}\""];
 
         try {
-            // Update the MX records
             $response = $this->route53->changeResourceRecordSets([
                 'HostedZoneId' => $hostedZoneId,
                 'ChangeBatch' => [
@@ -898,24 +859,20 @@ class AWSUtility
                 ],
             ]);
 
-            // Process the response as needed
-            // echo "MX records updated successfully.";
+            $this->waitForChangesAndVerify($response, $domain);
         } catch (AwsException $e) {
-            // Handle any errors that occurred
             echo "Error creating MX Records: {$e->getMessage()}";
-        } finally {
-            if ($response) {
-                $changeId = $response->get('ChangeInfo')['Id'];
-                $this->route53->waitUntil('ResourceRecordSetsChanged', [
-                    'Id' => $changeId,
-                    'WaiterConfig' => [
-                        'Delay' => 10, // time delay between each request
-                        'MaxAttempts' => 30, // maximum number of attempts to make
-                    ],
-                ]);
-                $this->verifyDomainRecords($domain);
-                // echo json_encode(['status' => 200, 'message' => 'success on creating MX Records!']);
-            }
+        }
+    }
+
+    private function waitForChangesAndVerify($response, $domain) {
+        if ($response) {
+            $changeId = $response->get('ChangeInfo')['Id'];
+            $this->route53->waitUntil('ResourceRecordSetsChanged', [
+                'Id' => $changeId,
+                'WaiterConfig' => ['Delay' => 10, 'MaxAttempts' => 30],
+            ]);
+            $this->verifyDomainRecords($domain);
         }
     }
 
@@ -923,28 +880,29 @@ class AWSUtility
      * Verify Domain Records
      * curl https://api.forwardemail.net/v1/domains/hash.fyi/verify-records \
      */
-    public function verifyDomainRecords(String $domain)
-    {
+    public function verifyDomainRecords(string $domain) {
         $url = $_SERVER['EMAILFORWARD_NET_URL'] . 'domains/' . $domain . '/verify-records';
-        $options = [
-            'auth' => [$_SERVER['EMAILFORWARD_NET_USER'], ''],
-        ];
+        $options = ['auth' => [$_SERVER['EMAILFORWARD_NET_USER'], '']];
 
         try {
             $response = $this->client->get($url, $options);
-            // Get the response body as a string
-            $body = $response->getBody()->getContents();
-            echo $body;
+            return $response->getBody()->getContents();
         } catch (RequestException $e) {
-            if ($e->hasResponse()) {
-                $statusCode = $e->getResponse()->getStatusCode();
-                $errorMessage = $e->getResponse()->getBody()->getContents();
-                echo "Error verifying domain: {$statusCode} - {$errorMessage}";
-            } else {
-                echo 'Error verifying domain: ' . $e->getMessage();
-            }
+            $this->handleRequestException($e, 'Error verifying domain');
+            return '';
         }
     }
+
+    private function handleRequestException(RequestException $e, string $errorMessagePrefix) {
+        if ($e->hasResponse()) {
+            $statusCode = $e->getResponse()->getStatusCode();
+            $errorMessage = $e->getResponse()->getBody()->getContents();
+            echo "{$errorMessagePrefix}: {$statusCode} - {$errorMessage}";
+        } else {
+            echo "{$errorMessagePrefix}: {$e->getMessage()}";
+        }
+    }
+
 
     public function updateMXRecords()
     {
