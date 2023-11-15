@@ -69,7 +69,6 @@ class AWSUtilityController
             case '/changenameserversonnamesilo':
                 $response = $this->changenameserversonnamesilo();
                 break;
-<<<<<<< HEAD
             case '/changeresoucerecords':
                 $response = $this->changeresoucerecords();
                 break;
@@ -77,8 +76,6 @@ class AWSUtilityController
                 $response = $this->pendingWebsiteSetup();
                 break;
                 
-=======
->>>>>>> c1f60ab7c930699d8f07a376b6cfd4c2364832a2
             default: header("HTTP/1.1 404 Not Found");
                 exit();
         }
@@ -113,17 +110,18 @@ class AWSUtilityController
     }
 
     private function pendingWebsiteSetup(){
+        
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = $_POST; //(array) json_decode(file_get_contents('php://input'), true); // Use like this when expecting acess from zebraline server
 
             if (count($input) < 1 || count($this->validatePendingWebsite($input)) > 0) {
                 $res =  $this->unprocessableResponse($this->validatePendingWebsite($input));
-                echo $res;
+                echo json_encode($res);
                 return;
             }
 
             $result = $this->awsUtilityGateway->pendingWebsiteSetup($input);
-            echo $result;
+            echo json_encode($result);
         } else {
             echo json_encode(['status' => 404, 'message' => 'This endpoint does not support ' . $_SERVER['REQUEST_METHOD'] . ' requests.']);
         }
@@ -241,7 +239,6 @@ class AWSUtilityController
         }
     }
 
-<<<<<<< HEAD
     private function changeresoucerecords() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = (array) json_decode(file_get_contents('php://input'), true); // Use like this when expecting acess from zebraline server
@@ -260,10 +257,6 @@ class AWSUtilityController
     }
 
     private function runJScompileCommand() {
-=======
-    private function runJScompileCommand()
-    {
->>>>>>> c1f60ab7c930699d8f07a376b6cfd4c2364832a2
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
             $result = $this->awsUtilityGateway->runJScompileCommand();
@@ -349,6 +342,10 @@ class AWSUtilityController
             array_push($errorMsg, 'Project IP is required and must be a string.');
         }
 
+        if(!isset($input['projectDir']) || empty($input['projectDir'])  || !is_string($input['projectDir'])) {
+            array_push($errorMsg, 'Project Directory is required and must be a string.');
+        }
+
         return $errorMsg;
     }
 
@@ -411,27 +408,10 @@ class AWSUtilityController
 
     }
 
-<<<<<<< HEAD
     private function createDomainForwarding() {
         $input = (array) json_decode(file_get_contents('php://input'), true);
         if (!$this->validateDomain($input)) {
             return $this->unprocessableEntityResponse();
-=======
-    private function createDomainForwarding()
-    {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $input = (array) json_decode(file_get_contents('php://input'), true); // Use like this when expecting acess from zebraline server
-            if (count($input) < 1 || count($this->validateDomainForwardData($input)) > 0) {
-                $res =  $this->unprocessableHostedZoneResponse($this->validateDomainForwardData($input));
-                echo json_encode($res);
-                return;
-            }
-
-            $result = $this->awsUtilityGateway->createDomain($input);
-            echo json_encode($result);
-        } else {
-            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support ' . $_SERVER['REQUEST_METHOD'] . ' requests.']);
->>>>>>> c1f60ab7c930699d8f07a376b6cfd4c2364832a2
         }
     }
 
@@ -476,26 +456,7 @@ class AWSUtilityController
         return $errorMsg;
     }
 
-<<<<<<< HEAD
     private function validateCommand($input) {
-=======
-    private function validateDomainForwardData($input)
-    {
-        $errorMsg = [];
-
-        if (!isset($input['DomainName'])) {
-            array_push($errorMsg, 'Domain name is required and must be a string.');
-            // return false;
-        }
-        if (!isset($input['email'])) {
-            array_push($errorMsg, 'Email is required and must be a string.');
-        }
-        return $errorMsg;
-    }
-
-    private function validateCommand($input)
-    {
->>>>>>> c1f60ab7c930699d8f07a376b6cfd4c2364832a2
         $errorMsg = [];
 
         if (!isset($input['DomainName'])) {
@@ -533,9 +494,9 @@ class AWSUtilityController
     private function unprocessableResponse($errorMsg)
     {
         $response['status_code_header'] = 'HTTP/1.1 422 Unprocessable Entity';
-        $response['body'] = json_encode([
+        $response['body'] = [
             'error' => $errorMsg
-        ]);
+        ];
         return $response;
     }
     private function unprocessableHostedZoneResponse($errMsg)

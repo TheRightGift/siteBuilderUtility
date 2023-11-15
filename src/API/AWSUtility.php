@@ -84,12 +84,14 @@ class AWSUtility
     }
 
     public function pendingWebsiteSetup($input){
+        
         $projectIp = $input['projectIp'];
+        $projectDir = $input['projectDir'];
         // get 100 pending records from zebraline.web_creation TB & id of last record processed
         $res = json_decode($this->getRecordsFromZebralinePOST('https://zebraline.ai/api/getpendingwebsite'), true);
-        
-        if(count($res['data']) > 0) {
-            
+        $siteLen = count($res['data']);
+
+        if($siteLen > 0) {            
             foreach ($res['data'] as $key => $value) {
                 $domain = $value['domainName'];
                 $stripeId = $value['customer_id'];
@@ -100,47 +102,35 @@ class AWSUtility
 
                 
                 $userDetailRes = json_decode($this->getRecordsFromZebralinePOST('https://zebraline.ai/api/webisteCreationGetUserDetails', $data), true);
-                // echo $userDetailRes['data']['email'];
+                
                 if(count($userDetailRes) > 0){
                     $domainPurchaseRes = $this->purchaseDomainFromNameSilo($domain);
                     if($domainPurchaseRes['status'] === 200){
-                        $data = ["DomainName" => $domain, "projectIp" => $projectIp];
-                        echo $this->createHostedZone($data);
+                        $data = ["DomainName" => $domain, "projectIp" => $projectIp, "projectDir" => $projectDir];
+                        $createHostedZoneRes = $this->createHostedZone($data);
+                        
                     } else {
                         // Send mail to goziechukwu@gmail.com
                     }
                 } else {
                     // Send mail to goziechukwu@gmail.com; this domain has no user attached
                 }
-                
-                
-                // echo $domainPurchaseRes['status'];
-                
-                // $domainRegData = $this->registerDomain($value->customer_id, $domain);
-                // return response()->json(['status' => 200, 'message' => $domain.' set up succesful.']);
-                // if ($domainRegData !== null) {
-                //     $decoded = !$domainRegData->content() ? $domainRegData : json_decode($domainRegData->content());
-                    
-                //     if ($decoded->status === 200) {
-                //         // Update DB web_creation to success
-                //         $DB->find($value->id)->update(['web_creation' => 'success']);
-                //         return response()->json(['status' => 200, 'message' => $domain.' set up succesful.']);
-                //     } else {
-                //         // Send email to admin
-                //         // TODO: doesnt work
-                //         Mail::to('goziechukwu@gmail.com')->send(new ErrorCreatingSite($value));
-                //     }
-                // }
+
+                $siteLen--;
             }
 
-            
-            // $lastUpdatedIndex = $DB->latest('updated_at')->value('id');
+            if($siteLen == 0){
+                return ['status' => 200, 'message' => 'Website creation operations completed.'];
+                // TODO: send request to zebraline to update lastUpdatedIndex
+                // $lastUpdatedIndex = $DB->latest('updated_at')->value('id');
 
-            // !empty($lastRecord) ? DB::table('last_updated_record_for_webcreations')->where('id', 1)->update(['lastID' => $lastUpdatedIndex]) : DB::table('last_updated_record_for_webcreations')->insert(['lastID' => $lastUpdatedIndex]);
+                // !empty($lastRecord) ? DB::table('last_updated_record_for_webcreations')->where('id', 1)->update(['lastID' => $lastUpdatedIndex]) : DB::table('last_updated_record_for_webcreations')->insert(['lastID' => $lastUpdatedIndex]);
+                
+                // // Send email to admin
+                // $msg = 'Website creation operations completed.';
+                // Mail::to('goziechukwu@gmail.com')->send(new CronResponseMail($msg));
+            }
             
-            // // Send email to admin
-            // $msg = 'Website creation operations completed.';
-            // Mail::to('goziechukwu@gmail.com')->send(new CronResponseMail($msg));
         } else {
             // Send email to admin
             $msg = 'No outstanding website to create!';
@@ -534,8 +524,7 @@ class AWSUtility
         }
     }
 
-    public function storeTypeHasTemplate(array $input)
-    {
+    public function storeTypeHasTemplate(array $input) {
         $storeTypeId = $input['storeTypeId'];
         if($this->storeTypeHasTemplateCheck($storeTypeId) === 1) {
             echo json_encode(['status' => 200, 'message' => 'Store type has templates.']);
@@ -544,8 +533,7 @@ class AWSUtility
         }
     }
 
-    private function storeTypeHasTemplateCheck($storeTypeId)
-    {
+    private function storeTypeHasTemplateCheck($storeTypeId) {
         $countTemplatesForStoreType = count(glob(dirname(__DIR__) . "/storeTemplates/" . $storeTypeId . "/*", GLOB_ONLYDIR));
 
         if($countTemplatesForStoreType > 0) {
@@ -584,6 +572,7 @@ class AWSUtility
         // Create DB with domainame and caller_refernce
         $domainName = $input['DomainName'];
         $projectIp = $input['projectIp'];
+        $projectDir = $input['projectDir'];
         $params = [
             'Name' => $domainName,
             'CallerReference' => $this->uniqueNumber($domainName),
@@ -593,6 +582,7 @@ class AWSUtility
         ];
         
         try {
+
             // Create the hosted zone
             $result = $this->route53->createHostedZone($params);
 
@@ -601,16 +591,23 @@ class AWSUtility
 
             // Get the name servers of the new hosted zone
             $nameServers = $result->get('DelegationSet')['NameServers'];
-
-            // Update the DNS settings for the domain
-            // Change the resourceRecords
-
-            $res =  $this->changeResourceRecords($domainName, $hostedZoneId, $projectIp);
-            if($res['status'] === 200){
-                return json_encode(['domainName' => $domainName, 'nameservers' => $nameServers]);
+            
+            if(count($nameServers) > 0){
+                $res =  $this->changeResourceRecords($domainName, $hostedZoneId, $projectIp, $projectDir);
+                return $res;
             } else {
-                return json_encode(['status' => $res['status'], 'message' => $res['message']]);
+                // Send email to gozie
             }
+
+            // // Update the DNS settings for the domain
+            // // Change the resourceRecords
+
+            // // $res =  $this->changeResourceRecords($domainName, $hostedZoneId, $projectIp);
+            // if($res['status'] === 200){
+            //     return json_encode(['domainName' => $domainName, 'nameservers' => $nameServers]);
+            // } else {
+            //     return json_encode(['status' => $res['status'], 'message' => $res['message']]);
+            // }
         } catch (AwsException $e) {
             // Handle any errors that occur
             $error['status'] = 501;
@@ -619,8 +616,7 @@ class AWSUtility
         }
     }
 
-    public function configureEmail($domainName, $email, $forward1)
-    {
+    public function configureEmail($domainName, $email, $forward1) {
         $api = 'https://api.forwardemail.net/v1';
         $data = [
             'domain' => $domainName,
@@ -702,7 +698,7 @@ class AWSUtility
      * @param String $hostedZoneId
      * @return void
      */
-    public function changeResourceRecords(String $domainName, String $hostedZoneId, String $projectIp) {
+    public function changeResourceRecords(String $domainName, String $hostedZoneId, String $projectIp, String $projectDir) {
         try {
             $awwwRecord = [
                 'Action' => 'CREATE',
@@ -770,18 +766,18 @@ class AWSUtility
             return $error;
         } finally {
             if ($result) {
-                $changeId = $result->get('ChangeInfo')['Id'];
-                $this->route53->waitUntil('ResourceRecordSetsChanged', [
-                    'Id' => $changeId,
-                    'WaiterConfig' => [
-                        'Delay' => 10, // time delay between each request
-                        'MaxAttempts' => 30, // maximum number of attempts to make
-                    ],
-                ]);
-
-                $res['status'] = 200;
-                $res['message'] = 'success on creating hosted zone!';
-                return $res;
+                // $changeId = $result->get('ChangeInfo')['Id'];
+                // $this->route53->waitUntil('ResourceRecordSetsChanged', [
+                //     'Id' => $changeId,
+                //     'WaiterConfig' => [
+                //         'Delay' => 5, // time delay between each request
+                //         'MaxAttempts' => 6, // maximum number of attempts to make
+                //     ],
+                // ]);
+                $arr = ["DomainName" => $domainName, "projectDir" => $projectDir];
+                $sendCommandRes = $this->sendCommand($arr);
+                return $sendCommandRes;
+                // return 'success on creating hosted zone!';
             }
         }
     }
@@ -799,6 +795,7 @@ class AWSUtility
     {
         $domain = $input['DomainName'];
         $projectDir = $input['projectDir'];
+        
         $uri = '$uri';
         $query_string = '$query_string';
         $realpath_root = '$realpath_root';
@@ -832,6 +829,7 @@ class AWSUtility
         ";
         $linkFileCommand = "ln -s /etc/nginx/sites-available/$domain /etc/nginx/sites-enabled/";
         $certbot = "sudo certbot run -n --nginx --agree-tos -d $domain,www.$domain  -m  goziechukwu@gmail.com  --redirect";
+        
         try {
             $n1Command = $this->ssmClient->sendCommand([
                 'InstanceIds' => ['i-01f1d0e3ed7035edb'],
