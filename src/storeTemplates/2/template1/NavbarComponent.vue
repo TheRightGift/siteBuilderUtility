@@ -38,7 +38,7 @@
                             <a href="#" class="logo">{{ brandname }}</a>
                             <ul>
                                 <span v-show="categories.length < 6">
-                                    <li v-for="category in categories" :key="category.id" @click="showCategoryEditEditor">
+                                    <li v-for="category in categories.slice(0, 3)" :key="category.id" @click="showCategoryEditEditor">
                                         <router-link :to=" loggedIn ? `#!` : { name: `product-search-category`, params: { category_name: category.name ?? `category` }, query: { additionalData: category.id ?? `category_id` } }">
                                             {{ category.name }}
                                         </router-link>
