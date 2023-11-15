@@ -299,7 +299,7 @@ sup {
 }
 .heroInner p {
   color: var(--secondary-color);
-  font-family: Montserrat;
+  font-family: 'Montserrat', sans-serif;
   font-size: 1.375rem;
   font-style: normal;
   font-weight: 600;
