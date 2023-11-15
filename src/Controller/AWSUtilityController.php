@@ -72,14 +72,13 @@ class AWSUtilityController
             case '/changeresoucerecords':
                 $response = $this->changeresoucerecords();
                 break;
+            case '/pendingWebsiteSetup':
+                $response = $this->pendingWebsiteSetup();
+                break;
                 
             default: header("HTTP/1.1 404 Not Found");
                 exit();
         }
-        // header($response['status_code_header']);
-        // if ($response['body']) {
-        //     echo $response['body'];
-        // }
     }
 
     private function dbConnection()
@@ -94,8 +93,7 @@ class AWSUtilityController
         return $db;
     }
 
-    private function cleanInput($data)
-    {
+    private function cleanInput($data) {
         // Address Magic Quotes.
         if (ini_get('magic_quotes_gpc')) {
             $data = stripslashes($data);
@@ -111,9 +109,24 @@ class AWSUtilityController
         return $data;
     }
 
+    private function pendingWebsiteSetup(){
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $input = $_POST; //(array) json_decode(file_get_contents('php://input'), true); // Use like this when expecting acess from zebraline server
 
-    private function createTemplate()
-    {
+            if (count($input) < 1 || count($this->validatePendingWebsite($input)) > 0) {
+                $res =  $this->unprocessableResponse($this->validatePendingWebsite($input));
+                echo $res;
+                return;
+            }
+
+            $result = $this->awsUtilityGateway->pendingWebsiteSetup($input);
+            echo $result;
+        } else {
+            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support ' . $_SERVER['REQUEST_METHOD'] . ' requests.']);
+        }
+    }
+
+    private function createTemplate() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $db = $this->dbConnection();
         // $result = $db->query("SELECT * FROM templates");
@@ -124,8 +137,7 @@ class AWSUtilityController
         }
     }
 
-    private function allTemplates()
-    {
+    private function allTemplates() {
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             $db = $this->dbConnection();
             $result = $db->query("SELECT * FROM templates");
@@ -175,13 +187,12 @@ class AWSUtilityController
     //         echo 'No';
     //     }
     // }
-    private function updateThemeColor()
-    {
+    private function updateThemeColor() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = $_POST; //(array) json_decode(file_get_contents('php://input'), true);
 
             if (count($input) < 1 || count($this->validateStoreThemeColorUpdateData($input)) > 0) {
-                return $this->unprocessableStoreCreationResponse($this->validateStoreThemeColorUpdateData($input));
+                return $this->unprocessableResponse($this->validateStoreThemeColorUpdateData($input));
             }
 
             $result = $this->awsUtilityGateway->updateStoreThemeColor($input);
@@ -193,13 +204,12 @@ class AWSUtilityController
         }
     }
 
-    private function deleteStoreDirectory()
-    {
+    private function deleteStoreDirectory() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = $_POST; //(array) json_decode(file_get_contents('php://input'), true);
 
             if (count($input) < 1 || count($this->validateStoreDeleteData($input)) > 0) {
-                return $this->unprocessableStoreCreationResponse($this->validateStoreDeleteData($input));
+                return $this->unprocessableResponse($this->validateStoreDeleteData($input));
             }
 
             $result = $this->awsUtilityGateway->deleteStoreDirectory($input);
@@ -211,8 +221,7 @@ class AWSUtilityController
         }
     }
 
-    private function changenameserversonnamesilo()
-    {
+    private function changenameserversonnamesilo() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = (array) json_decode(file_get_contents('php://input'), true); // Use like this when expecting acess from zebraline server
 
@@ -229,8 +238,7 @@ class AWSUtilityController
         }
     }
 
-    private function changeresoucerecords()
-    {
+    private function changeresoucerecords() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = (array) json_decode(file_get_contents('php://input'), true); // Use like this when expecting acess from zebraline server
 
@@ -247,8 +255,7 @@ class AWSUtilityController
         }
     }
 
-    private function runJScompileCommand()
-    {
+    private function runJScompileCommand() {
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
             $result = $this->awsUtilityGateway->runJScompileCommand();
@@ -260,13 +267,12 @@ class AWSUtilityController
         }
     }
 
-    private function createStore()
-    {
+    private function createStore() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = $_POST; //(array) json_decode(file_get_contents('php://input'), true);
 
             if (count($input) < 1 || count($this->validateStoreCreationData($input)) > 0) {
-                return $this->unprocessableStoreCreationResponse($this->validateStoreCreationData($input));
+                return $this->unprocessableResponse($this->validateStoreCreationData($input));
                 // exit();
             }
 
@@ -280,8 +286,7 @@ class AWSUtilityController
 
     }
 
-    private function storeTypeHasTemplate()
-    {
+    private function storeTypeHasTemplate() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = $_POST;
             $result = $this->awsUtilityGateway->storeTypeHasTemplate($input);
@@ -292,8 +297,7 @@ class AWSUtilityController
         }
     }
 
-    private function listcommands()
-    {
+    private function listcommands() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = $_POST; //(array) json_decode(file_get_contents('php://input'), true);
 
@@ -306,8 +310,7 @@ class AWSUtilityController
         }
     }
 
-    private function validateStoreThemeColorUpdateData($input)
-    {
+    private function validateStoreThemeColorUpdateData($input) {
         $errorMsg = [];
 
         //must be text only
@@ -329,8 +332,19 @@ class AWSUtilityController
         return $errorMsg;
     }
 
-    private function validateStoreDeleteData($input)
-    {
+    private function validatePendingWebsite($input) {
+        $errorMsg = [];
+
+        //must be text only
+        // clean input using $this->cleanInput()
+        if(!isset($input['projectIp']) || empty($input['projectIp'])  || !is_string($input['projectIp'])) {
+            array_push($errorMsg, 'Project IP is required and must be a string.');
+        }
+
+        return $errorMsg;
+    }
+
+    private function validateStoreDeleteData($input) {
         $errorMsg = [];
 
         //must be text only
@@ -342,8 +356,7 @@ class AWSUtilityController
         return $errorMsg;
     }
 
-    private function validateStoreCreationData($input)
-    {
+    private function validateStoreCreationData($input) {
         $errorMsg = [];
 
         //must be text only
@@ -373,8 +386,7 @@ class AWSUtilityController
         return $errorMsg;
     }
 
-    private function createZone()
-    {
+    private function createZone() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = (array) json_decode(file_get_contents('php://input'), true); // Use like this when expecting acess from zebraline server
             if (count($input) < 1 || count($this->validateHostedZoneData($input)) > 0) {
@@ -391,8 +403,7 @@ class AWSUtilityController
 
     }
 
-    private function createDomainForwarding()
-    {
+    private function createDomainForwarding() {
         $input = (array) json_decode(file_get_contents('php://input'), true);
         if (!$this->validateDomain($input)) {
             return $this->unprocessableEntityResponse();
@@ -403,8 +414,7 @@ class AWSUtilityController
         return $response;
     }
 
-    private function getcreatedZone()
-    {
+    private function getcreatedZone() {
         // $input = (array) json_decode(file_get_contents('php://input'), TRUE);
         // if (! $this->validateDomain($input)) {
         //     return $this->unprocessableEntityResponse();
@@ -415,8 +425,7 @@ class AWSUtilityController
         return $response;
     }
 
-    private function sendCommand()
-    {
+    private function sendCommand() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = (array) json_decode(file_get_contents('php://input'), true); // Use like this when expecting acess from zebraline server
 
@@ -433,8 +442,7 @@ class AWSUtilityController
         }
     }
 
-    private function validateHostedZoneData($input)
-    {
+    private function validateHostedZoneData($input) {
         $errorMsg = [];
 
         if (!isset($input['DomainName'])) {
@@ -447,8 +455,7 @@ class AWSUtilityController
         return $errorMsg;
     }
 
-    private function validateCommand($input)
-    {
+    private function validateCommand($input) {
         $errorMsg = [];
 
         if (!isset($input['DomainName'])) {
@@ -461,8 +468,7 @@ class AWSUtilityController
         return $errorMsg;
     }
 
-    private function validateNameServerRec($input)
-    {
+    private function validateNameServerRec($input) {
         $errorMsg = [];
 
         if (!isset($input['domainName'])) {
@@ -504,7 +510,7 @@ class AWSUtilityController
         return true;
     }
 
-    private function unprocessableStoreCreationResponse($errorMsg)
+    private function unprocessableResponse($errorMsg)
     {
         $response['status_code_header'] = 'HTTP/1.1 422 Unprocessable Entity';
         $response['body'] = json_encode([

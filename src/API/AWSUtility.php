@@ -47,8 +47,7 @@ class AWSUtility
      * @param Object $record
      * @return void
      */
-    public function addDNSRecord(array $record, String $hostedZoneId)
-    {
+    public function addDNSRecord(array $record, String $hostedZoneId) {
         // echo $record['ResourceRecord']['Value'], $record['ResourceRecord']['Type'], $record['ResourceRecord']['Name'];
         $cnameRecord = [
             'Action' => 'CREATE',
@@ -84,14 +83,137 @@ class AWSUtility
         }
     }
 
+    public function pendingWebsiteSetup($input){
+        $projectIp = $input['projectIp'];
+        // get 100 pending records from zebraline.web_creation TB & id of last record processed
+        $res = json_decode($this->getRecordsFromZebralinePOST('https://zebraline.ai/api/getpendingwebsite'), true);
+        
+        if(count($res['data']) > 0) {
+            
+            foreach ($res['data'] as $key => $value) {
+                $domain = $value['domainName'];
+                $stripeId = $value['customer_id'];
+                $data = [
+                    'stripeId' => $stripeId,
+                    'domain' => $domain,
+                ];
+
+                
+                $userDetailRes = json_decode($this->getRecordsFromZebralinePOST('https://zebraline.ai/api/webisteCreationGetUserDetails', $data), true);
+                // echo $userDetailRes['data']['email'];
+                if(count($userDetailRes) > 0){
+                    $domainPurchaseRes = $this->purchaseDomainFromNameSilo($domain);
+                    if($domainPurchaseRes['status'] === 200){
+                        $data = ["DomainName" => $domain, "projectIp" => $projectIp];
+                        echo $this->createHostedZone($data);
+                    } else {
+                        // Send mail to goziechukwu@gmail.com
+                    }
+                } else {
+                    // Send mail to goziechukwu@gmail.com; this domain has no user attached
+                }
+                
+                
+                // echo $domainPurchaseRes['status'];
+                
+                // $domainRegData = $this->registerDomain($value->customer_id, $domain);
+                // return response()->json(['status' => 200, 'message' => $domain.' set up succesful.']);
+                // if ($domainRegData !== null) {
+                //     $decoded = !$domainRegData->content() ? $domainRegData : json_decode($domainRegData->content());
+                    
+                //     if ($decoded->status === 200) {
+                //         // Update DB web_creation to success
+                //         $DB->find($value->id)->update(['web_creation' => 'success']);
+                //         return response()->json(['status' => 200, 'message' => $domain.' set up succesful.']);
+                //     } else {
+                //         // Send email to admin
+                //         // TODO: doesnt work
+                //         Mail::to('goziechukwu@gmail.com')->send(new ErrorCreatingSite($value));
+                //     }
+                // }
+            }
+
+            
+            // $lastUpdatedIndex = $DB->latest('updated_at')->value('id');
+
+            // !empty($lastRecord) ? DB::table('last_updated_record_for_webcreations')->where('id', 1)->update(['lastID' => $lastUpdatedIndex]) : DB::table('last_updated_record_for_webcreations')->insert(['lastID' => $lastUpdatedIndex]);
+            
+            // // Send email to admin
+            // $msg = 'Website creation operations completed.';
+            // Mail::to('goziechukwu@gmail.com')->send(new CronResponseMail($msg));
+        } else {
+            // Send email to admin
+            $msg = 'No outstanding website to create!';
+            // Mail::to('goziechukwu@gmail.com')->send(new CronResponseMail($msg));
+            return json_encode(['status' => 500, 'message' => 'Theme color should be a color in hex format.']);
+        }
+    }
+
+    private function purchaseDomainFromNameSilo($domain) {
+        $years = 1;
+        $key = $_SERVER['NAMESILO_API_KEY']; //env('NAMESILO_API_KEY');
+        $api = $_SERVER['NAMESILO_API_URL']; //env('NAMESILO_API_URL');
+        try {
+            // $URL = "{$api}/registerDomain?version=1&type=xml&key={$key}&domain={$domain}&years={$years}&private=1&auto_renew=1";
+            // $client = new \GuzzleHttp\Client();
+
+            // $response = $client->request('GET', $URL);
+            // $body = $response->getBody();
+            // $xml = simplexml_load_string($body);
+            // if (htmlentities((string)$xml->reply->code) == 300) { // && htmlentities((string)$xml->reply->detail) == 'success'
+                return ['status' => 200, 'message' => 'Domain successfully purchased.'];
+            // } else {
+            //     echo json_encode(['message' => htmlentities((string)$xml->reply->detail), 'status' => htmlentities((string) $xml->reply->code)]);
+            // }
+        } catch (Exception $th) {
+            return $th->getMessage();
+        }
+    }
+
+    private function getRecordsFromZebralinePOST($url, $data = []) {
+        // create a new cURL resource
+        $ch = curl_init();
+
+        $token = 'e7bf6b05198b3909c0dad366eb1573cdb7f0fb36';
+
+        $auth_header = 'Authorization: Basic ' . base64_encode($token);
+
+        // set the URL to fetch
+        curl_setopt($ch, CURLOPT_URL, $url);
+
+        // curl_setopt($ch, CURLOPT_URL, 'localhost:8000/api/getpendingwebsite');
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array($auth_header));
+
+        curl_setopt($ch, CURLOPT_POST, true);
+
+        // return the transfer as a string
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        // $data = [];
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+
+        // send the request and store the response in a variable
+        $response = curl_exec($ch);
+
+        if(curl_error($ch)) {
+            return curl_error($ch);
+        }
+
+        // output the response
+        return $response;
+
+        // close cURL resource
+        curl_close($ch);        
+    }
+
     /**
      * Operation for creating a store
      *
      * @param Array $input
      * @return void
      */
-    public function createStoreModule(array $input)
-    {
+    public function createStoreModule(array $input){
         $defaultStoreName = 'StoreName';
         $storeName = $input['storeName'];
         $themeColor = $input['themeColor'];
@@ -424,8 +546,7 @@ class AWSUtility
         }
     }
 
-    private function storeFileSetup($fileName, $findThemeColor = null, $replaceThemeColor = null, $findSecColor = null, $replaceSecColor = null)
-    {
+    private function storeFileSetup($fileName, $findThemeColor = null, $replaceThemeColor = null, $findSecColor = null, $replaceSecColor = null) {
         //read the entire string
         $str = file_get_contents($fileName);
 
@@ -449,8 +570,7 @@ class AWSUtility
      * @param Array $input
      * @return void
      */
-    public function createHostedZone(array $input)
-    {
+    public function createHostedZone(array $input) {
         
         // Create DB with domainame and caller_refernce
         $domainName = $input['DomainName'];
