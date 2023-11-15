@@ -2,9 +2,11 @@
   <div class="mt-4 bgGray" >
     <div class="container" >
       <div class="row addPtopNRemMgBtm" @click="showSocialEditor">
-        <div class="col s12 m12 l4">
+        <div class="col s12 m4 l3">
           <div class="brand-logo">{{ brandname }} Logo</div>
-          <h6>Contact Info</h6>
+        </div>
+        <div class="col s12 m4 l3">
+          <h6>Contact Us</h6>
           <div class="flex">
             <a :href="social.facebook" class="btnSocial">
               <i class="fa-brands fa-facebook-f"></i>
@@ -35,20 +37,6 @@
               <router-link :to=" loggedIn ? `#!` : { name: `product-search-category`, params: { category_name: category.name ?? `category` }, query: { additionalData: category.id ?? `category_id` } }">
                 {{ category.name }}
               </router-link>
-            </li>
-          </ul>
-        </div>
-        <div class="col s12 m4 l2">
-          <h6>&nbsp;</h6>
-          <ul class="">
-            <li
-              v-for="category in sliceSvenEnd"
-              :key="category.id"
-              @click="showCategoryEditEditor"
-            >
-            <router-link :to=" loggedIn ? `#!` : { name: `product-search-category`, params: { category_name: category.name ?? `category` }, query: { additionalData: category.id ?? `category_id` } }">
-              {{ category.name }}
-            </router-link>
             </li>
           </ul>
         </div>
@@ -156,6 +144,7 @@ h6 {
 }
 h6:first-of-type {
   padding: 0;
+  margin-bottom: 3vh;
 }
 .container {
   width: 85%;

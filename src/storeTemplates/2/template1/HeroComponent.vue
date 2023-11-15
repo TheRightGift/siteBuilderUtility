@@ -202,7 +202,7 @@ sup {
 }
 .heading,
 .desc {
-  color: #333e48;
+  color: var(--secondary-color);
   line-height: normal;
   letter-spacing: 0.2px;
   z-index: 1;

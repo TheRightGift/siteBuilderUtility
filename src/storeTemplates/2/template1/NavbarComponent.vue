@@ -5,11 +5,21 @@
                 <div class="topbar-content">
                     <a href="#" class="welcome">{{branddesc == "" ? "Welcome to Worldwide Electronics Store" : branddesc}}</a>
                     <div class="flex-right">
-                        <a href="#">
+                        <!-- <a href="#">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <span>Store Locator</span>
+                        </a>
+                        <div class="divider"></div> -->
+                        <!-- <a href="#">
+                            <i class="fa-solid fa-truck-fast"></i>
+                            <span>Track your order</span>
+                        </a> -->
+                        <!-- <div class="divider"></div> -->
+                        <!-- <a href="#">
                             <i class="fa-solid fa-dollar-sign"></i>
                             <span>Dollar (US)</span>
-                        </a>
-                        <div class="divider"></div>
+                        </a> -->
+                        <!-- <div class="divider"></div> -->
                         <a href="/auth/signin" v-if="!isAuthenticated">
                             <i class="fa-regular fa-user"></i>
                             <span>Register <span class="or">or</span> Sign in</span>
