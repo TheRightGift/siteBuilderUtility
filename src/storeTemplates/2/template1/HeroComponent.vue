@@ -298,8 +298,8 @@ sup {
   margin: 0;
 }
 .heroInner p {
-  color: #000;
-  font-family: Montserrat;
+  color: var(--secondary-color);
+  font-family: 'Montserrat', sans-serif;
   font-size: 1.375rem;
   font-style: normal;
   font-weight: 600;
