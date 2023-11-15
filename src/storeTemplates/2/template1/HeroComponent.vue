@@ -202,7 +202,7 @@ sup {
 }
 .heading,
 .desc {
-  color: #333e48;
+  color: var(--secondary-color);
   line-height: normal;
   letter-spacing: 0.2px;
   z-index: 1;
@@ -298,8 +298,8 @@ sup {
   margin: 0;
 }
 .heroInner p {
-  color: #000;
-  font-family: Montserrat;
+  color: var(--secondary-color);
+  font-family: 'Montserrat', sans-serif;
   font-size: 1.375rem;
   font-style: normal;
   font-weight: 600;

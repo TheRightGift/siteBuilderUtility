@@ -5,11 +5,21 @@
                 <div class="topbar-content">
                     <a href="#" class="welcome">{{branddesc == "" ? "Welcome to Worldwide Electronics Store" : branddesc}}</a>
                     <div class="flex-right">
-                        <a href="#">
+                        <!-- <a href="#">
+                            <i class="fa-solid fa-location-dot"></i>
+                            <span>Store Locator</span>
+                        </a>
+                        <div class="divider"></div> -->
+                        <!-- <a href="#">
+                            <i class="fa-solid fa-truck-fast"></i>
+                            <span>Track your order</span>
+                        </a> -->
+                        <!-- <div class="divider"></div> -->
+                        <!-- <a href="#">
                             <i class="fa-solid fa-dollar-sign"></i>
                             <span>Dollar (US)</span>
-                        </a>
-                        <div class="divider"></div>
+                        </a> -->
+                        <!-- <div class="divider"></div> -->
                         <a href="/auth/signin" v-if="!isAuthenticated">
                             <i class="fa-regular fa-user"></i>
                             <span>Register <span class="or">or</span> Sign in</span>
@@ -27,17 +37,10 @@
                         <div class="flexed gap-7">
                             <a href="#" class="logo">{{ brandname }}</a>
                             <ul>
-                                <span v-show="categories.length < 6">
-                                    <li v-for="category in categories" :key="category.id" @click="showCategoryEditEditor">
-                                        <router-link :to=" loggedIn ? `#!` : { name: `product-search-category`, params: { category_name: category.name ?? `category` }, query: { additionalData: category.id ?? `category_id` } }">
-                                            {{ category.name }}
-                                        </router-link>
-                                    </li>
-                                </span>
-                                <li v-show="categories.length > 6">
-                                    <a class="dropdown-trigger" href="#productCatSectionInner" data-target="dropdownCategory">Categories</a>
+                                <li v-show="categories.length > 2">
+                                    <a class="dropdown-trigger" href="#productCatSectionInner" data-target="dropdownCategoryOne">Categories</a>
                                 </li>
-                                <ul id="dropdownCategory" class="dropdown-content">
+                                <ul id="dropdownCategoryOne" class="dropdown-content">
                                     <li v-for="category in categories" :key="category.id" @click="showCategoryEditEditor">
                                         <router-link :to=" loggedIn ? `#!` : { name: `product-search-category`, params: { category_name: category.name ?? `category`, }, query: { additionalData: category.id ?? `category_id`} }">
                                             {{ category.name }}
