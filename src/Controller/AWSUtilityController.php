@@ -75,6 +75,9 @@ class AWSUtilityController
             case '/pendingWebsiteSetup':
                 $response = $this->pendingWebsiteSetup();
                 break;
+            case '/setUpVendorWebsite':
+                $response = $this->setUpVendorWebsite();
+                break;
                 
             default: header("HTTP/1.1 404 Not Found");
                 exit();
@@ -107,6 +110,23 @@ class AWSUtilityController
         }
         // Return the escaped value.
         return $data;
+    }
+
+    private function setUpVendorWebsite() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $input = $_POST; //(array) json_decode(file_get_contents('php://input'), true); // Use like this when expecting acess from zebraline server
+
+            if (count($input) < 1 || count($this->validateSetUpVendorWebsite($input)) > 0) {
+                $res =  $this->unprocessableResponse($this->validateSetUpVendorWebsite($input));
+                echo json_encode($res);
+                return;
+            }
+
+            $result = $this->awsUtilityGateway->setUpVendorWebsite($input);
+            echo json_encode($result);
+        } else {
+            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support ' . $_SERVER['REQUEST_METHOD'] . ' requests.']);
+        }
     }
 
     private function pendingWebsiteSetup(){
@@ -328,6 +348,37 @@ class AWSUtilityController
         // clean input using $this->cleanInput()
         if(!isset($input['storeDirectoryName']) || empty($input['storeDirectoryName'])  || !is_string($input['storeDirectoryName'])) {
             array_push($errorMsg, 'Store directory name is required and must be a string.');
+        }
+
+        return $errorMsg;
+    }
+    private function validateSetUpVendorWebsite($input) {
+        $errorMsg = [];
+
+        //must be text only
+        // clean input using $this->cleanInput()
+        if(!isset($input['projectIp']) || empty($input['projectIp'])  || !is_string($input['projectIp'])) {
+            array_push($errorMsg, 'Project IP is required and must be a string.');
+        }
+
+        if(!isset($input['projectDir']) || empty($input['projectDir'])  || !is_string($input['projectDir'])) {
+            array_push($errorMsg, 'Project Directory is required and must be a string.');
+        }
+
+        if(!isset($input['email']) || empty($input['email'])  || !is_string($input['email'])) {
+            array_push($errorMsg, 'Project IP is required and must be a string.');
+        }
+
+        if(!isset($input['domainName']) || empty($input['domainName'])  || !is_string($input['domainName'])) {
+            array_push($errorMsg, 'Project Directory is required and must be a string.');
+        }
+
+        if(!isset($input['stripeId']) || empty($input['stripeId'])  || !is_string($input['stripeId'])) {
+            array_push($errorMsg, 'Project Directory is required and must be a string.');
+        }
+
+        if(!isset($input['websiteCreationId']) || empty($input['websiteCreationId'])  || !is_string($input['websiteCreationId'])) {
+            array_push($errorMsg, 'Project Directory is required and must be a string.');
         }
 
         return $errorMsg;

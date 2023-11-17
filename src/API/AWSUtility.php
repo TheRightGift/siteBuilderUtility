@@ -83,61 +83,516 @@ class AWSUtility
         }
     }
 
-    public function pendingWebsiteSetup($input){
-        
+    public function setUpVendorWebsite($input){
         $projectIp = $input['projectIp'];
         $projectDir = $input['projectDir'];
-        // get 100 pending records from zebraline.web_creation TB & id of last record processed
-        $res = json_decode($this->getRecordsFromZebralinePOST('https://zebraline.ai/api/getpendingwebsite'), true);
-        $siteLen = count($res['data']);
+        $email = $input['email'];
+        $domain = $input['domainName'];
+        $stripeId = $input['stripeId'];
+        $websiteCreationId = $input['websiteCreationId'];
+        
 
-        if($siteLen > 0) {            
-            foreach ($res['data'] as $key => $value) {
-                $domain = $value['domainName'];
-                $stripeId = $value['customer_id'];
-                $data = [
-                    'stripeId' => $stripeId,
-                    'domain' => $domain,
-                ];
-
-                
-                $userDetailRes = json_decode($this->getRecordsFromZebralinePOST('https://zebraline.ai/api/webisteCreationGetUserDetails', $data), true);
-                
-                if(count($userDetailRes) > 0){
-                    $domainPurchaseRes = $this->purchaseDomainFromNameSilo($domain);
-                    if($domainPurchaseRes['status'] === 200){
-                        $data = ["DomainName" => $domain, "projectIp" => $projectIp, "projectDir" => $projectDir];
-                        $createHostedZoneRes = $this->createHostedZone($data);
-                        
-                    } else {
-                        // Send mail to goziechukwu@gmail.com
-                    }
-                } else {
-                    // Send mail to goziechukwu@gmail.com; this domain has no user attached
-                }
-
-                $siteLen--;
-            }
-
-            if($siteLen == 0){
-                return ['status' => 200, 'message' => 'Website creation operations completed.'];
-                // TODO: send request to zebraline to update lastUpdatedIndex
-                // $lastUpdatedIndex = $DB->latest('updated_at')->value('id');
-
-                // !empty($lastRecord) ? DB::table('last_updated_record_for_webcreations')->where('id', 1)->update(['lastID' => $lastUpdatedIndex]) : DB::table('last_updated_record_for_webcreations')->insert(['lastID' => $lastUpdatedIndex]);
-                
-                // // Send email to admin
-                // $msg = 'Website creation operations completed.';
-                // Mail::to('goziechukwu@gmail.com')->send(new CronResponseMail($msg));
-            }
-            
+        $domainPurchaseRes = $this->purchaseDomainFromNameSilo($domain);
+                    
+        if($domainPurchaseRes['status'] === 200){
+            $createdZoneData = ["DomainName" => $domain, "projectIp" => $projectIp, "projectDir" => $projectDir, "websiteCreationId" => $websiteCreationId, "email" => $email];
+            $createHostedZoneRes = $this->createHostedZone($createdZoneData);  
+            return $createHostedZoneRes;
         } else {
-            // Send email to admin
-            $msg = 'No outstanding website to create!';
-            // Mail::to('goziechukwu@gmail.com')->send(new CronResponseMail($msg));
-            return json_encode(['status' => 500, 'message' => 'Theme color should be a color in hex format.']);
+            // Send mail to goziechukwu@gmail.com
+            $mailData = [
+                "msg" => 'Domain purchase failed for '.$domain
+            ];
+            $this->getRecordsFromZebralinePOST('https://zebraline.ai/api/sendMailWebsiteCreationError', $mailData);
         }
     }
+
+    /**
+     * Creates a Hosted Zone on Route 53
+     *
+     * @param Array $input
+     * @return void
+     */
+    public function createHostedZone(array $input) {
+        
+        // Create DB with domainame and caller_refernce
+        $domainName = $input['DomainName'];
+        $projectIp = $input['projectIp'];
+        $projectDir = $input['projectDir'];
+        $websiteCreationId = $input['websiteCreationId'];
+        $email = $input['email'];
+        // websiteCreationId
+        $params = [
+            'Name' => $domainName,
+            'CallerReference' => $this->uniqueNumber($domainName),
+            'HostedZoneConfig' => [
+                'Comment' => 'My hosted zone for my domain',
+            ],
+        ];
+        
+        try {
+
+            // Create the hosted zone
+            $result = $this->route53->createHostedZone($params);
+
+            // Get the ID of the new hosted zone
+            $hostedZoneId = $result->get('HostedZone')['Id'];
+
+            // Get the name servers of the new hosted zone
+            $nameServers = $result->get('DelegationSet')['NameServers'];
+            
+            if(count($nameServers) > 0){
+                $res =  $this->changeResourceRecords($domainName, $hostedZoneId, $projectIp, $projectDir, $websiteCreationId, $email);
+                return $res;
+            } else {
+                // Send email to gozie
+                $mailData = [
+                    "msg" => 'Route53 hosted zone couldnt be created for '.$domainName
+
+                ];
+                $this->getRecordsFromZebralinePOST('https://zebraline.ai/api/sendMailWebsiteCreationError', $mailData);
+            }
+        } catch (AwsException $e) {
+            // Handle any errors that occur
+            $error['status'] = 501;
+            $error['message'] = 'Error creating hosted zone and updating DNS: ' . $e->getMessage();
+            return $error;
+        }
+    }
+
+    
+    
+
+    /**
+     * Creates an A record on the Amazon Route 53
+     * This points to the ipaddress of the parent site.
+     *
+     * @param String $domainName
+     * @param String $hostedZoneId
+     * @return void
+     */
+    public function changeResourceRecords(String $domainName, String $hostedZoneId, String $projectIp, String $projectDir, String $websiteCreationId, String $email) {
+        try {
+            $awwwRecord = [
+                'Action' => 'CREATE',
+                'ResourceRecordSet' => [
+                    'Name' => 'www.' . $domainName,
+                    'Type' => 'A',
+                    'SetIdentifier' => 'aww-record',
+                    'TTL' => 300,
+                    'Weight' => 100,
+                    'ResourceRecords' => [
+                        [
+                            'Value' => $projectIp,
+                        ]
+                    ]
+                ]
+            ];
+
+            $aRecord = [
+                'Action' => 'CREATE',
+                'ResourceRecordSet' => [
+                    'Name' => $domainName,
+                    'Type' => 'A',
+                    'SetIdentifier' => 'a-record',
+                    'TTL' => 300,
+                    'Weight' => 100,
+                    'ResourceRecords' => [
+                        [
+                            'Value' => $projectIp,
+                        ]
+                    ]
+                ]
+            ];
+            $aWildRecord = [
+                'Action' => 'CREATE',
+                'ResourceRecordSet' => [
+                    'Name' => '*.' . $domainName,
+                    'Type' => 'A',
+                    'SetIdentifier' => 'awild-record',
+                    'TTL' => 300,
+                    'Weight' => 100,
+                    'ResourceRecords' => [
+                        [
+                            'Value' => $projectIp,
+                        ]
+                    ]
+                ]
+            ];
+            $changeBatch = [
+                'Comment' => 'Create A records for domain',
+                'Changes' => [
+                    $aRecord,
+                    $awwwRecord,
+                    $aWildRecord
+                ]
+            ];
+
+            // Create the records in Route53
+            $result = $this->route53->changeResourceRecordSets([
+                'HostedZoneId' => $hostedZoneId,
+                'ChangeBatch' => $changeBatch
+            ]);
+        } catch (AwsException $e) {
+            $mailData = [
+                "msg" => 'Error Updating Hosted zone resource records for $domainName: ' . $e->getAwsErrorMessage()
+
+            ];
+            $this->getRecordsFromZebralinePOST('https://zebraline.ai/api/sendMailWebsiteCreationError', $mailData);
+        } finally {
+            if ($result) {
+                // $changeId = $result->get('ChangeInfo')['Id'];
+                // $this->route53->waitUntil('ResourceRecordSetsChanged', [
+                //     'Id' => $changeId,
+                //     'WaiterConfig' => [
+                //         'Delay' => 5, // time delay between each request
+                //         'MaxAttempts' => 6, // maximum number of attempts to make
+                //     ],
+                // ]);
+                $arr = ["DomainName" => $domainName, "projectDir" => $projectDir, "websiteCreationId" => $websiteCreationId, "email" => $email];
+                $sendCommandRes = $this->sendCommand($arr);
+                return $sendCommandRes;
+            }
+        }
+    }
+
+    /**
+     * Changes the nameserver on namesilo
+     * Points NS resords to the Route 53 Hosted Zone
+     *
+     * @param String $domainName
+     * @param Array $nameServers
+     * @return void
+     */
+    public function changeNameServers(array $input) {
+        $domainName = $input['domainName'];
+        $nameServers = $input['nameServers'];
+        $key = $_SERVER['NAMESILO_API_KEY'];
+        
+        // Construct the nameserver parameters dynamically
+        $nsParams = [];
+        foreach ($nameServers as $index => $ns) {
+            $nsParams["ns" . ($index + 1)] = $ns;
+        }
+        
+        try {
+            $params = http_build_query(array_merge([
+                'version' => 1,
+                'type' => 'xml',
+                'key' => $key,
+                'domain' => $domainName
+            ], $nsParams));
+    
+            $URL = "https://www.namesilo.com/api/changeNameServers?" . $params;
+            $response = $this->client->request('GET', $URL);
+            $body = $response->getBody();
+            $xml = simplexml_load_string($body);
+            
+            if ((string)$xml->reply->detail === 'success' && (int)$xml->reply->code === 300) {
+                return [
+                    'status' => 200,
+                    'message' => 'success'
+                ];
+            } else {
+                return json_decode(json_encode($xml), true);
+            }
+        } catch (\Throwable $th) {
+            return [
+                'error' => $th->getMessage()
+            ];
+        }
+    }
+
+
+    /**
+     * Creates a Server block to the nginx available-sites
+     * Initiates a certbot command
+     * And append the ssl path block
+     *
+     * @param Array $input
+     * @return void
+     */
+    public function sendCommand(array $input) {
+        $domain = $input['DomainName'];
+        $projectDir = $input['projectDir'];
+        $websiteCreationId = $input['websiteCreationId'];
+        $email = $input['email'];
+        
+        $uri = '$uri';
+        $query_string = '$query_string';
+        $realpath_root = '$realpath_root';
+        $fastcgi_script_name = '$fastcgi_script_name';
+        $command = "sudo nano $domain
+            echo 'server {
+                listen 80;
+                server_name $domain www.$domain;
+                root /var/www/$projectDir/public;
+                
+                add_header X-XSS-Protection \"1; mode=block\";
+                add_header X-Content-Type-Options \"nosniff\";
+                index index.html index.htm index.php;
+                charset utf-8;
+                location / {
+                    try_files $uri $uri/ /index.php?$query_string;
+                }
+                location = /favicon.ico { access_log off; log_not_found off; }
+                location = /robots.txt  { access_log off; log_not_found off; }
+                error_page 404 /index.php;
+                location ~ \\.php$ {
+                    fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;
+                    fastcgi_index index.php;
+                    fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+                    include fastcgi_params;
+                }
+                location ~ /\\.(?!well-known).* {
+                    deny all;
+                }
+            }' >>  /etc/nginx/sites-available/$domain && sudo dos2unix -n $domain
+        ";
+        $linkFileCommand = "ln -s /etc/nginx/sites-available/$domain /etc/nginx/sites-enabled/";
+        $certbot = "sudo certbot run -n --nginx --agree-tos -d $domain,www.$domain  -m  goziechukwu@gmail.com  --redirect";
+        
+        try {
+            $n1Command = $this->ssmClient->sendCommand([
+                'InstanceIds' => ['i-01f1d0e3ed7035edb'],
+                'DocumentName' => 'AWS-RunShellScript',
+                'Parameters' => [
+                    'commands' => [$command, $linkFileCommand, $certbot, 'sudo nginx -t' , 'sudo systemctl restart nginx'],
+                ],
+            ]);
+            $commandID = $n1Command['Command']['CommandId'];
+            if ($commandID !== '') {
+                // TODO: update zebraline.web_creation for this website
+                
+                // Setup email 
+                $arr = [
+                    'domainName' => $domain,
+                    'email' => $email,
+                    'websiteCreationId' => $websiteCreationId,
+                    'commandID' => $commandID
+                ];
+                $emailSetupRes = $this->createDomain($arr);
+                return $emailSetupRes;
+                
+                
+            }
+        } catch (AwsException $e) {
+            
+            $mailData = [
+                "msg" => 'Error settign up server file (sites-available) and SSL for '.$domainName.': ' . $e->getAwsErrorMessage()
+
+            ];
+            $this->getRecordsFromZebralinePOST('https://zebraline.ai/api/sendMailWebsiteCreationError', $mailData);
+            $error['status'] = 501;
+            $error['message'] = 'AWS Error response: ' . $e->getAwsErrorMessage();
+            return $error;
+        }
+    }
+
+    /**
+     * curl https://api.forwardemail.net/v1/domains/hash.fyi \
+     *   -u @api String $user:
+     * @param String $domain
+     */
+    public function createDomain(array $input) {
+        $domain = $input["domainName"];
+        $email = $input['email'];
+        $websiteCreationId = $input['websiteCreationId'];
+        $commandID = $input['commandID'];
+        
+        $zoneID = $this->requestZoneID($domain);
+        
+        if ($zoneID['status'] == 200) {
+            $hostedZoneId = $zoneID['zoneID'];
+            $responseData = $this->createDomainForwarding($domain);
+            
+            if (isset($responseData['created_at'])) {
+                $verification_record = $responseData['verification_record'];
+                return $this->updateDNSMXAndTXTRecords($verification_record, $hostedZoneId, $domain, $email, $websiteCreationId, $commandID);
+                             
+            } else {
+                $mailData = [
+                    "msg" => 'Email forwarding not created for '.$domain
+    
+                ];
+                $this->getRecordsFromZebralinePOST('https://zebraline.ai/api/sendMailWebsiteCreationError', $mailData);
+
+                $error['status'] = 501;
+                $error['message'] = 'Email forwarding not created for '.$domain;
+                return $error;
+            }
+        }
+    }
+
+    public function createDomainForwarding(string $domain) {
+        $url = $_SERVER['EMAILFORWARD_NET_URL'] . 'domains';
+        $options = [
+            'auth' => [$_SERVER['EMAILFORWARD_NET_USER'], ''],
+            'form_params' => ['domain' => $domain],
+        ];
+
+        try {
+            $response = $this->client->post($url, $options);
+            return json_decode($response->getBody()->getContents(), true);
+        } catch (RequestException $e) {            
+            $mailData = [
+                "msg" => 'Error Creating Email Forwarding for '.$domain
+
+            ];
+            $this->getRecordsFromZebralinePOST('https://zebraline.ai/api/sendMailWebsiteCreationError', $mailData);
+            $error['status'] = 501;
+            $error['message'] = 'Email forwarding not created for '.$domain.'. '.$e->getMessage();
+            return $error;
+        }
+    }
+
+    /**
+     * curl -X POST https://api.forwardemail.net/v1/domains/hash.fyi/aliases \
+     * -u @api
+     * @param String consultancy@+$domain
+     */
+    public function createDomainAlias(string $aliasName, string $domain, string $email) {
+        $url = $_SERVER['EMAILFORWARD_NET_URL'] . 'domains/' . $domain . '/aliases';
+        $options = [
+            'auth' => [$_SERVER['EMAILFORWARD_NET_USER'], ''],
+            'headers' => ['Content-Type' => 'application/json'],
+            'json' => ['name' => $aliasName, 'recipients' => $email],
+        ];
+
+        try {
+            $this->client->post($url, $options);
+        } catch (RequestException $e) {
+            $mailData = [
+                "msg" => 'Error Creating Email Forwarding Alias for '.$domain
+
+            ];
+            $this->getRecordsFromZebralinePOST('https://zebraline.ai/api/sendMailWebsiteCreationError', $mailData);
+            $error['status'] = 501;
+            $error['message'] = 'Email forwarding not created for '.$domain.'. '.$e->getMessage();
+            return $error;
+        }
+    }
+
+    /**
+     * Update user MX records in AWS Route53
+     */
+    public function updateDNSMXAndTXTRecords(string $verification_record, string $hostedZoneId, string $domain, String $email, String $websiteCreationId, String $commandID) {
+        $mxRecords = [
+            ['Value' => '10 mx1.forwardemail.net'],
+            ['Value' => '10 mx2.forwardemail.net']
+        ];
+
+        $txtRecord = ['Value' => "\"forward-email-site-verification={$verification_record}\""];
+
+        try {
+            $response = $this->route53->changeResourceRecordSets([
+                'HostedZoneId' => $hostedZoneId,
+                'ChangeBatch' => [
+                    'Changes' => [
+                        [
+                            'Action' => 'UPSERT',
+                            'ResourceRecordSet' => [
+                                'Name' => $domain,
+                                'Type' => 'MX',
+                                'TTL' => 300,
+                                'ResourceRecords' => $mxRecords,
+                            ],
+                        ],
+                        [
+                            'Action' => 'UPSERT',
+                            'ResourceRecordSet' => [
+                                'Name' => $domain,
+                                'Type' => 'TXT',
+                                'TTL' => 300,
+                                'ResourceRecords' => [$txtRecord],
+                            ],
+                        ],
+                    ],
+                ],
+            ]);
+            $this->createDomainAlias('consultancy', $domain, $email);   
+            $this->waitForChangesAndVerify($response, $domain);
+
+            $data = [
+                "websiteCreationId" => $websiteCreationId,
+                'domain' => $domain,
+                'email' => $email
+            ];
+            $siteCreationCompleteRes = json_decode($this->getRecordsFromZebralinePOST('https://zebraline.ai/api/pendingWebisteCreationComplete', $data), true);
+            
+            // return response
+            $res['status'] = 200;
+            $res['commandID'] = $commandID;
+            $res['message'] = $domain.' successfully set up!';
+            return $res;
+        } catch (AwsException $e) {
+            // echo "Error creating MX Records: {$e->getMessage()}";
+            $mailData = [
+                "msg" => 'Error creating MX Records for '.$domain
+
+            ];
+            $this->getRecordsFromZebralinePOST('https://zebraline.ai/api/sendMailWebsiteCreationError', $mailData);
+            $error['status'] = 501;
+            $error['message'] = 'Email forwarding not created for '.$domain.'. '.$e->getMessage();
+            return $error;
+        }
+    }
+
+    // public function pendingWebsiteSetup($input){
+    //     $projectIp = $input['projectIp'];
+    //     $projectDir = $input['projectDir'];
+    //     // get 100 pending records from zebraline.web_creation TB & id of last record processed
+    //     $res = json_decode($this->getRecordsFromZebralinePOST('https://zebraline.ai/api/getpendingwebsite'), true);
+    //     $siteLen = count($res['data']);
+        
+    //     if($siteLen > 0) {            
+    //         foreach ($res['data'] as $key => $value) {
+    //             $domain = $value['domainName'];
+    //             $stripeId = $value['customer_id'];
+    //             $websiteCreationId = $value['id'];
+    //             $data = [
+    //                 'stripeId' => $stripeId,
+    //                 'domain' => $domain,
+    //             ];
+
+                
+    //             $userDetailRes = json_decode($this->getRecordsFromZebralinePOST('https://zebraline.ai/api/webisteCreationGetUserDetails', $data), true);
+                
+    //             if($userDetailRes['status'] == 200){
+    //                 $domainPurchaseRes = $this->purchaseDomainFromNameSilo($domain);
+                    
+    //                 if($domainPurchaseRes['status'] === 200){
+    //                     $createdZoneData = ["DomainName" => $domain, "projectIp" => $projectIp, "projectDir" => $projectDir, "websiteCreationId" => $websiteCreationId, "email" => $userDetailRes['data']['email']];
+    //                     $createHostedZoneRes = $this->createHostedZone($createdZoneData);  
+    //                 } else {
+    //                     // Send mail to goziechukwu@gmail.com
+    //                     $mailData = [
+    //                         "msg" => 'Domain purchase failed for '.$domain
+    //                     ];
+    //                     $this->getRecordsFromZebralinePOST('https://zebraline.ai/api/sendMailWebsiteCreationError', $mailData);
+    //                 }
+    //             } else {
+    //                 // Send mail to goziechukwu@gmail.com; this domain has no user attached
+    //                 $mailData = [
+    //                     "msg" => $domain.' has no user attached'
+    //                 ];
+    //                 $this->getRecordsFromZebralinePOST('https://zebraline.ai/api/sendMailWebsiteCreationError', $mailData);
+    //             }
+
+    //     //         $siteLen--;
+    //         }
+
+    //     //     if($siteLen == 0){
+    //     //         return ['status' => 200, 'message' => 'Website creation operations completed.'];
+    //     //         // TODO: send request to zebraline to update lastUpdatedIndex
+    //     //     }
+            
+    //     } else {
+    //         // Send email to admin
+    //         $msg = 'No outstanding website to create!';
+    //         Mail::to('goziechukwu@gmail.com')->send(new CronResponseMail($msg));
+    //     }
+    // }
 
     private function purchaseDomainFromNameSilo($domain) {
         $years = 1;
@@ -561,60 +1016,7 @@ class AWSUtility
         return $str;
     }
 
-    /**
-     * Creates a Hosted Zone on Route 53
-     *
-     * @param Array $input
-     * @return void
-     */
-    public function createHostedZone(array $input) {
-        
-        // Create DB with domainame and caller_refernce
-        $domainName = $input['DomainName'];
-        $projectIp = $input['projectIp'];
-        $projectDir = $input['projectDir'];
-        $params = [
-            'Name' => $domainName,
-            'CallerReference' => $this->uniqueNumber($domainName),
-            'HostedZoneConfig' => [
-                'Comment' => 'My hosted zone for my domain',
-            ],
-        ];
-        
-        try {
-
-            // Create the hosted zone
-            $result = $this->route53->createHostedZone($params);
-
-            // Get the ID of the new hosted zone
-            $hostedZoneId = $result->get('HostedZone')['Id'];
-
-            // Get the name servers of the new hosted zone
-            $nameServers = $result->get('DelegationSet')['NameServers'];
-            
-            if(count($nameServers) > 0){
-                $res =  $this->changeResourceRecords($domainName, $hostedZoneId, $projectIp, $projectDir);
-                return $res;
-            } else {
-                // Send email to gozie
-            }
-
-            // // Update the DNS settings for the domain
-            // // Change the resourceRecords
-
-            // // $res =  $this->changeResourceRecords($domainName, $hostedZoneId, $projectIp);
-            // if($res['status'] === 200){
-            //     return json_encode(['domainName' => $domainName, 'nameservers' => $nameServers]);
-            // } else {
-            //     return json_encode(['status' => $res['status'], 'message' => $res['message']]);
-            // }
-        } catch (AwsException $e) {
-            // Handle any errors that occur
-            $error['status'] = 501;
-            $error['message'] = 'Error creating hosted zone and updating DNS: ' . $e->getMessage();
-            return $error;
-        }
-    }
+    
 
     public function configureEmail($domainName, $email, $forward1) {
         $api = 'https://api.forwardemail.net/v1';
@@ -642,237 +1044,28 @@ class AWSUtility
         }
     }
 
-    /**
-     * Changes the nameserver on namesilo
-     * Points NS resords to the Route 53 Hosted Zone
-     *
-     * @param String $domainName
-     * @param Array $nameServers
-     * @return void
-     */
-    public function changeNameServers(array $input) {
-        $domainName = $input['domainName'];
-        $nameServers = $input['nameServers'];
-        $key = $_SERVER['NAMESILO_API_KEY'];
-        
-        // Construct the nameserver parameters dynamically
-        $nsParams = [];
-        foreach ($nameServers as $index => $ns) {
-            $nsParams["ns" . ($index + 1)] = $ns;
-        }
-        
-        try {
-            $params = http_build_query(array_merge([
-                'version' => 1,
-                'type' => 'xml',
-                'key' => $key,
-                'domain' => $domainName
-            ], $nsParams));
-    
-            $URL = "https://www.namesilo.com/api/changeNameServers?" . $params;
-            $response = $this->client->request('GET', $URL);
-            $body = $response->getBody();
-            $xml = simplexml_load_string($body);
-            
-            if ((string)$xml->reply->detail === 'success' && (int)$xml->reply->code === 300) {
-                return [
-                    'status' => 200,
-                    'message' => 'success'
-                ];
-            } else {
-                return json_decode(json_encode($xml), true);
-            }
-        } catch (\Throwable $th) {
-            return [
-                'error' => $th->getMessage()
-            ];
-        }
-    }
     
 
-    /**
-     * Creates an A record on the Amazon Route 53
-     * This points to the ipaddress of the parent site.
-     *
-     * @param String $domainName
-     * @param String $hostedZoneId
-     * @return void
-     */
-    public function changeResourceRecords(String $domainName, String $hostedZoneId, String $projectIp, String $projectDir) {
-        try {
-            $awwwRecord = [
-                'Action' => 'CREATE',
-                'ResourceRecordSet' => [
-                    'Name' => 'www.' . $domainName,
-                    'Type' => 'A',
-                    'SetIdentifier' => 'aww-record',
-                    'TTL' => 300,
-                    'Weight' => 100,
-                    'ResourceRecords' => [
-                        [
-                            'Value' => $projectIp,
-                        ]
-                    ]
-                ]
-            ];
 
-            $aRecord = [
-                'Action' => 'CREATE',
-                'ResourceRecordSet' => [
-                    'Name' => $domainName,
-                    'Type' => 'A',
-                    'SetIdentifier' => 'a-record',
-                    'TTL' => 300,
-                    'Weight' => 100,
-                    'ResourceRecords' => [
-                        [
-                            'Value' => $projectIp,
-                        ]
-                    ]
-                ]
-            ];
-            $aWildRecord = [
-                'Action' => 'CREATE',
-                'ResourceRecordSet' => [
-                    'Name' => '*.' . $domainName,
-                    'Type' => 'A',
-                    'SetIdentifier' => 'awild-record',
-                    'TTL' => 300,
-                    'Weight' => 100,
-                    'ResourceRecords' => [
-                        [
-                            'Value' => $projectIp,
-                        ]
-                    ]
-                ]
-            ];
-            $changeBatch = [
-                'Comment' => 'Create A records for domain',
-                'Changes' => [
-                    $aRecord,
-                    $awwwRecord,
-                    $aWildRecord
-                ]
-            ];
+    // public function createDocument(){
+    //     $json_string = file_get_contents('../resources/content.json');
+    //     $documentContent = json_decode($json_string, true);
 
-            // Create the records in Route53
-            $result = $this->route53->changeResourceRecordSets([
-                'HostedZoneId' => $hostedZoneId,
-                'ChangeBatch' => $changeBatch
-            ]);
-        } catch (AwsException $e) {
-            $error['status'] = 501;
-            $error['message'] = 'Error Updating Hostede zone resource records: ' . $e->getAwsErrorMessage();
-            return $error;
-        } finally {
-            if ($result) {
-                // $changeId = $result->get('ChangeInfo')['Id'];
-                // $this->route53->waitUntil('ResourceRecordSetsChanged', [
-                //     'Id' => $changeId,
-                //     'WaiterConfig' => [
-                //         'Delay' => 5, // time delay between each request
-                //         'MaxAttempts' => 6, // maximum number of attempts to make
-                //     ],
-                // ]);
-                $arr = ["DomainName" => $domainName, "projectDir" => $projectDir];
-                $sendCommandRes = $this->sendCommand($arr);
-                return $sendCommandRes;
-                // return 'success on creating hosted zone!';
-            }
-        }
-    }
+    //     // Define the SSM document name
+    //     $documentName = 'CreateServerBlockAndIssueSSL';
 
+    //     // Create the SSM document
+    //     $result = $this->ssmClient->updateDocument([
+    //         'Content' => json_encode($documentContent),
+    //         'Name' => $documentName,
+    //         'DocumentType' => 'Command',
+    //         'DocumentVersion' => '1'
+    //     ]);
 
-    /**
-     * Creates a Server block to the nginx available-sites
-     * Initiates a certbot command
-     * And append the ssl path block
-     *
-     * @param Array $input
-     * @return void
-     */
-    public function sendCommand(array $input)
-    {
-        $domain = $input['DomainName'];
-        $projectDir = $input['projectDir'];
-        
-        $uri = '$uri';
-        $query_string = '$query_string';
-        $realpath_root = '$realpath_root';
-        $fastcgi_script_name = '$fastcgi_script_name';
-        $command = "sudo nano $domain
-            echo 'server {
-                listen 80;
-                server_name $domain www.$domain;
-                root /var/www/$projectDir/public;
-                
-                add_header X-XSS-Protection \"1; mode=block\";
-                add_header X-Content-Type-Options \"nosniff\";
-                index index.html index.htm index.php;
-                charset utf-8;
-                location / {
-                    try_files $uri $uri/ /index.php?$query_string;
-                }
-                location = /favicon.ico { access_log off; log_not_found off; }
-                location = /robots.txt  { access_log off; log_not_found off; }
-                error_page 404 /index.php;
-                location ~ \\.php$ {
-                    fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;
-                    fastcgi_index index.php;
-                    fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
-                    include fastcgi_params;
-                }
-                location ~ /\\.(?!well-known).* {
-                    deny all;
-                }
-            }' >>  /etc/nginx/sites-available/$domain && sudo dos2unix -n $domain
-        ";
-        $linkFileCommand = "ln -s /etc/nginx/sites-available/$domain /etc/nginx/sites-enabled/";
-        $certbot = "sudo certbot run -n --nginx --agree-tos -d $domain,www.$domain  -m  goziechukwu@gmail.com  --redirect";
-        
-        try {
-            $n1Command = $this->ssmClient->sendCommand([
-                'InstanceIds' => ['i-01f1d0e3ed7035edb'],
-                'DocumentName' => 'AWS-RunShellScript',
-                'Parameters' => [
-                    'commands' => [$command, $linkFileCommand, $certbot, 'sudo nginx -t' , 'sudo systemctl restart nginx'],
-                ],
-            ]);
-            $commandID = $n1Command['Command']['CommandId'];
-            if ($commandID !== '') {
-                $res['status'] = 200;
-                $res['commandID'] = $commandID;
-                $res['message'] = 'success on creating server!';
-                return $res;
-            }
-        } catch (AwsException $e) {
-            $error['status'] = 501;
-            $error['message'] = 'AWS Error response: ' . $e->getAwsErrorMessage();
-            return $error;
-        }
-    }
-
-
-    public function createDocument()
-    {
-        $json_string = file_get_contents('../resources/content.json');
-        $documentContent = json_decode($json_string, true);
-
-        // Define the SSM document name
-        $documentName = 'CreateServerBlockAndIssueSSL';
-
-        // Create the SSM document
-        $result = $this->ssmClient->updateDocument([
-            'Content' => json_encode($documentContent),
-            'Name' => $documentName,
-            'DocumentType' => 'Command',
-            'DocumentVersion' => '1'
-        ]);
-
-        $documentId = $result->get('DocumentDescription.DocumentVersion');
-        echo $result;
-        echo $documentId;
-    }
+    //     $documentId = $result->get('DocumentDescription.DocumentVersion');
+    //     echo $result;
+    //     echo $documentId;
+    // }
 
     private function listCommand($commandId)
     {
@@ -888,118 +1081,16 @@ class AWSUtility
         // echo $result['CommandInvocations'][0]['Status'];
     }
 
-    /**
-     * curl https://api.forwardemail.net/v1/domains/hash.fyi \
-     *   -u @api String $user:
-     * @param String $domain
-     */
-    public function createDomain(array $input) {
-        $domain = $input["DomainName"];
-        $email = $input['email'];
-        $zoneID = $this->requestZoneID($domain);
-        
-        if ($zoneID['status'] == 200) {
-            $hostedZoneId = $zoneID['zoneID'];
-            $responseData = $this->createDomainForwarding($domain);
-            
-            if (isset($responseData['created_at'])) {
-                $verification_record = $responseData['verification_record'];
-                $this->createDomainAlias('consultancy', $domain, $email);
-                $this->updateDNSMXAndTXTRecords($verification_record, $hostedZoneId, $domain);
-            } else {
-                echo "The 'created_at' field does not exist in the response.";
-            }
-        }
-    }
-
-    public function createDomainForwarding(string $domain) {
-        $url = $_SERVER['EMAILFORWARD_NET_URL'] . 'domains';
-        $options = [
-            'auth' => [$_SERVER['EMAILFORWARD_NET_USER'], ''],
-            'form_params' => ['domain' => $domain],
-        ];
-
-        try {
-            $response = $this->client->post($url, $options);
-            return json_decode($response->getBody()->getContents(), true);
-        } catch (RequestException $e) {
-            $this->handleRequestException($e, 'Error Creating Forward');
-            return [];
-        }
-    }
-
-    /**
-     * curl -X POST https://api.forwardemail.net/v1/domains/hash.fyi/aliases \
-     * -u @api
-     * @param String consultancy@+$domain
-     */
-    public function createDomainAlias(string $aliasName, string $domain, string $email) {
-        $url = $_SERVER['EMAILFORWARD_NET_URL'] . 'domains/' . $domain . '/aliases';
-        $options = [
-            'auth' => [$_SERVER['EMAILFORWARD_NET_USER'], ''],
-            'headers' => ['Content-Type' => 'application/json'],
-            'json' => ['name' => $aliasName, 'recipients' => $email],
-        ];
-
-        try {
-            $this->client->post($url, $options);
-        } catch (RequestException $e) {
-            $this->handleRequestException($e, 'Error Creating Alias');
-        }
-    }
-
-    /**
-     * Update user MX records in AWS Route53
-     */
-    public function updateDNSMXAndTXTRecords(string $verification_record, string $hostedZoneId, string $domain) {
-        $mxRecords = [
-            ['Value' => '10 mx1.forwardemail.net.', 'Priority' => 10],
-            ['Value' => '10 mx2.forwardemail.net.', 'Priority' => 10],
-        ];
-
-        $txtRecord = ['Value' => "\"forward-email-site-verification={$verification_record}\""];
-
-        try {
-            $response = $this->route53->changeResourceRecordSets([
-                'HostedZoneId' => $hostedZoneId,
-                'ChangeBatch' => [
-                    'Changes' => [
-                        [
-                            'Action' => 'UPSERT',
-                            'ResourceRecordSet' => [
-                                'Name' => $domain,
-                                'Type' => 'MX',
-                                'TTL' => 300,
-                                'ResourceRecords' => $mxRecords,
-                            ],
-                        ],
-                        [
-                            'Action' => 'UPSERT',
-                            'ResourceRecordSet' => [
-                                'Name' => $domain,
-                                'Type' => 'TXT',
-                                'TTL' => 300,
-                                'ResourceRecords' => [$txtRecord],
-                            ],
-                        ],
-                    ],
-                ],
-            ]);
-
-            $this->waitForChangesAndVerify($response, $domain);
-        } catch (AwsException $e) {
-            echo "Error creating MX Records: {$e->getMessage()}";
-        }
-    }
+    
 
     private function waitForChangesAndVerify($response, $domain) {
         if ($response) {
-            $changeId = $response->get('ChangeInfo')['Id'];
-            $this->route53->waitUntil('ResourceRecordSetsChanged', [
-                'Id' => $changeId,
-                'WaiterConfig' => ['Delay' => 10, 'MaxAttempts' => 30],
-            ]);
-            $this->verifyDomainRecords($domain);
+            // $changeId = $response->get('ChangeInfo')['Id'];
+            // $this->route53->waitUntil('ResourceRecordSetsChanged', [
+            //     'Id' => $changeId,
+            //     'WaiterConfig' => ['Delay' => 10, 'MaxAttempts' => 30],
+            // ]);
+            return $this->verifyDomainRecords($domain);
         }
     }
 
@@ -1010,13 +1101,21 @@ class AWSUtility
     public function verifyDomainRecords(string $domain) {
         $url = $_SERVER['EMAILFORWARD_NET_URL'] . 'domains/' . $domain . '/verify-records';
         $options = ['auth' => [$_SERVER['EMAILFORWARD_NET_USER'], '']];
-
+        
         try {
             $response = $this->client->get($url, $options);
             return $response->getBody()->getContents();
         } catch (RequestException $e) {
-            $this->handleRequestException($e, 'Error verifying domain');
-            return '';
+            // $this->handleRequestException($e, 'Error verifying domain');
+            // return '';
+            $mailData = [
+                "msg" => 'MX Records for '.$domain. ' yet to update'
+
+            ];
+            $this->getRecordsFromZebralinePOST('https://zebraline.ai/api/sendMailWebsiteCreationError', $mailData);
+            $error['status'] = 501;
+            $error['message'] = 'Email forwarding not created for '.$domain.'. '.$e->getMessage();
+            return $error;
         }
     }
 
@@ -1031,70 +1130,70 @@ class AWSUtility
     }
 
 
-    public function updateMXRecords()
-    {
-        // Set the updated MX records with priority
-        $mxRecords = [
-            [
-                'Value' => '10 mx1.forwardemail.net.',
-                'Priority' => 10,
-            ],
-            [
-                'Value' => '10 mx2.forwardemail.net.',
-                'Priority' => 20,
-            ],
-        ];
-        $hostedZoneId = 'Z048341915W6DVYZZF7HM';
-        $rootDomain = 'purityvendor.com';
-        try {
-            // Get the existing record sets
-            $response = $this->route53->listResourceRecordSets([
-                'HostedZoneId' => $hostedZoneId,
-            ]);
+    // public function updateMXRecords()
+    // {
+    //     // Set the updated MX records with priority
+    //     $mxRecords = [
+    //         [
+    //             'Value' => '10 mx1.forwardemail.net.',
+    //             'Priority' => 10,
+    //         ],
+    //         [
+    //             'Value' => '10 mx2.forwardemail.net.',
+    //             'Priority' => 20,
+    //         ],
+    //     ];
+    //     $hostedZoneId = 'Z048341915W6DVYZZF7HM';
+    //     $rootDomain = 'purityvendor.com';
+    //     try {
+    //         // Get the existing record sets
+    //         $response = $this->route53->listResourceRecordSets([
+    //             'HostedZoneId' => $hostedZoneId,
+    //         ]);
 
-            // Find the existing MX record
-            $existingMxRecord = null;
-            foreach ($response['ResourceRecordSets'] as $recordSet) {
-                if ($recordSet['Name'] === $rootDomain && $recordSet['Type'] === 'MX') {
-                    $existingMxRecord = $recordSet;
-                    break;
-                }
-            }
+    //         // Find the existing MX record
+    //         $existingMxRecord = null;
+    //         foreach ($response['ResourceRecordSets'] as $recordSet) {
+    //             if ($recordSet['Name'] === $rootDomain && $recordSet['Type'] === 'MX') {
+    //                 $existingMxRecord = $recordSet;
+    //                 break;
+    //             }
+    //         }
 
-            // Prepare the changes for MX records
-            $changes = [];
-            if ($existingMxRecord !== null) {
-                $changes[] = [
-                    'Action' => 'DELETE',
-                    'ResourceRecordSet' => $existingMxRecord,
-                ];
-            }
-            $changes[] = [
-                'Action' => 'UPSERT',
-                'ResourceRecordSet' => [
-                    'Name' => $rootDomain,
-                    'Type' => 'MX',
-                    'TTL' => 300,
-                    'ResourceRecords' => $mxRecords,
-                ],
-            ];
+    //         // Prepare the changes for MX records
+    //         $changes = [];
+    //         if ($existingMxRecord !== null) {
+    //             $changes[] = [
+    //                 'Action' => 'DELETE',
+    //                 'ResourceRecordSet' => $existingMxRecord,
+    //             ];
+    //         }
+    //         $changes[] = [
+    //             'Action' => 'UPSERT',
+    //             'ResourceRecordSet' => [
+    //                 'Name' => $rootDomain,
+    //                 'Type' => 'MX',
+    //                 'TTL' => 300,
+    //                 'ResourceRecords' => $mxRecords,
+    //             ],
+    //         ];
 
-            // Update the MX records
-            $response = $this->route53->changeResourceRecordSets([
-                'HostedZoneId' => $hostedZoneId,
-                'ChangeBatch' => [
-                    'Changes' => $changes,
-                ],
-            ]);
+    //         // Update the MX records
+    //         $response = $this->route53->changeResourceRecordSets([
+    //             'HostedZoneId' => $hostedZoneId,
+    //             'ChangeBatch' => [
+    //                 'Changes' => $changes,
+    //             ],
+    //         ]);
 
-            // Process the response as needed
-            echo "MX records updated successfully.";
-        } catch (AwsException $e) {
-            // Handle any errors that occurred
-            echo "Error: {$e->getMessage()}";
-        }
+    //         // Process the response as needed
+    //         echo "MX records updated successfully.";
+    //     } catch (AwsException $e) {
+    //         // Handle any errors that occurred
+    //         echo "Error: {$e->getMessage()}";
+    //     }
 
-    }
+    // }
 
     /**
     * Send API output.
@@ -1114,49 +1213,49 @@ class AWSUtility
         exit;
     }
 
-    public function getELBID() //String $domainName, String $hostedZoneId
-    {// Set the parameters for the describe load balancers call
-        $params = [
-            'Names' => ['wcd-lb-d7b7e9924c1fc7c5.elb.us-east-1.amazonaws.com.'], // Replace with the name of your load balancer
-        ];
+    // public function getELBID() //String $domainName, String $hostedZoneId
+    // {// Set the parameters for the describe load balancers call
+    //     $params = [
+    //         'Names' => ['wcd-lb-d7b7e9924c1fc7c5.elb.us-east-1.amazonaws.com.'], // Replace with the name of your load balancer
+    //     ];
 
-        try {
-            // Make the describe load balancers call
-            $result = $this->ELBClient->describeLoadBalancers($params);
+    //     try {
+    //         // Make the describe load balancers call
+    //         $result = $this->ELBClient->describeLoadBalancers($params);
 
-            // Get the hosted zone ID for the load balancer
-            $ELBHostedZoneId = $result->get('LoadBalancerDescriptions')[0]['CanonicalHostedZoneNameID'];
-            // $this->changeResourceRecords($domainName, $hostedZoneId, $ELBHostedZoneId);
-            echo 'Hosted zone ID for load balancer is: ' . $ELBHostedZoneId;
-            print_r($result);
-        } catch (AwsException $e) {
-            // Handle any errors that occur
-            echo 'Error retrieving hosted zone ID for load balancer: ' . $e->getMessage();
-        }
-    }
+    //         // Get the hosted zone ID for the load balancer
+    //         $ELBHostedZoneId = $result->get('LoadBalancerDescriptions')[0]['CanonicalHostedZoneNameID'];
+    //         // $this->changeResourceRecords($domainName, $hostedZoneId, $ELBHostedZoneId);
+    //         echo 'Hosted zone ID for load balancer is: ' . $ELBHostedZoneId;
+    //         print_r($result);
+    //     } catch (AwsException $e) {
+    //         // Handle any errors that occur
+    //         echo 'Error retrieving hosted zone ID for load balancer: ' . $e->getMessage();
+    //     }
+    // }
 
-    public function getAllZones()
-    {
-        try {
-            // Make the list hosted zones call
-            $result = $this->route53->listHostedZones();
+    // public function getAllZones()
+    // {
+    //     try {
+    //         // Make the list hosted zones call
+    //         $result = $this->route53->listHostedZones();
 
-            // Get the hosted zones from the response
-            $hostedZones = $result->get('HostedZones');
+    //         // Get the hosted zones from the response
+    //         $hostedZones = $result->get('HostedZones');
 
-            // Output the details for each hosted zone
-            foreach ($hostedZones as $hostedZone) {
-                echo 'ID: ' . $hostedZone['Id'] . PHP_EOL;
-                echo 'DNS Name: ' . $hostedZone['Name'] . PHP_EOL;
-                echo 'Caller Reference: ' . $hostedZone['CallerReference'] . PHP_EOL;
-                echo 'Created On: ' . $hostedZone['Config']['CreatedDate'] . PHP_EOL;
-                echo PHP_EOL;
-            }
-        } catch (AwsException $e) {
-            // Handle any errors that occur
-            echo 'Error retrieving hosted zones: ' . $e->getMessage();
-        }
-    }
+    //         // Output the details for each hosted zone
+    //         foreach ($hostedZones as $hostedZone) {
+    //             echo 'ID: ' . $hostedZone['Id'] . PHP_EOL;
+    //             echo 'DNS Name: ' . $hostedZone['Name'] . PHP_EOL;
+    //             echo 'Caller Reference: ' . $hostedZone['CallerReference'] . PHP_EOL;
+    //             echo 'Created On: ' . $hostedZone['Config']['CreatedDate'] . PHP_EOL;
+    //             echo PHP_EOL;
+    //         }
+    //     } catch (AwsException $e) {
+    //         // Handle any errors that occur
+    //         echo 'Error retrieving hosted zones: ' . $e->getMessage();
+    //     }
+    // }
 
     public function requestZoneID(String $domainName)
     {

@@ -138,8 +138,7 @@ export default {
     },
   },
   mounted() {
-    M.AutoInit();
-    
+    M.AutoInit();    
   },
 };
 </script>
