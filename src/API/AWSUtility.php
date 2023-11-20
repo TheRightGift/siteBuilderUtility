@@ -379,7 +379,7 @@ class AWSUtility
         } catch (AwsException $e) {
             
             $mailData = [
-                "msg" => 'Error settign up server file (sites-available) and SSL for '.$domainName.': ' . $e->getAwsErrorMessage()
+                "msg" => 'Error settign up server file (sites-available) and SSL for '.$domain.': ' . $e->getAwsErrorMessage()
 
             ];
             $this->getRecordsFromZebralinePOST('https://zebraline.ai/api/sendMailWebsiteCreationError', $mailData);
@@ -538,6 +538,70 @@ class AWSUtility
         }
     }
 
+    /**
+     * Update user MX records in AWS Route53
+     */
+    public function updateSMTPCNAMEAndTXTRecords(array $input) {
+        $domain = $input['domainName'];
+        $allChanges = [];
+    
+        foreach ($input['data'] as $key => $value) {
+            // Extract values
+            $recordName = rtrim($value[2]).".$domain";
+            $recordType = rtrim($value[3]);
+            $trimmedRecordValue = rtrim($value[4]);
+            // If type === CNAME don't add a quoted value
+            if ($value[3] !== 'CNAME') {
+                $recordValue = "\"$trimmedRecordValue\"";
+            } else {
+                $recordValue = $trimmedRecordValue;
+            }
+    
+            // Define changes for each record
+            $change = [
+                'Action' => 'UPSERT',
+                'ResourceRecordSet' => [
+                    'Name' => $recordName,
+                    'Type' => $recordType,
+                    'TTL' => 300,
+                    'ResourceRecords' => [
+                        [
+                            'Value' => $recordValue,
+                        ]
+                    ],
+                ],
+            ];
+    
+            $allChanges[] = $change;
+        }
+        $zoneID = $this->requestZoneID($domain);
+        if ($zoneID['status'] == 200) {
+            try {
+                $response = $this->route53->changeResourceRecordSets([
+                    'HostedZoneId' => $zoneID['zoneID'],
+                    'ChangeBatch' => [
+                        'Changes' => $allChanges,
+                    ],
+                ]);
+                if ($response['@metadata']['statusCode'] == 200) {
+                    echo json_encode([
+                        'status' => 200,
+                        'message' => 'SMTP settings saved!',
+                    ]);
+                }
+            } catch (AwsException $e) {
+                echo json_encode(['status' => 501, 'message' => $e->getMessage()]);
+            }
+        } else {
+            // Return an appropriate response if the zone ID retrieval fails
+            echo json_encode([
+                'status' => 501,
+                'message' => 'Error getting hosted zone ID',
+            ]);
+        }
+    }
+    
+
     // public function pendingWebsiteSetup($input){
     //     $projectIp = $input['projectIp'];
     //     $projectDir = $input['projectDir'];
@@ -610,7 +674,7 @@ class AWSUtility
             // } else {
             //     echo json_encode(['message' => htmlentities((string)$xml->reply->detail), 'status' => htmlentities((string) $xml->reply->code)]);
             // }
-        } catch (Exception $th) {
+        } catch (RequestException $th) {
             return $th->getMessage();
         }
     }
@@ -885,7 +949,7 @@ class AWSUtility
     }
 
     public function runJScompileCommand() {
-        $jsCompileCommand = 'cd /var/www/zebralinetest && sudo npm run prod';
+        $jsCompileCommand = 'cd /var/www/zebralinetest && sudo yarn run prod';
         try {
             $n1Command = $this->ssmClient->sendCommand([
                 'InstanceIds' => ['i-01f1d0e3ed7035edb'],
@@ -1044,45 +1108,6 @@ class AWSUtility
         }
     }
 
-    
-
-
-    // public function createDocument(){
-    //     $json_string = file_get_contents('../resources/content.json');
-    //     $documentContent = json_decode($json_string, true);
-
-    //     // Define the SSM document name
-    //     $documentName = 'CreateServerBlockAndIssueSSL';
-
-    //     // Create the SSM document
-    //     $result = $this->ssmClient->updateDocument([
-    //         'Content' => json_encode($documentContent),
-    //         'Name' => $documentName,
-    //         'DocumentType' => 'Command',
-    //         'DocumentVersion' => '1'
-    //     ]);
-
-    //     $documentId = $result->get('DocumentDescription.DocumentVersion');
-    //     echo $result;
-    //     echo $documentId;
-    // }
-
-    private function listCommand($commandId)
-    {
-        $result = $this->ssmClient->listCommandInvocations(
-            [
-                'CommandId' => $commandId,
-                'Details' => true,
-                'InstanceId' => 'i-01f1d0e3ed7035edb',
-                // "NextToken" => "AAEAASiaH2XV9X6gYzh6sJ201/MOh1ryQY/Ixll+fRvoBwGlAAAAAGRMD9I1IdZhNLKZNX1PHoNwZFKtsE6yJer9otpcugjtbW26TJSXP+C9iwejqL9pdDAsk9fnE7HZwytd4THp+c2ThMxK68JwvXvunVJR0ZE6xUJnqypbqrQ4iAxqKL+hOXUlheh36KoYRk/svRAG7+HwOz1s+3sq737nlgoaAXNIxnpYYT3Uyq7xKmA9aIYIYTCfjZhjcyQ55uAIqucAy+9/LXiTEiNvTcPLxi3XCctQf4a53giAAMFceiDT9Zp420wVTJLt91uQTWSSaZWv8GbE3n6oUbRCon29nigdvbfJm4N/mXvPF4wcRls0xy8SD16ljI9ykCNzXgzLj3iGO2eyAU4hWnUkGRD+0B/JqXkE6954Rs48z3+F+uR2hQcHrSrhXYIbdxfT3ZzbA1F95PKJ/RbSYPtaTwAGI5/fhBSk0JllJOuxGnsO5doa0LCAm79QS+fxIVqfDxStEmB282ldKgOAkiNEOvdi4VOtdpJAzsE6HcihH5KdB9qLRDb9URkcOkssAijrSJO5v8lUuLMIfWeGyb2Qu4zptLC5BFmiIGoY37fBU1aRCBeeoap+ffXirUGsxS9wTz5w4icq8o8Ta9pYfsTMYpSv8YOKM1+IqKFj4GHOXGx39YPexrS2BnI9taArt1YBrG6dCr7GrbbvU5SxcWKRXl9SmiuwYVGO1UJ+mEc3flGnxoDXM6Txgb7ImFDlGLOrLTZyDoTfFIJwVPes1b4LTk1nkr/hTaAB8l8pGwonNANhxX0s6hUMesgsTDKqcKUiA+Xc7LiwHMvxGBAk2KRko39bOUQcOawyee6BjPpmmpyQg0NML9H/uchTqxJfDQWAX5di1yOmKKbK/Ecvf2SrQl17Uw0gJl88PVyWaUnSxIo3dXkhdHac1jPVklVTH7bYMT3sEf73vDGndV+k7pz/sw9kuO6sunhmBAcXcRHPFqQiAIdQA9p33yWiBYHUTKkIhas0nprq8t7FkRP+iVftpAeD1yZcOdo/KbznbDJPTodgGowDn3LG90VMqrHD532Swi/9UM5q7T2Ot2y7fa500RQHo3zSBoBHxi/SE4siHEQ7AikH+V1BaZohoX5i4M6B1RVal/2rpssQyB2jYsdajhEDGVrfEbwAFXIlmyc57hC72+jiC7bF3vDR45avBnix81e0gOfRTVw4a+ssgCkaPSa+rpUSpYu6Rg5dpA==",
-            ]
-        );
-        echo $result;
-        // echo $result['CommandInvocations'][0]['Status'];
-    }
-
-    
-
     private function waitForChangesAndVerify($response, $domain) {
         if ($response) {
             // $changeId = $response->get('ChangeInfo')['Id'];
@@ -1213,50 +1238,6 @@ class AWSUtility
         exit;
     }
 
-    // public function getELBID() //String $domainName, String $hostedZoneId
-    // {// Set the parameters for the describe load balancers call
-    //     $params = [
-    //         'Names' => ['wcd-lb-d7b7e9924c1fc7c5.elb.us-east-1.amazonaws.com.'], // Replace with the name of your load balancer
-    //     ];
-
-    //     try {
-    //         // Make the describe load balancers call
-    //         $result = $this->ELBClient->describeLoadBalancers($params);
-
-    //         // Get the hosted zone ID for the load balancer
-    //         $ELBHostedZoneId = $result->get('LoadBalancerDescriptions')[0]['CanonicalHostedZoneNameID'];
-    //         // $this->changeResourceRecords($domainName, $hostedZoneId, $ELBHostedZoneId);
-    //         echo 'Hosted zone ID for load balancer is: ' . $ELBHostedZoneId;
-    //         print_r($result);
-    //     } catch (AwsException $e) {
-    //         // Handle any errors that occur
-    //         echo 'Error retrieving hosted zone ID for load balancer: ' . $e->getMessage();
-    //     }
-    // }
-
-    // public function getAllZones()
-    // {
-    //     try {
-    //         // Make the list hosted zones call
-    //         $result = $this->route53->listHostedZones();
-
-    //         // Get the hosted zones from the response
-    //         $hostedZones = $result->get('HostedZones');
-
-    //         // Output the details for each hosted zone
-    //         foreach ($hostedZones as $hostedZone) {
-    //             echo 'ID: ' . $hostedZone['Id'] . PHP_EOL;
-    //             echo 'DNS Name: ' . $hostedZone['Name'] . PHP_EOL;
-    //             echo 'Caller Reference: ' . $hostedZone['CallerReference'] . PHP_EOL;
-    //             echo 'Created On: ' . $hostedZone['Config']['CreatedDate'] . PHP_EOL;
-    //             echo PHP_EOL;
-    //         }
-    //     } catch (AwsException $e) {
-    //         // Handle any errors that occur
-    //         echo 'Error retrieving hosted zones: ' . $e->getMessage();
-    //     }
-    // }
-
     public function requestZoneID(String $domainName)
     {
         try {
@@ -1365,89 +1346,5 @@ class AWSUtility
         }
     }
 
-    /**
-     * Returns the certificatecreated for a domain, with records to validate domain ownership
-     *
-     * @param String $certificateArn
-     * @return void
-     */
-    // public function describeCertificate(String $certificateArn, String $hostedZoneId) {
-    //     $certificateArn = $certificateArn;
-    //     try {
-    //         $result = $this->acmClient->describeCertificate([
-    //             'CertificateArn' => $certificateArn,
-    //         ]);
-    //         $domainValidationOptions = $result->get('Certificate')['DomainValidationOptions'];
-    //         // print_r($domainValidationOptions[0]);
-
-    //         // foreach($domainValidationOptions as $value) {
-    //             $this->addDNSRecord($domainValidationOptions[0], $hostedZoneId);
-    //         //     echo
-    //         // }
-    //     } catch (AcmException $e) {
-    //         $this->sendOutput(json_encode(array('error' => $e->getAwsErrorMessage())),
-    //             array('Content-Type: application/json', 'HTTP/1.1 401 Client Not Found')
-    //         );
-    //     }
-    // }
-
-    /**
-     * Lists all certificates
-     *
-     * @return void
-     */
-    // public function listCertificate() {
-    //     $result = $this->acmClient->listCertificates([
-    //         // additional options
-    //     ]);
-
-    //     $certificates = $result['CertificateSummaryList'];
-    //     $certificateArn = "";
-    //     foreach ($certificates as $certificate) {
-    //         if ($certificate['DomainName'] === 'vendmeqniq.com') {
-    //             $certificateArn = $certificate['CertificateArn'];
-    //             break;
-    //         }
-    //     }
-    //     $hostedZoneId = '';
-    //     $response = $this->describeCertificate($certificateArn, $hostedZoneId);
-    //     if ($response['Certificate']['Status'] == 'ISSUED') {
-    //         // The certificate has been issued and is ready to use
-    //         return true;
-    //     } else {
-    //         // The certificate is still being validated or there was an error
-    //         return false;
-    //     }
-    // }
-
-    /**
-    * Makes a request for an SSL certificate
-    *
-    * @param Array $input
-    * @return void
-    */
-    // public function requestCertificate(Array $input, String $hostedZoneId) {
-    //     $domainName = $input['DomainName']; // Change to your domain name
-    //     try {
-    //         $request_result = $this->acmClient->requestCertificate([
-    //             'DomainName' => $domainName,
-    //             'ValidationMethod' => 'DNS',
-    //             'SubjectAlternativeNames' => [
-    //                 '*.'.$domainName, // Add any additional domains or subdomains here
-    //             ],
-    //         ]);
-    //         $certificateArn = $request_result['CertificateArn'];
-    //         if ($certificateArn !== null) {
-    //             return $this->describeCertificate($certificateArn, $hostedZoneId);
-    //         }
-    //         else {
-    //             echo ['status' => 404, 'message' => $request_result];
-    //         }
-    //     } catch (AcmException $e) {
-    //         $this->sendOutput(json_encode(array('error' => $e->getAwsErrorMessage())),
-    //             array('Content-Type: application/json', 'HTTP/1.1 401 Client Not Found')
-    //         );
-    //     }
-
-    // }
+    
 }
