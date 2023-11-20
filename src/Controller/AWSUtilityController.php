@@ -39,9 +39,9 @@ class AWSUtilityController
             case '/listcommands':
                 $response = $this->listcommands();
                 break;
-            case '/getzones':
-                $response = $this->getcreatedZone();
-                break;
+            // case '/getzones':
+            //     $response = $this->getcreatedZone();
+            //     break;
             case '/createdomainforwarding':
                 $response = $this->createDomainForwarding();
                 break;
@@ -69,14 +69,17 @@ class AWSUtilityController
             case '/changenameserversonnamesilo':
                 $response = $this->changenameserversonnamesilo();
                 break;
-            case '/changeresoucerecords':
-                $response = $this->changeresoucerecords();
-                break;
-            case '/pendingWebsiteSetup':
-                $response = $this->pendingWebsiteSetup();
-                break;
+            // case '/changeresoucerecords':
+            //     $response = $this->changeresoucerecords();
+            //     break;
+            // case '/pendingWebsiteSetup':
+            //     $response = $this->pendingWebsiteSetup();
+            //     break;
             case '/setUpVendorWebsite':
                 $response = $this->setUpVendorWebsite();
+                break;
+            case '/setup_smtp_for_mail_forwarder':
+                $response = $this->createSMTPrecordForEmailF();
                 break;
                 
             default: header("HTTP/1.1 404 Not Found");
@@ -129,23 +132,23 @@ class AWSUtilityController
         }
     }
 
-    private function pendingWebsiteSetup(){
+    // private function pendingWebsiteSetup(){
         
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $input = $_POST; //(array) json_decode(file_get_contents('php://input'), true); // Use like this when expecting acess from zebraline server
+    //     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    //         $input = $_POST; //(array) json_decode(file_get_contents('php://input'), true); // Use like this when expecting acess from zebraline server
 
-            if (count($input) < 1 || count($this->validatePendingWebsite($input)) > 0) {
-                $res =  $this->unprocessableResponse($this->validatePendingWebsite($input));
-                echo json_encode($res);
-                return;
-            }
+    //         if (count($input) < 1 || count($this->validatePendingWebsite($input)) > 0) {
+    //             $res =  $this->unprocessableResponse($this->validatePendingWebsite($input));
+    //             echo json_encode($res);
+    //             return;
+    //         }
 
-            $result = $this->awsUtilityGateway->pendingWebsiteSetup($input);
-            echo json_encode($result);
-        } else {
-            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support ' . $_SERVER['REQUEST_METHOD'] . ' requests.']);
-        }
-    }
+    //         $result = $this->awsUtilityGateway->pendingWebsiteSetup($input);
+    //         echo json_encode($result);
+    //     } else {
+    //         echo json_encode(['status' => 404, 'message' => 'This endpoint does not support ' . $_SERVER['REQUEST_METHOD'] . ' requests.']);
+    //     }
+    // }
 
     private function createTemplate() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -259,22 +262,22 @@ class AWSUtilityController
         }
     }
 
-    private function changeresoucerecords() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $input = (array) json_decode(file_get_contents('php://input'), true); // Use like this when expecting acess from zebraline server
+    // private function changeresoucerecords() {
+    //     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    //         $input = (array) json_decode(file_get_contents('php://input'), true); // Use like this when expecting acess from zebraline server
 
-            if (count($input) < 1 || count($this->validateResourceData($input)) > 0) {
-                $res =  $this->unprocessableCommandResponse($this->validateResourceData($input));
-                echo json_encode($res);
-                return;
-            }
+    //         if (count($input) < 1 || count($this->validateResourceData($input)) > 0) {
+    //             $res =  $this->unprocessableCommandResponse($this->validateResourceData($input));
+    //             echo json_encode($res);
+    //             return;
+    //         }
 
-            $result = $this->awsUtilityGateway->changeResourceRecords($input);
-            echo json_encode($result);
-        } else {
-            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support ' . $_SERVER['REQUEST_METHOD'] . ' requests.']);
-        }
-    }
+    //         $result = $this->awsUtilityGateway->changeResourceRecords($input);
+    //         echo json_encode($result);
+    //     } else {
+    //         echo json_encode(['status' => 404, 'message' => 'This endpoint does not support ' . $_SERVER['REQUEST_METHOD'] . ' requests.']);
+    //     }
+    // }
 
     private function runJScompileCommand() {
         if ($_SERVER['REQUEST_METHOD'] === 'GET') {
@@ -311,6 +314,17 @@ class AWSUtilityController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $input = $_POST;
             $result = $this->awsUtilityGateway->storeTypeHasTemplate($input);
+            $response['body'] = json_encode($result);
+            return $response;
+        } else {
+            echo json_encode(['status' => 404, 'message' => 'This endpoint does not support ' . $_SERVER['REQUEST_METHOD'] . ' requests.']);
+        }
+    }
+
+    private function createSMTPrecordForEmailF() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $input = (array) json_decode(file_get_contents('php://input'), true);
+            $result = $this->awsUtilityGateway->updateSMTPCNAMEAndTXTRecords($input);
             $response['body'] = json_encode($result);
             return $response;
         } else {
@@ -466,16 +480,16 @@ class AWSUtilityController
         }
     }
 
-    private function getcreatedZone() {
-        // $input = (array) json_decode(file_get_contents('php://input'), TRUE);
-        // if (! $this->validateDomain($input)) {
-        //     return $this->unprocessableEntityResponse();
-        // }
-        $result = $this->awsUtilityGateway->getAllZones([]);
-        // $response['status_code_header'] = 'HTTP/1.1 200 OK';
-        $response['body'] = json_encode($result);
-        return $response;
-    }
+    // private function getcreatedZone() {
+    //     // $input = (array) json_decode(file_get_contents('php://input'), TRUE);
+    //     // if (! $this->validateDomain($input)) {
+    //     //     return $this->unprocessableEntityResponse();
+    //     // }
+    //     $result = $this->awsUtilityGateway->getAllZones([]);
+    //     // $response['status_code_header'] = 'HTTP/1.1 200 OK';
+    //     $response['body'] = json_encode($result);
+    //     return $response;
+    // }
 
     private function sendCommand() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
