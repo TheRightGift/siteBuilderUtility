@@ -951,7 +951,7 @@ class AWSUtility
     public function runJScompileCommand() {
         // Use this to run watch in production
         // Zebraline no longer makes calls here or to check command status
-        $jsCompileCommand = 'cd /var/www/zebralinetest && sudo npm run watch-production';
+        $jsCompileCommand = 'cd /var/www/zebralinetest && sudo npm run build';
         try {
             $n1Command = $this->ssmClient->sendCommand([
                 'InstanceIds' => ['i-01f1d0e3ed7035edb'],
@@ -960,7 +960,7 @@ class AWSUtility
                     'commands' => [$jsCompileCommand],
                 ],
             ]);
-            $commandId = $n1Command['Command']['CommandId'];
+            $commandId = $n1Command['Command']; // ['CommandId']
 
             echo json_encode(['status' => 200, 'message' => $commandId]);
             
